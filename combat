@@ -1,0 +1,45 @@
+#lang racket
+
+;; character
+(define base-character<%>
+  (interface ()
+    dead? ;; true iff character is dead
+    apply-attack ;; takes another character and applies an attack from that character to this one
+    apply-spell ;; takes a spell and applies it to this character
+    ))
+
+(define character%
+  (class* object% (base-character<%>)
+    (init-field
+     name ;; a string that is the character's name
+     health ;; a nat that is the character's current health
+     max-health ;; a nat that is the character's max health
+     base-agility ;; a nat that is the character's base-agility
+     base-strength ;; a nat that is the character's base-strength
+     invintory ;; the character's invintory
+     spells ;; the spells the character knows
+     weakness ;; a symbol that is the characters weakness. 'none if they have no weakness
+     )
+    (define/public (dead?) (<= health 0))
+    (define/public (apply-attack attacker)
+      (new character%
+           [health 5])) ;; fix line
+    (define/public (apply-spell spell)
+      (new character%
+           [health 5])))) ;; fix line
+
+(define player%
+  (class* character% (base-character<%>)
+    (init-field
+     level
+     current-xp)
+    (define/public (add-xp npc)
+      (new player%
+           [current-xp (+ current-xp 5)])))) ;; fix line
+     
+(define npc%
+  (class* character% (base-character<%>)
+    (init-field
+     xp-award)))
+    
+    
