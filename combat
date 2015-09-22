@@ -15,9 +15,11 @@
   (class* item% (base-item<%>)
     (init-field
      wepon-damage ;; a nat that is the wepons damage
-     wepon-accuracy ;; a nat that is the wepon's accuracy
+     wepon-accuracy ;; a nat between 0 and 1 that is the proboblity that the wepon will hit
      type;; a symbol that is the wepon's type
-     )))
+     )
+    (define/public (get-accuracy)
+      wepon-accuracy)))
 
 (define equipment%
   (class* item% (base-item<%>)
@@ -50,33 +52,36 @@
      name ;; a string that is the character's name
      health ;; a nat that is the character's current health
      max-health ;; a nat that is the character's max health
-     base-agility ;; a nat that is the character's base-agility
+     base-agility ;; a nat between 0 and 1 which is the probibility that a character will be hit by any given attack
      base-strength ;; a nat that is the character's base-strength
      character-invintory ;; the character's invintory
      spells ;; the spells the character knows
      weakness ;; a symbol that is the characters weakness. 'none if they have no weakness
      )
     (define/public (dead?) (<= health 0))
-    (define/public (apply-attack attacker)
+    (define/public (apply-attack attacker-accuracy
+                                 attacker-damage
+                                 wepon-type)
       (new character%
            [health (- health (if (hit? base-agility 
-                                       ;; attackers agility 
-                                       ;; attacker's wepon's accuracy
+                                       attacker-accuracy
                                        )
-                                 (calculate-damage 
+                                 0
+                                 #;(calculate-damage 
                                   (invintory-equiped character-invintory)
                                   base-strength
                                   weakness
-                                  ;; attacker's wepon's damage
-                                  ;; attacker's wepon's type
-                                  ;; attacker's strength
+                                  
                                   )
                                  0))]))
     (define/public (apply-spell spell)
-      (s character%))
+      (spell character%))
     (define/public (use-consumable c)
       (c character%))))
 
+;; hit?: nat nat nat --> bool
+(define (hit? ag acc)
+           
 (define player%
   (class* character% (base-character<%>)
     (init-field
@@ -94,3 +99,6 @@
      xp-award ;; the xp award you get for defeating the enemy
      )))
 
+(module+ test
+  (require rackunit)
+  (check-equal? 3 3))
