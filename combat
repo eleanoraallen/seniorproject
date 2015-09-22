@@ -70,7 +70,8 @@
                                   ;; attacker's wepon's damage
                                   ;; attacker's wepon's type
                                   ;; attacker's strength
-                                  )))]))
+                                  )
+                                 0))]))
     (define/public (apply-spell spell)
       (s character%))
     (define/public (use-consumable c)
@@ -92,3 +93,4 @@
     (init-field
      xp-award ;; the xp award you get for defeating the enemy
      )))
+
