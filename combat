@@ -1,11 +1,47 @@
 #lang racket
 
-;; character
+;; ITEMS ----------------------------------------------------------------
+(define base-item<%>
+  (interface ()))
+
+(define item%
+  (class object% (base-item<%>)
+  (init-field
+   name ;; string that is the items name
+   description ;; string that is the description of the item
+   )))
+
+(define wepon%
+  (class* item% (base-item<%>)
+    (init-field
+     wepon-damage ;; a nat that is the wepons damage
+     wepon-accuracy ;; a nat that is the wepon's accuracy
+     type;; a symbol that is the wepon's type
+     )))
+
+(define equipment%
+  (class* item% (base-item<%>)
+    (init-field
+     defense ;; a nat that is the equipments defense
+     equipment-type ;; a symbol that is the type of equipment it is
+     )))
+
+(define consumable%
+  (class* item% (base-item<%>)
+    (init-field
+     effect ;; a function that takes a character and produces a character
+     )))
+
+;; an invintory is a (make-invintory wepon list-of-equipment list-of-consumables list-of-items)
+(define-struct invintory (wepon equiped consumables miscellaneous))
+
+;; CHARACTERS ----------------------------------------------------------------
 (define base-character<%>
   (interface ()
     dead? ;; true iff character is dead
     apply-attack ;; takes another character and applies an attack from that character to this one
     apply-spell ;; takes a spell and applies it to this character
+    use-consumable ;; takes a consumable and applies it to this character
     ))
 
 (define character%
@@ -16,30 +52,43 @@
      max-health ;; a nat that is the character's max health
      base-agility ;; a nat that is the character's base-agility
      base-strength ;; a nat that is the character's base-strength
-     invintory ;; the character's invintory
+     character-invintory ;; the character's invintory
      spells ;; the spells the character knows
      weakness ;; a symbol that is the characters weakness. 'none if they have no weakness
      )
     (define/public (dead?) (<= health 0))
     (define/public (apply-attack attacker)
       (new character%
-           [health 5])) ;; fix line
+           [health (- health (if (hit? base-agility 
+                                       ;; attackers agility 
+                                       ;; attacker's wepon's accuracy
+                                       )
+                                 (calculate-damage 
+                                  (invintory-equiped character-invintory)
+                                  base-strength
+                                  weakness
+                                  ;; attacker's wepon's damage
+                                  ;; attacker's wepon's type
+                                  ;; attacker's strength
+                                  )))]))
     (define/public (apply-spell spell)
-      (new character%
-           [health 5])))) ;; fix line
+      (s character%))
+    (define/public (use-consumable c)
+      (c character%))))
 
 (define player%
   (class* character% (base-character<%>)
     (init-field
-     level
-     current-xp)
-    (define/public (add-xp npc)
+     level ;; a nat that is the player's level
+     mp ;; a nat that is the players mp
+     current-xp ;; a nat that is the player's xp
+     )
+    (define/public (add-xp num) ;; adds xp-award to player's current xp
       (new player%
-           [current-xp (+ current-xp 5)])))) ;; fix line
+           [current-xp (+ current-xp num)]))))
      
 (define npc%
   (class* character% (base-character<%>)
     (init-field
-     xp-award)))
-    
-    
+     xp-award ;; the xp award you get for defeating the enemy
+     )))
