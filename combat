@@ -5,7 +5,8 @@
   (interface ()))
 
 (define item%
-  (class object% (base-item<%>)
+  (class* object% (base-item<%>)
+    (super-new)
     (init-field
      name ;; string that is the items name
      description ;; string that is the description of the item
@@ -13,6 +14,7 @@
 
 (define wepon%
   (class* item% (base-item<%>)
+    (super-new)
     (init-field
      wepon-damage ;; a nat that is the wepons damage
      wepon-accuracy ;; a nat between 0 and 1 that is the proboblity that the wepon will hit
@@ -27,6 +29,7 @@
 
 (define equipment%
   (class* item% (base-item<%>)
+    (super-new)
     (init-field
      defence ;; a nat that is the equipments defence
      equipment-portion ;; a symbol that is the portion of the body the equipment goes on
@@ -38,12 +41,16 @@
 
 (define consumable%
   (class* item% (base-item<%>)
+    (super-new)
     (init-field
      effect ;; a function that takes a character and produces a character
      )))
 
 ;; an invintory is a (make-invintory wepon list-of-equipment list-of-consumables list-of-items)
 (define-struct invintory (wepon equiped consumables miscellaneous))
+
+;; a spell is a (make-spell string string effect)
+(define-struct spell (name discription effect))
 
 ;; CHARACTERS ----------------------------------------------------------------
 (define base-character<%>
@@ -58,6 +65,7 @@
 
 (define character%
   (class* object% (base-character<%>)
+    (super-new)
     (init-field
      name ;; a string that is the character's name
      health ;; a nat that is the character's current health
@@ -103,6 +111,7 @@
 
 (define player%
   (class* character% (base-character<%>)
+    (super-new)
     (init-field
      level ;; a nat that is the player's level
      mp ;; a nat that is the players mp
@@ -114,6 +123,7 @@
 
 (define npc%
   (class* character% (base-character<%>)
+    (super-new)
     (init-field
      xp-award ;; the xp award you get for defeating the enemy
      )))
