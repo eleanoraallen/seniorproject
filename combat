@@ -6,10 +6,10 @@
 
 (define item%
   (class object% (base-item<%>)
-  (init-field
-   name ;; string that is the items name
-   description ;; string that is the description of the item
-   )))
+    (init-field
+     name ;; string that is the items name
+     description ;; string that is the description of the item
+     )))
 
 (define wepon%
   (class* item% (base-item<%>)
@@ -18,15 +18,23 @@
      wepon-accuracy ;; a nat between 0 and 1 that is the proboblity that the wepon will hit
      type;; a symbol that is the wepon's type
      )
-    (define/public (get-accuracy)
-      wepon-accuracy)))
+    (define/public (get-accuracy) ;; produces wepon's accuracy
+      wepon-accuracy)
+    (define/public (get-damage) ;; produces wepon's damage
+      wepon-damage)
+    (define/public (get-type) ;; produces wepon's type
+      type)))
 
 (define equipment%
   (class* item% (base-item<%>)
     (init-field
-     defense ;; a nat that is the equipments defense
-     equipment-type ;; a symbol that is the type of equipment it is
-     )))
+     defence ;; a nat that is the equipments defence
+     equipment-portion ;; a symbol that is the portion of the body the equipment goes on
+     )
+    (define/public (get-defence) ;; produces the equipment's defence
+      defence)
+    (define/public (get-portion) ;; produces the equipment's portion
+      equipment-portion)))
 
 (define consumable%
   (class* item% (base-item<%>)
@@ -44,6 +52,8 @@
     apply-attack ;; takes another character and applies an attack from that character to this one
     apply-spell ;; takes a spell and applies it to this character
     use-consumable ;; takes a consumable and applies it to this character
+    get-agility ;; gets character's agility
+    get-damage ;; gets the damage a character can enflict
     ))
 
 (define character%
@@ -65,20 +75,32 @@
       (new character%
            [health (- health (if (< (* (* (- 1 (get-agility)) attacker-accuracy) 100) (random 100))
                                  0
-                                 #;(calculate-damage 
-                                  (invintory-equiped character-invintory)
-                                  base-strength
-                                  weakness
-                                  
-                                  )
-                                 0))]))
+                                 (local [(define (tally-defense e)
+                                           (cond
+                                             [(empty? e) 0]
+                                             [(cons? e) (+ (send (first e) get-defense) (tally-defense (rest e)))]))
+                                         (define (opposite-types? we wt) false) ;; fix me
+                                         (define (damage num)
+                                           (if (<= (- num (tally-defense (invintory-equiped character-invintory))) base-strength)
+                                               base-strength
+                                               (- num (tally-defense (invintory-equiped character-invintory)))))]
+                                   (cond
+                                     [(eq? weakness wepon-type)
+                                      (* 2 (damage (- attacker-damage base-strength)))]
+                                     [(opposite-types? weakness wepon-type)
+                                      (* .5 (damage (- attacker-damage base-strength)))]
+                                     [else (damage (- attacker-damage base-strength))]))
+                                 ))]))
     (define/public (apply-spell spell)
       (spell character%))
     (define/public (use-consumable c)
       (c character%))
-    (define/public (get-agility) ;; alter
-      base-agility)))
-           
+    (define/public (get-agility) base-agility) 
+    (define/public (get-damage) 
+      (+ (send (invintory-wepon character-invintory) wepon-damage) base-strength))))
+
+
+
 (define player%
   (class* character% (base-character<%>)
     (init-field
@@ -89,7 +111,7 @@
     (define/public (add-xp num) ;; adds xp-award to player's current xp
       (new player%
            [current-xp (+ current-xp num)]))))
-     
+
 (define npc%
   (class* character% (base-character<%>)
     (init-field
