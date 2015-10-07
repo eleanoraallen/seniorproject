@@ -58,7 +58,7 @@
     dead? ;; true iff character is dead
     apply-attack ;; takes another character and applies an attack from that character to this one
     apply-spell ;; takes a spell and applies it to this character
-    use-consumable ;; takes a consumable and applies it to this character
+    use-consumable ;; takes a consumable effect and applies it to this character
     get-health ;; gets character's health
     get-agility ;; gets character's agility
     get-damage ;; gets the damage a character can enflict
@@ -90,13 +90,20 @@
                                            (cond
                                              [(empty? e) 0]
                                              [(cons? e) (+ (send (first e) get-defence) (tally-defense (rest e)))]))
-                                         (define (opposite-types? we wt) false) ;; fix me
+                                         (define (opposite-types? we wt)
+                                           (cond
+                                             [(and (eq? we 'water) (eq? wt 'fire)) true]
+                                             [(and (eq? we 'wood) (eq? wt 'earth)) true]
+                                             [(and (eq? we 'fire) (eq? wt 'metal)) true]
+                                             [(and (eq? we 'earth) (eq? wt 'water)) true]
+                                             [(and (eq? we 'metal) (eq? wt 'wood)) true]
+                                             [else false]))
                                          (define (damage num)
                                            (if (<= (- num (tally-defense (invintory-equiped character-invintory))) base-strength)
                                                base-strength
                                                (- num (tally-defense (invintory-equiped character-invintory)))))]
                                    (cond
-                                     [(eq? weakness wepon-type)
+                                     [(and (eq? weakness wepon-type) (not (eq? weakness 'none)))
                                       (* 2 (damage (- attacker-damage base-strength)))]
                                      [(opposite-types? weakness wepon-type)
                                       (* .5 (damage (- attacker-damage base-strength)))]
@@ -109,7 +116,7 @@
            [spells spells]
            [weakness weakness]))
     (define/public (apply-spell spell)
-      (spell character%))
+      ((spell-effect spell) character%))
     (define/public (use-consumable c)
       (c character%))
     (define/public (get-health) health)
@@ -141,12 +148,13 @@
 
 (module+ test
   (require rackunit)
+  ;; Definitions
   (define TESTSWORD
     (new wepon%
          [name "Test Sword"]
          [description "A sword used exclusivly for testing the game."]
          [wepon-damage 50]
-         [wepon-accuracy .95]
+         [wepon-accuracy 1]
          [type 'metal]))
   (define TESTARMOR
     (new equipment%
@@ -172,4 +180,7 @@
          [weakness 'none]
          [level 5]
          [mp 20]
-         [current-xp 1500])))
+         [current-xp 1500]))
+ ; (check-equal (send TESTPLAYER1 dead?) false)
+  ;(check-equal (send (send TESTPLAYER1 apply-attack 1 50 'none) get-health) 50)
+  )
