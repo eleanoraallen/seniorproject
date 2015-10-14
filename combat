@@ -44,7 +44,9 @@
     (super-new)
     (init-field
      effect ;; a function that takes a character and produces a character
-     )))
+     )
+    (define/public (get-effect) effect) ;; gets items effect
+    ))
 
 ;; an invintory is a (make-invintory wepon list-of-equipment list-of-consumables list-of-items)
 (define-struct invintory (wepon equiped consumables miscellaneous))
@@ -55,14 +57,18 @@
 ;; CHARACTERS ----------------------------------------------------------------
 (define base-character<%>
   (interface ()
+    get-name ;; gets character's name
+    get-health ;; gets character's health
+    get-agility ;; gets character's agility
+    get-strength ;; gets character's strength
+    get-invintory ;; gets the character's invintory
+    get-spells ;; gets the spells a character knows
+    get-weakness ;; gets character's weakness
+    get-damage ;; gets the damage a character can enflict
     dead? ;; true iff character is dead
     apply-attack ;; takes another character and applies an attack from that character to this one
     apply-spell ;; takes a spell and applies it to this character
     use-consumable ;; takes a consumable effect and applies it to this character
-    get-health ;; gets character's health
-    get-agility ;; gets character's agility
-    get-damage ;; gets the damage a character can enflict
-    get-spells ;; gets the spells a character knows
     ))
 
 (define character%
@@ -78,7 +84,37 @@
      spells ;; the spells the character knows
      weakness ;; a symbol that is the characters weakness. 'none if they have no weakness
      )
+    (define/public (get-name) name)
+    (define/public (get-health) health)
+    (define/public (get-max-health) max-health)
+    (define/public (get-agility) base-agility)
+    (define/public (get-strength) base-strength)
+    (define/public (get-invintory) character-invintory)
+    (define/public (get-spells) spells)
+    (define/public (get-weakness) weakness)
+    (define/public (get-damage) 
+      (+ (send (invintory-wepon character-invintory) get-damage) base-strength))
     (define/public (dead?) (<= health 0))
+    (define/public (apply-spell spell)
+      ((spell-effect spell) (new character%
+                                 [name name]
+                                 [health health]
+                                 [max-health max-health]
+                                 [base-agility base-agility]
+                                 [base-strength base-strength]
+                                 [character-invintory character-invintory]
+                                 [spells spells]
+                                 [weakness weakness])))
+    (define/public (use-consumable c)
+      ((send c get-effect) (new character%
+                                [name name]
+                                [health health]
+                                [max-health max-health]
+                                [base-agility base-agility]
+                                [base-strength base-strength]
+                                [character-invintory character-invintory]
+                                [spells spells]
+                                [weakness weakness])))
     (define/public (apply-attack attacker-accuracy
                                  attacker-damage
                                  wepon-type)
@@ -114,18 +150,7 @@
            [base-strength base-strength]
            [character-invintory character-invintory]
            [spells spells]
-           [weakness weakness]))
-    (define/public (apply-spell spell)
-      ((spell-effect spell) character%))
-    (define/public (use-consumable c)
-      (c character%))
-    (define/public (get-health) health)
-    (define/public (get-agility) base-agility) 
-    (define/public (get-damage) 
-      (+ (send (invintory-wepon character-invintory) get-damage) base-strength))
-    (define/public (get-spells) spells)))
-
-
+           [weakness weakness]))))
 
 (define player%
   (class* character% (base-character<%>)
@@ -148,7 +173,32 @@
 
 (module+ test
   (require rackunit)
-  ;; Definitions
+  
+  ;; SPELLS
+  (define TESTSPELL1
+    (make-spell
+     "magic bomb"
+     "bomb of fire"
+     (lambda (c)
+       (send c apply-attack 1 75 'fire))))
+  (define TESTSPELL2
+    (make-spell
+     "heal"
+     "+ 50 health"
+     (lambda (c)
+       (new character%
+            [name (send c get-name)]
+            [health (if (>= (+ 50 (send c get-health)) (send c get-max-health))
+                        (send c get-max-health)
+                        (+ 50 (send c get-health)))]
+            [max-health (send c get-max-health)]
+            [base-agility (send c get-agility)]
+            [base-strength (send c get-strength)]
+            [spells (send c get-spells)]
+            [character-invintory (send c get-invintory)]
+            [weakness (send c get-weakness)]))))
+
+  ;; WEPONS
   (define TESTSWORD
     (new wepon%
          [name "Test Sword"]
@@ -156,21 +206,27 @@
          [wepon-damage 50]
          [wepon-accuracy 1]
          [type 'metal]))
+
+  ;; ARMOR
   (define TESTARMOR
     (new equipment%
          [name "Test Armor"]
          [description "Armor used exclusivly for testing the game"]
-         [defence 15]
+         [defence 20]
          [equipment-portion 'body]))
+
+  ;; CONSUMABLES
   (define TESTPOTION
     (new consumable%
          [name "Test Potion"]
          [description "A potion used exclusivly for testing the game"]
          [effect (lambda (c)
                    (send c get-health))]))
+
+  ;; PLAYERS
   (define TESTPLAYER1
     (new player%
-         [name "Bob"]
+         [name "Al"]
          [health 100]
          [max-health 100]
          [base-agility 1]
@@ -181,6 +237,25 @@
          [level 5]
          [mp 20]
          [current-xp 1500]))
- ; (check-equal (send TESTPLAYER1 dead?) false)
-  ;(check-equal (send (send TESTPLAYER1 apply-attack 1 50 'none) get-health) 50)
-  )
+  
+  (define TESTPLAYER2
+    (new player%
+         [name "Bob"]
+         [health 25]
+         [max-health 100]
+         [base-agility 1]
+         [base-strength 2]
+         [spells (list TESTSPELL1 TESTSPELL2)]
+         [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
+         [weakness 'none]
+         [level 5]
+         [mp 20]
+         [current-xp 1500]))
+
+  ;; TESTS
+  (and
+   (not (send TESTPLAYER1 dead?))
+   (eq? (send (send TESTPLAYER1 apply-attack 1 50 'none) get-health) 75)
+   (eq? (send (send TESTPLAYER1 apply-spell TESTSPELL1) get-health) 50)
+   (eq? (send (send TESTPLAYER1 apply-spell TESTSPELL2) get-health) 100)
+   (eq? (send (send TESTPLAYER2 apply-spell TESTSPELL2) get-health) 75)))
