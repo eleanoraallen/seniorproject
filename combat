@@ -140,9 +140,9 @@
                                                (- num (tally-defense (invintory-equiped character-invintory)))))]
                                    (cond
                                      [(and (eq? weakness wepon-type) (not (eq? weakness 'none)))
-                                      (* 2 (damage (- attacker-damage base-strength)))]
+                                      (damage (- (round attacker-damage base-strength)))]
                                      [(opposite-types? weakness wepon-type)
-                                      (* .5 (damage (- attacker-damage base-strength)))]
+                                      (round (damage (- (* .5 attacker-damage) base-strength)))]
                                      [else (damage (- attacker-damage base-strength))]))
                                  ))]
            [max-health max-health]
@@ -244,7 +244,20 @@
          [health 25]
          [max-health 100]
          [base-agility 1]
-         [base-strength 2]
+         [base-strength 5]
+         [spells (list TESTSPELL1 TESTSPELL2)]
+         [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
+         [weakness 'none]
+         [level 5]
+         [mp 20]
+         [current-xp 1500]))
+  (define TESTPLAYER3
+    (new player%
+         [name "C"]
+         [health 0]
+         [max-health 100]
+         [base-agility 1]
+         [base-strength 5]
          [spells (list TESTSPELL1 TESTSPELL2)]
          [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
@@ -252,10 +265,53 @@
          [mp 20]
          [current-xp 1500]))
 
+  ;; NPCs
+  (define TESTNPC1
+    (new npc%
+         [name "Adam"]
+         [health 100]
+         [max-health 100]
+         [base-agility 1]
+         [base-strength 5]
+         [spells empty]
+         [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
+         [weakness 'none]
+         [xp-award 20]))
+  (define TESTNPC2
+    (new npc%
+         [name "Brian"]
+         [health 25]
+         [max-health 100]
+         [base-agility 1]
+         [base-strength 5]
+         [spells (list TESTSPELL1 TESTSPELL2)]
+         [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
+         [weakness 'fire]
+         [xp-award 20]))
+  (define TESTNPC3
+    (new npc%
+         [name "CC"]
+         [health 0]
+         [max-health 100]
+         [base-agility 1]
+         [base-strength 5]
+         [spells (list TESTSPELL1 TESTSPELL2)]
+         [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
+         [weakness 'none]
+         [xp-award 20]))
+
   ;; TESTS
   (and
+   ;; dead?
    (not (send TESTPLAYER1 dead?))
+   (send TESTPLAYER3 dead?)
+   (not (send TESTNPC1 dead?))
+   (send TESTNPC3 dead?)
+   ;; apply-attack
    (eq? (send (send TESTPLAYER1 apply-attack 1 50 'none) get-health) 75)
+   (eq? (send (send TESTNPC1 apply-attack 1 50 'none) get-health) 75)
+   (eq? (send (send TESTNPC2 apply-attack 1 50 'water) get-health) 88) ;; fix me
+   ;; apply-spell
    (eq? (send (send TESTPLAYER1 apply-spell TESTSPELL1) get-health) 50)
    (eq? (send (send TESTPLAYER1 apply-spell TESTSPELL2) get-health) 100)
    (eq? (send (send TESTPLAYER2 apply-spell TESTSPELL2) get-health) 75)))
