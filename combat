@@ -10,7 +10,8 @@
     (init-field
      name ;; string that is the items name
      description ;; string that is the description of the item
-     )))
+     )
+    (define/public (get-name) name)))
 
 (define wepon%
   (class* item% (base-item<%>)
@@ -78,20 +79,26 @@
      name ;; a string that is the character's name
      health ;; a nat that is the character's current health
      max-health ;; a nat that is the character's max health
-     base-agility ;; a nat between 0 and 1 which is the probibility that a character will be hit by any given attack
+     base-agility ;; a nat between 0 and 1 which is the base probibility that a character will be hit by any given attack
+     agility ;; a nat between 0 and 1 which is the current probibility that a character will be hit by any given attack
      base-strength ;; a nat that is the character's base-strength
+     strength ;; a nat that is the character's current strength
      character-invintory ;; the character's invintory
      spells ;; the spells the character knows
      weakness ;; a symbol that is the characters weakness. 'none if they have no weakness
+     resistance ;; a symbol that is the charactars resistance. 'none if they have no resistances
      )
     (define/public (get-name) name)
     (define/public (get-health) health)
     (define/public (get-max-health) max-health)
-    (define/public (get-agility) base-agility)
-    (define/public (get-strength) base-strength)
+    (define/public (get-base-agility) base-agility)
+    (define/public (get-agility) agility)
+    (define/public (get-base-strength) base-strength)
+    (define/public (get-strength) strength)
     (define/public (get-invintory) character-invintory)
     (define/public (get-spells) spells)
     (define/public (get-weakness) weakness)
+    (define/public (get-resistance) resistance)
     (define/public (get-damage) 
       (+ (send (invintory-wepon character-invintory) get-damage) base-strength))
     (define/public (dead?) (<= health 0))
@@ -101,20 +108,26 @@
                                  [health health]
                                  [max-health max-health]
                                  [base-agility base-agility]
+                                 [agility agility]
                                  [base-strength base-strength]
+                                 [strength strength]
                                  [character-invintory character-invintory]
                                  [spells spells]
-                                 [weakness weakness])))
+                                 [weakness weakness]
+                                 [resistance resistance])))
     (define/public (use-consumable c)
       ((send c get-effect) (new character%
                                 [name name]
                                 [health health]
                                 [max-health max-health]
                                 [base-agility base-agility]
+                                [agility agility]
                                 [base-strength base-strength]
+                                [strength strength]
                                 [character-invintory character-invintory]
                                 [spells spells]
-                                [weakness weakness])))
+                                [weakness weakness]
+                                [resistance resistance])))
     (define/public (apply-attack attacker-accuracy
                                  attacker-damage
                                  wepon-type)
@@ -122,44 +135,42 @@
            [name name]
            [health (- health (if (< (* (* (get-agility) attacker-accuracy) 100) (random 100))
                                  0
-                                 (local [(define (tally-defense e)
-                                           (cond
-                                             [(empty? e) 0]
-                                             [(cons? e) (+ (send (first e) get-defence) (tally-defense (rest e)))]))
-                                         (define (opposite-types? we wt)
-                                           (cond
-                                             [(and (eq? we 'water) (eq? wt 'fire)) true]
-                                             [(and (eq? we 'wood) (eq? wt 'earth)) true]
-                                             [(and (eq? we 'fire) (eq? wt 'metal)) true]
-                                             [(and (eq? we 'earth) (eq? wt 'water)) true]
-                                             [(and (eq? we 'metal) (eq? wt 'wood)) true]
-                                             [else false]))
-                                         (define (damage num)
-                                           (if (<= (- num (tally-defense (invintory-equiped character-invintory))) base-strength)
-                                               base-strength
-                                               (- num (tally-defense (invintory-equiped character-invintory)))))]
+                                 (local 
+                                   [(define (get-armor-defense e) ;; gets the defensive bonus from all character's equiped armor
+                                      (cond [(empty? e) 0]
+                                            [(cons? e) (+ (send (first e) get-defence) (get-armor-defense (rest e)))]))]
+                                   (define (apply-damage attack-power) ;; amount of damage to be applied for an attack of a given power
+                                     (if (>= (get-armor-defense (invintory-equiped character-invintory)) attack-power)
+                                         1 (- attack-power (get-armor-defense (invintory-equiped character-invintory)))))
                                    (cond
-                                     [(and (eq? weakness wepon-type) (not (eq? weakness 'none)))
-                                      (damage (- (round attacker-damage base-strength)))]
-                                     [(opposite-types? weakness wepon-type)
-                                      (round (damage (- (* .5 attacker-damage) base-strength)))]
-                                     [else (damage (- attacker-damage base-strength))]))
-                                 ))]
+                                     [(and (eq? wepon-type weakness) (not (eq? weakness 'none)))
+                                      (apply-damage (round (* attacker-damage 2)))]
+                                     [(and (eq? wepon-type resistance) (not (eq? resistance 'none)))
+                                      (apply-damage (round (* attacker-damage .5)))]
+                                     [else (apply-damage attacker-damage)]))))]                   
            [max-health max-health]
            [base-agility base-agility]
+           [agility agility]
            [base-strength base-strength]
+           [strength strength]
            [character-invintory character-invintory]
            [spells spells]
-           [weakness weakness]))))
+           [weakness weakness]
+           [resistance resistance]))))
 
 (define player%
   (class* character% (base-character<%>)
     (super-new)
     (init-field
      level ;; a nat that is the player's level
+     max-mp ;; a nat that is the players max mp
      mp ;; a nat that is the players mp
      current-xp ;; a nat that is the player's xp
      )
+    (define/public (get-level) level) ;; produces player's level
+    (define/public (get-max-mp) max-mp) ;; produces player's max mp
+    (define/public (get-mp) mp) ;; produces player's level
+    (define/public (get-current-xp) current-xp) ;; produces player's level
     (define/public (add-xp num) ;; adds xp-award to player's current xp
       (new player%
            [current-xp (+ current-xp num)]))))
@@ -169,11 +180,11 @@
     (super-new)
     (init-field
      xp-award ;; the xp award you get for defeating the enemy
-     )))
+     )
+    (define/public (get-xp-award) xp-award)))
 
 (module+ test
   (require rackunit)
-  
   ;; SPELLS
   (define TESTSPELL1
     (make-spell
@@ -192,12 +203,15 @@
                         (send c get-max-health)
                         (+ 50 (send c get-health)))]
             [max-health (send c get-max-health)]
-            [base-agility (send c get-agility)]
-            [base-strength (send c get-strength)]
+            [base-agility (send c get-base-agility)]
+            [agility (send c get-agility)]
+            [base-strength (send c get-base-strength)]
+            [strength (send c get-strength)]
             [spells (send c get-spells)]
             [character-invintory (send c get-invintory)]
-            [weakness (send c get-weakness)]))))
-
+            [weakness (send c get-weakness)]
+            [resistance (send c get-resistance)]))))
+  
   ;; WEPONS
   (define TESTSWORD
     (new wepon%
@@ -206,7 +220,7 @@
          [wepon-damage 50]
          [wepon-accuracy 1]
          [type 'metal]))
-
+  
   ;; ARMOR
   (define TESTARMOR
     (new equipment%
@@ -214,15 +228,28 @@
          [description "Armor used exclusivly for testing the game"]
          [defence 20]
          [equipment-portion 'body]))
-
+  
   ;; CONSUMABLES
   (define TESTPOTION
     (new consumable%
          [name "Test Potion"]
          [description "A potion used exclusivly for testing the game"]
          [effect (lambda (c)
-                   (send c get-health))]))
-
+                   (new character%
+                        [name (send c get-name)]
+                        [health (if (>= (+ 10 (send c get-health)) (send c get-max-health))
+                                    (send c get-max-health)
+                                    (+ 10 (send c get-health)))]
+                        [max-health (send c get-max-health)]
+                        [base-agility (send c get-base-agility)]
+                        [agility (send c get-agility)]
+                        [base-strength (send c get-base-strength)]
+                        [strength (send c get-strength)]
+                        [spells (send c get-spells)]
+                        [character-invintory (send c get-invintory)]
+                        [weakness (send c get-weakness)]
+                        [resistance (send c get-resistance)]))]))
+  
   ;; PLAYERS
   (define TESTPLAYER1
     (new player%
@@ -230,11 +257,15 @@
          [health 100]
          [max-health 100]
          [base-agility 1]
+         [agility 1]
          [base-strength 5]
+         [strength 5]
          [spells empty]
          [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
+         [resistance 'none]
          [level 5]
+         [max-mp 20]
          [mp 20]
          [current-xp 1500]))
   
@@ -244,11 +275,15 @@
          [health 25]
          [max-health 100]
          [base-agility 1]
+         [agility 1]
          [base-strength 5]
+         [strength 5]
          [spells (list TESTSPELL1 TESTSPELL2)]
          [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
+         [resistance 'none]
          [level 5]
+         [max-mp 20]
          [mp 20]
          [current-xp 1500]))
   (define TESTPLAYER3
@@ -257,14 +292,18 @@
          [health 0]
          [max-health 100]
          [base-agility 1]
+         [agility 1]
          [base-strength 5]
+         [strength 5]
          [spells (list TESTSPELL1 TESTSPELL2)]
          [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
+         [resistance 'none]
          [level 5]
+         [max-mp 20]
          [mp 20]
          [current-xp 1500]))
-
+  
   ;; NPCs
   (define TESTNPC1
     (new npc%
@@ -272,21 +311,27 @@
          [health 100]
          [max-health 100]
          [base-agility 1]
+         [agility 1]
          [base-strength 5]
+         [strength 5]
          [spells empty]
          [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
+         [resistance 'none]
          [xp-award 20]))
   (define TESTNPC2
     (new npc%
-         [name "Brian"]
-         [health 25]
+         [name "Brian Master of the Flames"]
+         [health 50]
          [max-health 100]
          [base-agility 1]
+         [agility 1]
          [base-strength 5]
+         [strength 5]
          [spells (list TESTSPELL1 TESTSPELL2)]
-         [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
-         [weakness 'fire]
+         [character-invintory (make-invintory TESTSWORD empty empty (list TESTPOTION))]
+         [weakness 'water]
+         [resistance 'fire]
          [xp-award 20]))
   (define TESTNPC3
     (new npc%
@@ -294,24 +339,197 @@
          [health 0]
          [max-health 100]
          [base-agility 1]
+         [agility 1]
          [base-strength 5]
+         [strength 5]
          [spells (list TESTSPELL1 TESTSPELL2)]
          [character-invintory (make-invintory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
+         [resistance 'none]
          [xp-award 20]))
-
+  
   ;; TESTS
-  (and
-   ;; dead?
-   (not (send TESTPLAYER1 dead?))
-   (send TESTPLAYER3 dead?)
-   (not (send TESTNPC1 dead?))
-   (send TESTNPC3 dead?)
-   ;; apply-attack
-   (eq? (send (send TESTPLAYER1 apply-attack 1 50 'none) get-health) 75)
-   (eq? (send (send TESTNPC1 apply-attack 1 50 'none) get-health) 75)
-   (eq? (send (send TESTNPC2 apply-attack 1 50 'water) get-health) 88) ;; fix me
-   ;; apply-spell
-   (eq? (send (send TESTPLAYER1 apply-spell TESTSPELL1) get-health) 50)
-   (eq? (send (send TESTPLAYER1 apply-spell TESTSPELL2) get-health) 100)
-   (eq? (send (send TESTPLAYER2 apply-spell TESTSPELL2) get-health) 75)))
+  #; (and
+      ;; dead?
+      (not (send TESTPLAYER1 dead?))
+      (send TESTPLAYER3 dead?)
+      (not (send TESTNPC1 dead?))
+      (send TESTNPC3 dead?)
+      ;; apply-attack
+      (= (send (send TESTPLAYER1 apply-attack 1 50 'none) get-health) 70)
+      (= (send (send TESTNPC1 apply-attack 1 50 'none) get-health) 70)
+      (= (send (send TESTNPC2 apply-attack 1 10 'water) get-health) 30)
+      (= (send (send TESTNPC2 apply-attack 1 10 'fire) get-health) 45)
+      ;; apply-spell
+      (= (send (send TESTPLAYER1 apply-spell TESTSPELL1) get-health) 45)
+      (= (send (send TESTPLAYER1 apply-spell TESTSPELL2) get-health) 100)
+      (= (send (send TESTPLAYER2 apply-spell TESTSPELL2) get-health) 75)
+      ;; use-consumable
+      (= (send (send TESTPLAYER1 use-consumable TESTPOTION) get-health) 100)
+      (= (send (send TESTPLAYER2 use-consumable TESTPOTION) get-health) 35)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; shenanigans
+
+(require 2htdp/image)
+(require 2htdp/universe)
+
+;; a world is a (make-world player npc symbol string string) where
+;; the player is the player
+;; the npc is an enemy
+;; the symbol is one of:
+;; - 'p
+;; - 'e
+;; - 'w
+;; - 'l
+;; the second string is a thing the player is typing
+(define-struct world (player npc phase text))
+
+;; render: world --> image
+(define (render w)
+  (above
+   (overlay
+    (beside
+     (above/align "left"
+                  (text (string-append "Player: " (send (world-player w) get-name)) 13 'black)
+                  (text " " 12 'white)
+                  (text (string-append
+                         "Health: "
+                         (number->string (send (world-player w) get-health))
+                         "/"
+                         (number->string (send (world-player w) get-max-health))) 12 'black)
+                  (text (string-append
+                         "Agility: "
+                         (number->string (round (* 100 (- 1 (send (world-player w) get-agility)))))) 12 'black)
+                  (text (string-append
+                         "Strength: "
+                         (number->string (send (world-player w) get-strength))) 12 'black)
+                  (text (string-append
+                         "MP: "
+                         (number->string (send (world-player w) get-mp))
+                         "/"
+                         (number->string (send (world-player w) get-max-mp))) 12 'black)
+                  (text " " 12 'white)
+                  (text (string-append
+                         "Weapon: " (send (invintory-wepon (send (world-player w) get-invintory)) get-name)) 12 'black)
+                  (text (string-append
+                         "Accuracy: " (number->string (* 100 (send (invintory-wepon (send (world-player w) get-invintory)) get-accuracy)))) 12 'black)
+                  (text (string-append
+                         "Damage: " (number->string (send (invintory-wepon (send (world-player w) get-invintory)) get-damage))) 12 'black)
+                  (text (string-append
+                         "Type: " (symbol->string (send (invintory-wepon (send (world-player w) get-invintory)) get-type))) 12 'black))
+     (rectangle 50 0 'solid 'white)
+     (above/align "left"
+                  (text (string-append "Enemy: " (send (world-npc w) get-name)) 13 'black)
+                  (text " " 12 'white)
+                  (text (string-append
+                         "Health: "
+                         (number->string (send (world-npc w) get-health))
+                         "/"
+                         (number->string (send (world-npc w) get-max-health))) 12 'black)
+                  (text (string-append
+                         "Agility: "
+                         (number->string (round (* 100 (- 1 (send (world-npc w) get-agility)))))) 12 'black)
+                  (text (string-append
+                         "Strength: "
+                         (number->string (send (world-npc w) get-strength))) 12 'black)
+                  (text " " 12 'white)
+                  (text " " 12 'white)
+                  (text (string-append
+                         "Weakness: "
+                         (symbol->string (send (world-npc w) get-weakness))) 12 'black)
+                  (text (string-append
+                         "Resistance: "
+                         (symbol->string (send (world-npc w) get-resistance))) 12 'black)
+                  (text " " 12 'white)
+                  (text " " 12 'white)))
+    (overlay (rectangle 300 175 'solid 'white) (rectangle 302 177 'solid 'black)))
+   (overlay/align "left" "middle" (text (string-append " " (world-text w)) 12 'black) (overlay (rectangle 300 20 'solid 'white)
+                                                                                               (rectangle 302 22 'solid 'black)))))
+
+;; tock: world --> world
+(define (tock w)
+  (cond
+    [(send (world-player w) dead?) (make-world (world-player w) (world-npc w) 'l "YOU LOOSE!")]
+    [(send (world-npc w) dead?) (make-world (world-player w) (world-npc w) 'w "YOU WIN!")]
+    [else
+     (if (symbol=? (world-phase w) 'e)
+         (make-world
+          (send (world-player w) apply-attack 
+                (send (invintory-wepon (send (world-npc w) get-invintory)) get-accuracy) 
+                (send (world-npc w) get-damage)
+                (send (invintory-wepon (send (world-npc w) get-invintory)) get-type))
+          (world-npc w)
+          'p
+          "")
+         w)]))
+
+;; handle-key : world --> world
+(define (handle-key w k)
+  (cond
+    [(key=? k "escape") WORLD]
+    [(and (not (string=? "" (world-text w))) (eq? (world-phase w) 'p) (key=? k "\b"))
+          (make-world (world-player w) (world-npc w) (world-phase w)
+                      (substring (world-text w) 0 (- (string-length (world-text w)) 1)))]
+    [(and (symbol=? (world-phase w) 'p) (key=? k "\r"))
+     (make-world (world-player w) (world-npc w) 'e "")]
+    [(symbol=? (world-phase w) 'p)
+     (make-world (world-player w) (world-npc w) 'p (string-append (world-text w) k))]
+    [else w]))
+     
+;; wepons
+(define SWORD
+  (new wepon%
+       [name "Steel Sword"]
+       [description "A sturdy steel sword."]
+       [wepon-damage 10]
+       [wepon-accuracy .95]
+       [type 'metal]))
+(define STAFF
+  (new wepon%
+       [name "Wood Staff"]
+       [description "A flimsy wooden quarterstaff."]
+       [wepon-damage 5]
+       [wepon-accuracy 1]
+       [type 'metal]))
+;; player
+(define PLAYER
+  (new player%
+       [name "You"]
+       [health 500]
+       [max-health 500]
+       [base-agility 1]
+       [agility .5]
+       [base-strength 5]
+       [strength 5]
+       [spells empty]
+       [character-invintory (make-invintory SWORD empty empty empty)]
+       [weakness 'none]
+       [resistance 'none]
+       [level 5]
+       [max-mp 20]
+       [mp 20]
+       [current-xp 1500]))
+;; npc
+(define NPC
+  (new npc%
+       [name "Evil Knight"]
+       [health 500]
+       [max-health 500]
+       [base-agility .95]
+       [agility .95]
+       [base-strength 5]
+       [strength 5]
+       [spells empty]
+       [character-invintory (make-invintory STAFF empty empty empty)]
+       [weakness 'fire]
+       [resistance 'ice]
+       [xp-award 20]))
+
+(define WORLD (make-world PLAYER NPC 'p ""))
+
+(define (main w)
+  (big-bang w
+            [to-draw render]
+            [on-tick tock]
+            [on-key handle-key]))
