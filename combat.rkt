@@ -1,10 +1,13 @@
 #lang racket
 
+(require 2htdp/image)
+
 (provide (struct-out spell)
          player% npc%
          (struct-out inventory)
          weapon%
-         consumable%)
+         consumable%
+         (struct-out animation))
 
 ;; ITEMS ----------------------------------------------------------------
 (define base-item<%>
@@ -16,9 +19,11 @@
     (init-field
      name ;; string that is the items name
      description ;; string that is the description of the item
+     image ;; an image of the item
      )
     (define/public (get-name) name)
-    (define/public (get-description) description)))
+    (define/public (get-description) description)
+    (define/public (get-image) image)))
 
 (define weapon%
   (class item%
@@ -56,19 +61,29 @@
 (define consumable%
   (class* item% (base-item<%>)
     (super-new)
+    (inherit-field image)
+    (inherit get-image)
     (init-field
      effect ;; a function that takes a character and produces a character
+     animation ;; a list of images that is the consumable's animation
      )
     (define/public (get-effect) effect) ;; gets items effect
     ))
 
 ;; an inventory is a (make-inventory weapon list-of-equipment list-of-consumables list-of-items)
-(define-struct inventory (weapon equiped consumables miscellaneous)
-  #:transparent)
+(define-struct inventory (weapon equiped consumables miscellaneous))
 
-;; a spell is a (make-spell string string effect)
-(define-struct spell (name discription effect)
-  #:transparent)
+;; a spell is a (make-spell string string effect list-of-images)
+(define-struct spell (name discription effect animation))
+
+;; an animation is a (make-animation image image image image) where:
+;; the first image is the characers standby image
+;; the second is the character's attack image
+;; the third is the character's cast image
+;; the fourth is the character's win image
+;; the fifth is the characetr's loose image
+(define-struct animation (standby attack cast win loose))
+
 
 ;; CHARACTERS ----------------------------------------------------------------
 (define base-character<%>
@@ -83,6 +98,7 @@
     get-spells ;; gets the spells a character knows
     get-weakness ;; gets character's weakness
     get-resistance ;; gets character's resistance
+    get-animation ;; gets character's animation
     get-damage ;; gets the damage a character can enflict
     dead? ;; true iff character is dead
     ))
@@ -102,6 +118,7 @@
      spells ;; the spells the character knows
      weakness ;; a symbol that is the characters weakness. 'none if they have no weakness
      resistance ;; a symbol that is the charactars resistance. 'none if they have no resistances
+     animation ;; the character's animation
      )
     (define/public (get-name) name)
     (define/public (get-health) health)
@@ -114,6 +131,7 @@
     (define/public (get-spells) spells)
     (define/public (get-weakness) weakness)
     (define/public (get-resistance) resistance)
+    (define/public (get-animation) animation)
     (define/public (get-damage) 
       (+ (send (inventory-weapon character-inventory) get-damage) strength))
     (define/public (dead?) (<= health 0))))
@@ -137,6 +155,7 @@
              get-spells
              get-weakness
              get-resistance
+             get-animation
              get-damage
              dead?)
     (inherit-field name   ;; TODO remove unused inherits (after using `this` below)
@@ -149,7 +168,8 @@
                    character-inventory
                    spells
                    weakness
-                   resistance)
+                   resistance
+                   animation)
     (define/public (get-level) level) ;; produces player's level
     (define/public (get-max-mp) max-mp) ;; produces player's max mp
     (define/public (get-mp) mp) ;; produces player's level
@@ -167,6 +187,7 @@
            [spells spells]
            [weakness weakness]
            [resistance resistance]
+           [animation animation]
            [level level]
            [max-mp max-mp]
            [mp (- mp n)]
@@ -184,55 +205,20 @@
            [spells spells]
            [weakness weakness]
            [resistance resistance]
+           [animation animation]
            [level level]
            [max-mp max-mp]
            [mp mp]
            [current-xp (+ current-xp xp-award)]))
     (define/public (apply-spell spell)
-      ((spell-effect spell) this)) ;; FIXED
+      ((spell-effect spell) this))
     (define/public (use-consumable c)
-      ((send c get-effect) (new player% ;; TODO use `this` as on line 184
-                                [name name]
-                                [health health]
-                                [max-health max-health]
-                                [base-agility base-agility]
-                                [agility agility]
-                                [base-strength base-strength]
-                                [strength strength]
-                                [character-inventory character-inventory]
-                                [spells spells]
-                                [weakness weakness]
-                                [resistance resistance]
-                                [level level]
-                                [max-mp max-mp]
-                                [mp mp]
-                                [current-xp current-xp])))
-    (define/public (apply-attack attacker-accuracy
-                                 attacker-damage
-                                 weapon-type)
+      ((send c get-effect) this))
+    (define/public (apply-attack attacker-accuracy attacker-damage weapon-type)
       (new player%
            [name name]
-           ;; TODO lift damage calculation out into a helper function that
-           ;; npc% can also use, OR move the function into superclass
-           ;; TODO split new health calculation into cohesive helpers:
-           ;;   - did the attack succeed? : (attack-landed? agility accuracy)
-           ;;   - how much damage it did
-           [health (- health (if (< (* (* (get-agility) attacker-accuracy) 100) (random 100))
-                                 0
-                                 (local 
-                                   [(define (get-armor-defense e) ;; gets the defensive bonus from all character's equiped armor
-                                      (cond [(empty? e) 0]
-                                            [(cons? e) (+ (send (first e) get-defence) (get-armor-defense (rest e)))]))
-                                    (define (apply-damage attack-power) ;; amount of damage to be applied for an attack of a given power
-                                     (if (>= (get-armor-defense (inventory-equiped character-inventory)) attack-power)
-                                         1 (- attack-power (get-armor-defense (inventory-equiped character-inventory)))))
-                                    ]
-                                   (cond
-                                     [(and (eq? weapon-type weakness) (not (eq? weakness 'none)))
-                                      (apply-damage (round (* attacker-damage 2)))]
-                                     [(and (eq? weapon-type resistance) (not (eq? resistance 'none)))
-                                      (apply-damage (round (* attacker-damage .5)))]
-                                     [else (apply-damage attacker-damage)]))))]                   
+           [health (- health (if (attack-landed? base-agility attacker-accuracy)
+                                 (damage-character this attacker-damage weapon-type) 0))]                   
            [max-health max-health]
            [base-agility base-agility]
            [agility agility]
@@ -242,10 +228,32 @@
            [spells spells]
            [weakness weakness]
            [resistance resistance]
+           [animation animation]
            [level level]
            [max-mp max-mp]
            [mp mp]
            [current-xp current-xp]))))
+
+;; attack-landed? : num num --> bool
+;; true iff attack landed
+(define (attack-landed? agi acc) (> (* (* agi acc) 100) (random 100)))
+
+;; damage-character : character num symbol --> num
+;; takes a character, attacker damage, and wepon type, and produces amount of damage to be applied
+(define (damage-character c dmg type)
+  (local 
+    [(define (get-armor-defense e) 
+       (cond [(empty? e) 0]
+             [(cons? e) (+ (send (first e) get-defence) (get-armor-defense (rest e)))]))
+     (define (apply-damage attack-power)
+       (if (>= (get-armor-defense (inventory-equiped (send c get-inventory))) attack-power)
+           1 (- attack-power (get-armor-defense (inventory-equiped (send c get-inventory))))))]
+    (cond
+      [(and (eq? type (send c get-weakness)) (not (eq? (send c get-weakness) 'none)))
+       (apply-damage (round (* dmg 2)))]
+      [(and (eq? type (send c get-resistance)) (not (eq? (send c get-resistance) 'none)))
+       (apply-damage (round (* dmg .5)))]
+      [else (apply-damage dmg)])))
 
 (define npc%
   (class* character% (base-character<%>)
@@ -278,53 +286,14 @@
                    resistance)
     (define/public (get-xp-award) xp-award)
     (define/public (apply-spell spell)
-      ((spell-effect spell) (new npc%
-                                 [name name]
-                                 [health health]
-                                 [max-health max-health]
-                                 [base-agility base-agility]
-                                 [agility agility]
-                                 [base-strength base-strength]
-                                 [strength strength]
-                                 [character-inventory character-inventory]
-                                 [spells spells]
-                                 [weakness weakness]
-                                 [resistance resistance]
-                                 [xp-award xp-award])))
+      ((spell-effect spell) this))
     (define/public (use-consumable c)
-      ((send c get-effect) (new npc%
-                                [name name]
-                                [health health]
-                                [max-health max-health]
-                                [base-agility base-agility]
-                                [agility agility]
-                                [base-strength base-strength]
-                                [strength strength]
-                                [character-inventory character-inventory]
-                                [spells spells]
-                                [weakness weakness]
-                                [resistance resistance]
-                                [xp-award xp-award])))
-    (define/public (apply-attack attacker-accuracy
-                                 attacker-damage
-                                 weapon-type)
+      ((send c get-effect) this))
+    (define/public (apply-attack attacker-accuracy attacker-damage weapon-type)
       (new npc%
            [name name]
-           [health (- health (if (< (* (* (get-agility) attacker-accuracy) 100) (random 100))
-                                 0
-                                 (local 
-                                   [(define (get-armor-defense e) ;; gets the defensive bonus from all character's equiped armor
-                                      (cond [(empty? e) 0]
-                                            [(cons? e) (+ (send (first e) get-defence) (get-armor-defense (rest e)))]))]
-                                   (define (apply-damage attack-power) ;; amount of damage to be applied for an attack of a given power
-                                     (if (>= (get-armor-defense (inventory-equiped character-inventory)) attack-power)
-                                         1 (- attack-power (get-armor-defense (inventory-equiped character-inventory)))))
-                                   (cond
-                                     [(and (eq? weapon-type weakness) (not (eq? weakness 'none)))
-                                      (apply-damage (round (* attacker-damage 2)))]
-                                     [(and (eq? weapon-type resistance) (not (eq? resistance 'none)))
-                                      (apply-damage (round (* attacker-damage .5)))]
-                                     [else (apply-damage attacker-damage)]))))]                   
+           [health (- health (if (attack-landed? base-agility attacker-accuracy)
+                                 (damage-character this attacker-damage weapon-type) 0))]                     
            [max-health max-health]
            [base-agility base-agility]
            [agility agility]
@@ -334,6 +303,7 @@
            [spells spells]
            [weakness weakness]
            [resistance resistance]
+           [animation animation]
            [xp-award xp-award]))))
 
 (module+ test
@@ -344,7 +314,8 @@
      "magic bomb"
      "bomb of fire"
      (lambda (c)
-       (send c apply-attack 1 75 'fire))))
+       (send c apply-attack 1 75 'fire))
+     empty))
   (define TESTSPELL2
     (make-spell
      "heal"
@@ -363,13 +334,16 @@
             [spells (send c get-spells)]
             [character-inventory (send c get-inventory)]
             [weakness (send c get-weakness)]
-            [resistance (send c get-resistance)]))))
+            [resistance (send c get-resistance)]
+            [animation (send c get-animation)]))
+     empty))
   
   ;; WEAPONS
   (define TESTSWORD
     (new weapon%
          [name "Test Sword"]
          [description "A sword used exclusivly for testing the game."]
+         [image (square 20 'solid 'white)]
          [weapon-damage 50]
          [weapon-accuracy 1]
          [type 'metal]))
@@ -379,6 +353,7 @@
     (new equipment%
          [name "Test Armor"]
          [description "Armor used exclusivly for testing the game"]
+         [image (square 20 'solid 'green)]
          [defence 20]
          [equipment-portion 'body]))
   
@@ -387,6 +362,7 @@
     (new consumable%
          [name "Test Potion"]
          [description "A potion used exclusivly for testing the game"]
+         [image (square 20 'solid 'blue)]
          [effect (lambda (c)
                    (new character%
                         [name (send c get-name)]
@@ -401,7 +377,9 @@
                         [spells (send c get-spells)]
                         [character-inventory (send c get-inventory)]
                         [weakness (send c get-weakness)]
-                        [resistance (send c get-resistance)]))]))
+                        [resistance (send c get-resistance)]
+                        [animation (send c get-animation)]))]
+         [animation empty]))
   
   ;; PLAYERS
   (define TESTPLAYER1
@@ -417,6 +395,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [level 5]
          [max-mp 20]
          [mp 20]
@@ -435,6 +414,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [level 5]
          [max-mp 20]
          [mp 20]
@@ -452,6 +432,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [level 5]
          [max-mp 20]
          [mp 20]
@@ -471,6 +452,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [xp-award 20]))
   (define TESTNPC2
     (new npc%
@@ -485,6 +467,7 @@
          [character-inventory (make-inventory TESTSWORD empty empty (list TESTPOTION))]
          [weakness 'water]
          [resistance 'fire]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [xp-award 20]))
   (define TESTNPC3
     (new npc%
@@ -499,6 +482,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [xp-award 20]))
   
   ;; TESTS
@@ -520,4 +504,3 @@
    ;; use-consumable
    (= (send (send TESTPLAYER1 use-consumable TESTPOTION) get-health) 100)
    (= (send (send TESTPLAYER2 use-consumable TESTPOTION) get-health) 35)))
-
