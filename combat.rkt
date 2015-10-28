@@ -3,6 +3,7 @@
 (require 2htdp/image)
 
 (provide (struct-out spell)
+         character% item%
          player% npc%
          (struct-out inventory)
          weapon%
@@ -68,6 +69,7 @@
      animation ;; a list of images that is the consumable's animation
      )
     (define/public (get-effect) effect) ;; gets items effect
+    (define/public (get-animation) animation) ;; gets items animation
     ))
 
 ;; an inventory is a (make-inventory weapon list-of-equipment list-of-consumables list-of-items)
@@ -76,13 +78,14 @@
 ;; a spell is a (make-spell string string effect list-of-images)
 (define-struct spell (name discription effect animation))
 
-;; an animation is a (make-animation image image image image) where:
+;; an animation is a (make-animation image image image image image) where:
 ;; the first image is the characers standby image
 ;; the second is the character's attack image
 ;; the third is the character's cast image
-;; the fourth is the character's win image
-;; the fifth is the characetr's loose image
-(define-struct animation (standby attack cast win loose))
+;; the fourth is the character's flinch animation
+;; the fifth is the character's win image
+;; the sixth is the characetr's loose image
+(define-struct animation (standby attack cast flinch win loose))
 
 
 ;; CHARACTERS ----------------------------------------------------------------
@@ -283,7 +286,8 @@
                    character-inventory
                    spells
                    weakness
-                   resistance)
+                   resistance
+                   animation)
     (define/public (get-xp-award) xp-award)
     (define/public (apply-spell spell)
       ((spell-effect spell) this))
@@ -395,7 +399,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
-         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [level 5]
          [max-mp 20]
          [mp 20]
@@ -414,7 +418,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
-         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [level 5]
          [max-mp 20]
          [mp 20]
@@ -432,7 +436,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
-         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [level 5]
          [max-mp 20]
          [mp 20]
@@ -452,7 +456,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
-         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [xp-award 20]))
   (define TESTNPC2
     (new npc%
@@ -467,7 +471,7 @@
          [character-inventory (make-inventory TESTSWORD empty empty (list TESTPOTION))]
          [weakness 'water]
          [resistance 'fire]
-         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [xp-award 20]))
   (define TESTNPC3
     (new npc%
@@ -482,7 +486,7 @@
          [character-inventory (make-inventory TESTSWORD (list TESTARMOR) (list TESTSWORD TESTARMOR) (list TESTPOTION))]
          [weakness 'none]
          [resistance 'none]
-         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
+         [animation (make-animation (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white) (square 50 'solid 'white))]
          [xp-award 20]))
   
   ;; TESTS
