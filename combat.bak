@@ -45,24 +45,11 @@
     (define/public (get-damage) ;; produces weapon's damage
       weapon-damage)
     (define/public (get-type) ;; produces weapon's type
-      type)
-    (define/public (clone #:name [new-name name] #:description [new-description description]
-                          #:weapon-accuracy [new-weapon-accuracy weapon-accuracy]
-                          #:weapon-damage [new-weapon-damage weapon-damage] #:type [new-type type])
-      (new this%
-           [name new-name]
-           [description new-description]
-           [weapon-accuracy new-weapon-accuracy]
-           [weapon-damage new-weapon-damage]
-           [type new-type]))))
+      type)))
 
 (define equipment%
   (class* item% (base-item<%>)
     (super-new)
-    (inherit-field
-     name
-     description
-     image)
     (init-field
      defence ;; a nat that is the equipments defence
      equipment-portion ;; a symbol that is the portion of the body the equipment goes on
@@ -70,16 +57,7 @@
     (define/public (get-defence) ;; produces the equipment's defence
       defence)
     (define/public (get-portion) ;; produces the equipment's portion
-      equipment-portion)
-    (define/public (clone #:name [new-name name] #:description [new-description description]
-                          #:image [new-image image] #:defence [new-defence defence] 
-                          #:equipment-portion [new-equipment-portion equipment-portion])
-      (new this%
-           [name new-name]
-           [description new-description]
-           [image new-image]
-           [defence new-defence]
-           [equipment-portion new-equipment-portion]))))
+      equipment-portion)))
 
 (define consumable%
   (class* item% (base-item<%>)
@@ -96,7 +74,6 @@
 
 ;; an inventory is a (make-inventory weapon list-of-equipment list-of-consumables list-of-items)
 (define-struct inventory (weapon equiped consumables miscellaneous))
-;; when I added #:transperent I got an error: define-struct: unrecognized struct-specification keyword in: #:transperent
 
 ;; a spell is a (make-spell string string effect list-of-images)
 (define-struct spell (name discription effect animation))
@@ -196,54 +173,69 @@
                    weakness
                    resistance
                    animation)
-    (define/public (clone #:name [new-name name]
-                          #:health [new-health health]
-                          #:max-health [new-max-health max-health]
-                          #:base-agility [new-base-agility base-agility]
-                          #:agility [new-agility agility]
-                          #:base-strength [new-base-strength base-strength]
-                          #:strength [new-strength strength]
-                          #:character-inventory [new-character-inventory character-inventory]
-                          #:spells [new-spells spells]
-                          #:weakness [new-weakness weakness]
-                          #:resistance [new-resistance resistance]
-                          #:animation [new-animation animation]
-                          #:level [new-level level]
-                          #:max-mp [new-max-mp max-mp]
-                          #:mp [new-mp mp]
-                          #:current-xp [new-current-xp current-xp])
-      (new this%
-           [name new-name]
-           [health new-health]
-           [max-health new-max-health]
-           [base-agility new-base-agility]
-           [agility new-agility]
-           [base-strength new-base-strength]
-           [strength new-strength]
-           [character-inventory new-character-inventory]
-           [spells new-spells]
-           [weakness new-weakness]
-           [resistance new-resistance]
-           [animation new-animation]
-           [level new-level]
-           [max-mp new-max-mp]
-           [mp new-mp]
-           [current-xp new-current-xp]))
     (define/public (get-level) level) ;; produces player's level
     (define/public (get-max-mp) max-mp) ;; produces player's max mp
     (define/public (get-mp) mp) ;; produces player's level
     (define/public (get-current-xp) current-xp) ;; produces player's level
     (define/public (remove-mp n)
-      (send this clone #:mp (- mp n)))
+      (new player%
+           [name name]
+           [health health]
+           [max-health max-health]
+           [base-agility base-agility]
+           [agility agility]
+           [base-strength base-strength]
+           [strength strength]
+           [character-inventory character-inventory]
+           [spells spells]
+           [weakness weakness]
+           [resistance resistance]
+           [animation animation]
+           [level level]
+           [max-mp max-mp]
+           [mp (- mp n)]
+           [current-xp current-xp]))
     (define/public (add-xp xp-award) ;; adds xp-award to player's current xp
-      (send this clone #:current-xp (+ current-xp xp-award)))
+      (new player%
+           [name name]
+           [health health]
+           [max-health max-health]
+           [base-agility base-agility]
+           [agility agility]
+           [base-strength base-strength]
+           [strength strength]
+           [character-inventory character-inventory]
+           [spells spells]
+           [weakness weakness]
+           [resistance resistance]
+           [animation animation]
+           [level level]
+           [max-mp max-mp]
+           [mp mp]
+           [current-xp (+ current-xp xp-award)]))
     (define/public (apply-spell spell)
       ((spell-effect spell) this))
     (define/public (use-consumable c)
       ((send c get-effect) this))
     (define/public (apply-attack attacker-accuracy attacker-damage weapon-type)
-      (send this clone #:health (- health (if (attack-landed? base-agility attacker-accuracy)
-                                              (damage-character this attacker-damage weapon-type) 0))))))
+      (new player%
+           [name name]
+           [health (- health (if (attack-landed? base-agility attacker-accuracy)
+                                 (damage-character this attacker-damage weapon-type) 0))]                   
+           [max-health max-health]
+           [base-agility base-agility]
+           [agility agility]
+           [base-strength base-strength]
+           [strength strength]
+           [character-inventory character-inventory]
+           [spells spells]
+           [weakness weakness]
+           [resistance resistance]
+           [animation animation]
+           [level level]
+           [max-mp max-mp]
+           [mp mp]
+           [current-xp current-xp]))))
 
 ;; attack-landed? : num num --> bool
 ;; true iff attack landed
@@ -296,41 +288,27 @@
                    weakness
                    resistance
                    animation)
-    (define/public (clone #:name [new-name name]
-                          #:health [new-health health]
-                          #:max-health [new-max-health max-health]
-                          #:base-agility [new-base-agility base-agility]
-                          #:agility [new-agility agility]
-                          #:base-strength [new-base-strength base-strength]
-                          #:strength [new-strength strength]
-                          #:character-inventory [new-character-inventory character-inventory]
-                          #:spells [new-spells spells]
-                          #:weakness [new-weakness weakness]
-                          #:resistance [new-resistance resistance]
-                          #:animation [new-animation animation]
-                          #:xp-award [new-xp-award xp-award])
-      (new this%
-           [name new-name]
-           [health new-health]
-           [max-health new-max-health]
-           [base-agility new-base-agility]
-           [agility new-agility]
-           [base-strength new-base-strength]
-           [strength new-strength]
-           [character-inventory new-character-inventory]
-           [spells new-spells]
-           [weakness new-weakness]
-           [resistance new-resistance]
-           [animation new-animation]
-           [xp-award new-xp-award]))
     (define/public (get-xp-award) xp-award)
     (define/public (apply-spell spell)
       ((spell-effect spell) this))
     (define/public (use-consumable c)
       ((send c get-effect) this))
     (define/public (apply-attack attacker-accuracy attacker-damage weapon-type)
-      (send this clone #:health (- health (if (attack-landed? base-agility attacker-accuracy)
-                                         (damage-character this attacker-damage weapon-type) 0))))))
+      (new npc%
+           [name name]
+           [health (- health (if (attack-landed? base-agility attacker-accuracy)
+                                 (damage-character this attacker-damage weapon-type) 0))]                     
+           [max-health max-health]
+           [base-agility base-agility]
+           [agility agility]
+           [base-strength base-strength]
+           [strength strength]
+           [character-inventory character-inventory]
+           [spells spells]
+           [weakness weakness]
+           [resistance resistance]
+           [animation animation]
+           [xp-award xp-award]))))
 
 (module+ test
   (require rackunit)
