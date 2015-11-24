@@ -10,7 +10,7 @@
 (require 2htdp/image)
 (require 2htdp/universe)
 
-(define BG (bitmap/file "background.png"))
+(define BG (rectangle 1600 900 'solid 'white))
 
 ;; a world is a (make-world player npc symbol string string) where
 ;; the player is the player
@@ -79,27 +79,7 @@
           [resistance (send c get-resistance)]
           [animation (send c get-animation)]
           [xp-award (send c get-xp-award)]))
-   (list (bitmap/file "doomrock1.png")
-         (bitmap/file "doomrock2.png")
-         (bitmap/file "doomrock3.png")
-         (bitmap/file "doomrock4.png")
-         (bitmap/file "doomrock5.png")
-         (bitmap/file "doomrock6.png")
-         (bitmap/file "doomrock7.png")
-         (bitmap/file "doomrock8.png")
-         (bitmap/file "doomrock9.png")
-         (bitmap/file "doomrock10.png")
-         (bitmap/file "doomrock11.png")
-         (bitmap/file "doomrock12.png")
-         (bitmap/file "doomrock13.png")
-         (bitmap/file "doomrock14.png")
-         (bitmap/file "doomrock15.png")
-         (bitmap/file "doomrock16.png")
-         (bitmap/file "doomrock17.png")
-         (bitmap/file "doomrock18.png")
-         (bitmap/file "doomrock19.png")
-         (bitmap/file "doomrock20.png")
-         )))
+   empty))
 
 ;; consumables
 (define MAGIC-POTION
@@ -161,12 +141,18 @@
        [character-inventory (make-inventory SWORD empty empty empty)]
        [weakness 'none]
        [resistance 'none]
-       [animation (make-animation (flip-horizontal (bitmap/file "knight_standby.png"))
-                                  (flip-horizontal (bitmap/file "knight_attack.png"))
-                                  (flip-horizontal (bitmap/file "knight_standby.png"))
-                                  (flip-horizontal (bitmap/file "knight_flinch.png"))
-                                  (flip-horizontal (bitmap/file "knight_standby.png"))
-                                  (flip-horizontal (bitmap/file "knight_standby.png")))]
+       [animation (make-animation (overlay (square 50 'outline 'black)
+                                           (text "standby" 12 'black))
+                                  (overlay (square 50 'outline 'black)
+                                           (text "attack" 12 'black))
+                                  (overlay (square 50 'outline 'black)
+                                           (text "cast" 12 'black))
+                                  (overlay (square 50 'outline 'black)
+                                           (text "flinch" 12 'black))
+                                  (overlay (square 50 'outline 'black)
+                                           (text "win" 12 'black))
+                                  (overlay (square 50 'outline 'black)
+                                           (text "loose" 12 'black)))]
        [level 5]
        [max-mp 20]
        [mp 20]
@@ -185,12 +171,18 @@
        [character-inventory (make-inventory STAFF empty empty empty)]
        [weakness 'fire]
        [resistance 'ice]
-       [animation (make-animation (bitmap/file "knight_standby.png")
-                                  (bitmap/file "knight_attack.png")
-                                  (bitmap/file "knight_standby.png")
-                                  (bitmap/file "knight_flinch.png")
-                                  (bitmap/file "knight_standby.png")
-                                  (bitmap/file "knight_standby.png"))]
+       [animation (make-animation (overlay (circle 50 'outline 'black)
+                                           (text "standby" 12 'black))
+                                  (overlay (circle 50 'outline 'black)
+                                           (text "attack" 12 'black))
+                                  (overlay (circle 50 'outline 'black)
+                                           (text "cast" 12 'black))
+                                  (overlay (circle 50 'outline 'black)
+                                           (text "flinch" 12 'black))
+                                  (overlay (circle 50 'outline 'black)
+                                           (text "win" 12 'black))
+                                  (overlay (circle 50 'outline 'black)
+                                           (text "loose" 12 'black)))]
        [xp-award 20]))
 
 ;; world
@@ -198,37 +190,39 @@
 
 ;; render: world --> image
 (define (render w)
-  (above
-   (overlay (if (empty? (world-loi w)) (square 0 'solid 'white) (first (world-loi w)))
-           (overlay (render-npc (send (world-npc w) get-animation) (world-phase w))
-                    (render-player (send (world-player w) get-animation) (world-phase w)) 
-                    (overlay/align "left" "top"
-                                   (beside
-                                    (text (string-append (send (world-npc w) get-name) ": ") 13 'white)
-                                    (text " " 12 'white)
-                                    (text (string-append
-                                           "Health: "
-                                           (number->string (send (world-npc w) get-health))
-                                           "/"
-                                           (number->string (send (world-npc w) get-max-health))) 12 'white))
-                                   (overlay/align "right" "top"
-                                                  (above/align "right"
-                                                               (beside
-                                                                (text (string-append (send (world-player w) get-name) ": ") 13 'white)
-                                                                (text " " 12 'white)
-                                                                (text (string-append
-                                                                       "Health: "
-                                                                       (number->string (send (world-player w) get-health))
-                                                                       "/"
-                                                                       (number->string (send (world-player w) get-max-health))) 12 'white))
-                                                               (text (string-append
-                                                                      "MP: "
-                                                                      (number->string (send (world-player w) get-mp))
-                                                                      "/"
-                                                                      (number->string (send (world-player w) get-max-mp))) 12 'white))
-                                                  BG))))
-   (text (world-text w) 12 'black)))
-
+  (overlay (if (empty? (world-loi w)) (square 0 'solid 'white) (first (world-loi w)))
+           (overlay/align "middle" "bottom"
+                          (text (world-text w) 12 'black)
+                          (overlay/align "left" "top"
+                                         (above
+                                          (beside
+                                           (text (string-append (send (world-npc w) get-name) ": ") 13 'black)
+                                           (text " " 12 'white)
+                                           (text (string-append
+                                                  "Health: "
+                                                  (number->string (send (world-npc w) get-health))
+                                                  "/"
+                                                  (number->string (send (world-npc w) get-max-health))) 12 'black))
+                                          (rectangle 0 100 'solid 'white)
+                                          (render-npc (send (world-npc w) get-animation) (world-phase w)))
+                                         (overlay/align "right" "top"
+                                                        (above/align "right"
+                                                                     (beside
+                                                                      (text (string-append (send (world-player w) get-name) ": ") 13 'black)
+                                                                      (text " " 12 'white)
+                                                                      (text (string-append
+                                                                             "Health: "
+                                                                             (number->string (send (world-player w) get-health))
+                                                                             "/"
+                                                                             (number->string (send (world-player w) get-max-health))) 12 'black))
+                                                                     (text (string-append
+                                                                            "MP: "
+                                                                            (number->string (send (world-player w) get-mp))
+                                                                            "/"
+                                                                            (number->string (send (world-player w) get-max-mp))) 12 'black)
+                                                                     (rectangle 0 100 'solid 'white)
+                                                                     (render-player (send (world-player w) get-animation) (world-phase w)))
+                                                        BG)))))
 (define (render-npc a p)
   (cond
     [(eq? p 'l) (animation-win a)]
@@ -261,7 +255,8 @@
                                     (world-npc w)
                                     'ea
                                     ""
-                                    (make-list 20 (bitmap/file "blankbackground.png")))]
+                                    (list (square 20 'solid 'red) (square 17 'solid 'red) (square 15 'solid 'red)
+                                          (square 13 'solid 'red) (square 11 'solid 'red) (square 9 'solid 'red)))]
     [(and (symbol=? (world-phase w) 'ea) (empty? (world-loi w))) (make-world (world-player w) (world-npc w) 'p "" empty)]
     [(and (symbol=? (world-phase w) 'pa) (empty? (world-loi w))) (make-world (world-player w) (world-npc w) 'e "" empty)]
     [(and (symbol=? (world-phase w) 'ps) (empty? (world-loi w))) (make-world (world-player w) (world-npc w) 'e "" empty)]
@@ -280,17 +275,18 @@
        [(or (string=? (world-text w) "attack")
             (string=? (world-text w) "a"))
         (make-world (world-player w) (send (world-npc w) apply-attack
-                                           (send (inventory-weapon (send (world-player w) get-inventory)) get-accuracy)
-                                           (send (world-player w) get-damage)
-                                           (send (inventory-weapon (send (world-player w) get-inventory)) get-type))
+                                                         (send (inventory-weapon (send (world-player w) get-inventory)) get-accuracy)
+                                                         (send (world-player w) get-damage)
+                                                         (send (inventory-weapon (send (world-player w) get-inventory)) get-type))
                     'pa "" 
-                    (make-list 20 (bitmap/file "blankbackground.png")))]
+                    (list (square 20 'solid 'black) (square 17 'solid 'black) (square 15 'solid 'black)
+                          (square 13 'solid 'black) (square 11 'solid 'black) (square 9 'solid 'black)))]
        ;; heal
        [(string=? (world-text w) "heal") (if (< (send (world-player w) get-mp) 5) w
                                              (make-world (send (send (world-player w) apply-spell HEAL) remove-mp 5)
                                                          (world-npc w) 'ps "" (spell-animation HEAL)))]
        ;; light ray
-       [(string=? (world-text w) "doom rock") (if (< (send (world-player w) get-mp) 10) w
+       [(string=? (world-text w) "light ray") (if (< (send (world-player w) get-mp) 10) w
                                                   (make-world (send (world-player w) remove-mp 10)
                                                               (send (world-npc w) apply-spell LIGHT-RAY) 'ps "" (spell-animation LIGHT-RAY)))]
        ;; use magic potion
