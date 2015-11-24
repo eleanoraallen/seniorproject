@@ -1,0 +1,12 @@
+# Racket compiled files
+compiled/
+*.dep
+*.zo
+
+# common backups, autosaves, lock files, OS meta-files
+*~
+\#*
+.#*
+.DS_Store
+*.bak
+TAGS
