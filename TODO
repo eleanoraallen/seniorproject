@@ -1,0 +1,33 @@
+Must do:
+ * Using an item should remove it from inventory
+ * Make enemy choose actions other than just attacking
+ * Menu-based combat
+   * Create keyboard menus
+   * Write key handler for menu item selection
+ * Player animations
+ * View inventory
+ * Make animation for heal
+ * Make animation for light ray
+ * Startup screen
+   * splash screen graphic
+   * key handling for starting game
+ * End-game animations:
+   * player dies
+   * enemy dies
+ * End-game screen:
+   * end-game graphic
+   * key handling for restarting game
+
+Really want to do:
+ * Design nicer player animations
+ * Allow choosing a weapon:
+   * Select weapon
+   * Equip weapon
+ * Create other items that the player can use
+ * Make different images for enemy
+
+Nice to have:
+ * Character selection at beginning of game
+ * Add additional types of enemy
+ * Improve/replace background
+ * More spells
