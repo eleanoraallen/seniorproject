@@ -9,6 +9,7 @@
 ;; Spells -------------------------------------------------------------------------------------------
 (define HEAL
   (make-spell
+   'player
    "heal" "+ 50 health"
    (lambda (c)
      (new player%
@@ -23,11 +24,15 @@
           [level (send c get-level)] [max-mp (send c get-max-mp)]
           [mp (send c get-mp)] [current-xp (send c get-current-xp)]))
    (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
-         (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green))))
+         (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green))
+   5
+   (bitmap/file "heal.png")))
 
 (define DOOM-ROCK
   (make-spell
-   "Doom Rock" "summon a rock of doom"
+   'npc
+   "Doom Rock"
+   "-100 spell damage"
    (lambda (c)
      (new npc%
           [name (send c get-name)] 
@@ -47,13 +52,15 @@
          (bitmap/file "doomrock13.png") (bitmap/file "doomrock14.png")
          (bitmap/file "doomrock15.png") (bitmap/file "doomrock16.png")
          (bitmap/file "doomrock17.png") (bitmap/file "doomrock18.png")
-         (bitmap/file "doomrock19.png") (bitmap/file "doomrock20.png"))))
+         (bitmap/file "doomrock19.png") (bitmap/file "doomrock20.png"))
+   10
+   (bitmap/file "doom-rock.png")))
 
 ;; Consumables -------------------------------------------------------------------------------------------
 (define MAGIC-POTION
   (new consumable%
-       [name "magic potion"] 
-       [description "A potion restores the users magic"]
+       [name "Magic Potion"] 
+       [description "Fully restores MP."]
        [image (square 20 'solid 'white)]
        [effect (lambda (c)
                  (new player% 
@@ -67,7 +74,7 @@
                       [current-xp (send c get-current-xp)]))]
        [animation (list (circle 10 'solid 'orange) (circle 9 'solid 'orange) (circle 8 'solid 'orange) 
                         (circle 7 'solid 'orange) (circle 6 'solid 'orange) (circle 5 'solid 'orange))]
-       [number 1]))
+       [number 3]))
 
 ;; Weapons ------------------------------------------------------------------------------------------------
 (define SWORD
@@ -91,8 +98,8 @@
 (define PLAYER
   (new player%
        [name "You"] [health 500] [max-health 500] [base-agility 1]
-       [agility 1] [base-strength 5] [strength 5] [spells empty]
-       [character-inventory (make-inventory SWORD empty empty empty)]
+       [agility 1] [base-strength 5] [strength 5] [spells (list HEAL DOOM-ROCK)]
+       [character-inventory (make-inventory SWORD empty (list MAGIC-POTION) empty)]
        [weakness 'none] [resistance 'none]
        [animation (make-animation (flip-horizontal (bitmap/file "knight_standby.png"))
                                   (flip-horizontal (bitmap/file "knight_attack.png"))
@@ -169,7 +176,6 @@
 ;; takes a player and a symbol and outputs the appropriate menu
 (define (render-menu p m)
   (cond
-    
     [(symbol=? m 'm) 
      (overlay 
       (beside 
@@ -188,29 +194,121 @@
        (overlay/align 
         "middle" "top" 
         (above (rectangle 0 11 'solid 'black) (text "3: Spells" 13 'black))
-        (overlay 
-         (above (rectangle 0 15 'solid 'black) 
-                (scale .14 (bitmap/file "phlogiston.png")))
-         (rectangle 190 130 'solid 'gray) (rectangle 200 140 'solid 'black))))
+        (overlay (above (rectangle 0 15 'solid 'black) 
+                        (scale .14 (bitmap/file "phlogiston.png")))
+                 (rectangle 190 130 'solid 'gray) (rectangle 200 140 'solid 'black))))
       (rectangle 800 165 'solid (make-color 60 60 60)))]
-    
-    
-    [(symbol=? m 'i)
-     (cond
-       [(empty? (inventory-consumables (send p get-invintory)))
-        (rectangle 800 165 'solid (make-color 60 60 60))]
-       [(= 1 1)
+    [(symbol=? m 'i) 
+     (cond 
+       [(empty? (inventory-consumables (send p get-inventory)))
+        (overlay (text "No Items Available!" 20 'white)
+                 (rectangle 800 165 'solid (make-color 60 60 60)))]
+       [(= (length (inventory-consumables (send p get-inventory))) 1)
+        (overlay (render-item-block (first (inventory-consumables (send p get-inventory))))
+                 (rectangle 800 165 'solid (make-color 60 60 60)))]
+       [(= (length (inventory-consumables (send p get-inventory))) 2)
+        (overlay 
+         (beside 
+          (render-item-block (first (inventory-consumables (send p get-inventory))))
+          (rectangle 50 0 'solid 'orange)
+          (render-item-block (second (inventory-consumables (send p get-inventory)))))
+         (rectangle 800 165 'solid (make-color 60 60 60)))]
+       [(= (length (inventory-consumables (send p get-inventory))) 3)
         (overlay
-         (overlay/align 
-        "middle" "top" 
-        (above (rectangle 0 11 'solid 'black) 
-               (text (send (first (invintory-consumables (send p get-invintory))) get-name) 13 'black))
-        (overlay (above (rectangle 0 20 'solid 'black) (send (first (invintory-consumables (send p get-invintory))) get-image))
-                 (rectangle 190 130 'solid 'gray) (rectangle 200 140 'solid 'black)))
-        (rectangle 800 165 'solid (make-color 60 60 60)))]
-       [else (rectangle 800 165 'solid (make-color 60 60 60))])]
-    [else (rectangle 800 165 'solid (make-color 60 60 60))]))
+         (beside
+          (render-item-block (first (inventory-consumables (send p get-inventory))))
+          (rectangle 50 0 'solid 'orange)
+          (render-item-block (second (inventory-consumables (send p get-inventory))))
+          (rectangle 50 0 'solid 'black)
+          (render-item-block (third (inventory-consumables (send p get-inventory)))))
+         (rectangle 800 165 'solid (make-color 60 60 60)))]
+       [else (overlay
+              (beside
+               (rotate 90 (overlay (isosceles-triangle 30 120 'solid 'white)
+                                   (isosceles-triangle 40 120 'solid 'black)))
+               (rectangle 15 0 'solid 'black)
+               (render-item-block (first (inventory-consumables (send p get-inventory))))
+               (rectangle 50 0 'solid 'orange)
+               (render-item-block (second (inventory-consumables (send p get-inventory))))
+               (rectangle 50 0 'solid 'black)
+               (render-item-block (third (inventory-consumables (send p get-inventory))))
+               (rectangle 15 0 'solid 'black)
+               (rotate 270 (overlay (isosceles-triangle 30 120 'solid 'white)
+                                    (isosceles-triangle 40 120 'solid 'black))))
+              (rectangle 800 165 'solid (make-color 60 60 60)))])]
+    [(symbol=? m 's)
+     (cond 
+       [(empty? (send p get-spells))
+        (overlay (text "No Spells Available!" 20 'white)
+                 (rectangle 800 165 'solid (make-color 60 60 60)))]
+       [(= (length (send p get-spells)) 1)
+        (overlay (render-spell-block (first (send p get-spells)))
+                 (rectangle 800 165 'solid (make-color 60 60 60)))]
+       [(= (length (send p get-spells)) 2)
+        (overlay 
+         (beside (render-spell-block (first (send p get-spells)))
+                 (rectangle 50 0 'solid 'black)
+                 (render-spell-block (second (send p get-spells))))
+         (rectangle 800 165 'solid (make-color 60 60 60)))]
+       [(= (length (send p get-spells)) 3)
+        (overlay 
+         (beside (render-spell-block (first (send p get-spells)))
+                 (rectangle 50 0 'solid 'black)
+                 (render-spell-block (second (send p get-spells)))
+                 (rectangle 50 0 'solid 'black)
+                 (render-spell-block (third (send p get-spells))))
+         (rectangle 800 165 'solid (make-color 60 60 60)))]
+       [else
+        (overlay 
+         (beside (rotate 90 (overlay (isosceles-triangle 30 120 'solid 'white)
+                                     (isosceles-triangle 40 120 'solid 'black)))
+                 (rectangle 15 0 'solid 'black)
+                 (render-spell-block (first (send p get-spells)))
+                 (rectangle 50 0 'solid 'black)
+                 (render-spell-block (second (send p get-spells)))
+                 (rectangle 50 0 'solid 'black)
+                 (render-spell-block (third (send p get-spells)))
+                 (rectangle 15 0 'solid 'black)
+                 (rotate 270 (overlay (isosceles-triangle 30 120 'solid 'white)
+                                      (isosceles-triangle 40 120 'solid 'black))))
+         (rectangle 800 165 'solid (make-color 60 60 60)))])]))
 
+
+
+;; render-spell-block : item --> image
+;; renders an spell block for a given spell
+(define (render-spell-block s)
+  (overlay/align 
+   "middle" "top" 
+   (above (rectangle 0 11 'solid 'black) 
+          (text (spell-name s) 12 'black)
+          (text (string-append "MP Cost: " (number->string (spell-cost s))) 10 'black))
+   (overlay/align 
+    "middle" "bottom"
+    (above (text (spell-discription s) 10 'black)
+           (rectangle 0 11 'solid 'black))
+    (overlay (above (rectangle 0 (image-height (text "I" 12 'black)) 'solid 'black)
+                    (spell-image s))
+             (rectangle 190 130 'solid 'gray) 
+             (rectangle 200 140 'solid 'black)))))
+
+;; render-item-block : item --> image
+;; renders an item block for a given image
+(define (render-item-block i)
+  (overlay/align 
+   "middle" "top" 
+   (above (rectangle 0 11 'solid 'black) 
+          (text (string-append 
+                 (send i get-name) ": " 
+                 (number->string (send i get-number))) 
+                13 'black))
+   (overlay/align 
+    "middle" "bottom"
+    (above (text (send i get-description) 13 'black)
+           (rectangle 0 11 'solid 'black))
+    (overlay (send i get-image)
+             (rectangle 190 130 'solid 'gray) 
+             (rectangle 200 140 'solid 'black)))))
 
 ;; render-data: string num num #:num #:num --> image
 ;; renders given character data as an image

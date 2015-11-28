@@ -102,8 +102,8 @@
 ;; an inventory is a (make-inventory weapon list-of-equipment list-of-consumables list-of-items)
 (define-struct inventory (weapon equiped consumables miscellaneous))
 
-;; a spell is a (make-spell string string effect list-of-images)
-(define-struct spell (name discription effect animation))
+;; a spell is a (make-spell target string string effect list-of-images int image)
+(define-struct spell (target name discription effect animation cost image))
 
 ;; an animation is a (make-animation image image image image image) where:
 ;; the first image is the characers standby image
@@ -175,7 +175,7 @@
      mp ;; a nat that is the players mp
      current-xp ;; a nat that is the player's xp
      )
-    (inherit get-name   ;; TODO: remove unused inherits
+    (inherit get-name   
              get-health
              get-base-agility
              get-agility
@@ -188,7 +188,7 @@
              get-animation
              get-damage
              dead?)
-    (inherit-field name   ;; TODO remove unused inherits (after using `this` below)
+    (inherit-field name   
                    health
                    max-health
                    base-agility
@@ -341,13 +341,17 @@
   ;; SPELLS
   (define TESTSPELL1
     (make-spell
+     'npc
      "magic bomb"
      "bomb of fire"
      (lambda (c)
        (send c apply-attack 1 75 'fire))
-     empty))
+     empty
+     10
+     (square 20 'solid 'blue)))
   (define TESTSPELL2
     (make-spell
+     'player
      "heal"
      "+ 50 health"
      (lambda (c)
@@ -366,7 +370,9 @@
             [weakness (send c get-weakness)]
             [resistance (send c get-resistance)]
             [animation (send c get-animation)]))
-     empty))
+     empty
+     5
+    (square 20 'solid 'blue)))
   
   ;; WEAPONS
   (define TESTSWORD
