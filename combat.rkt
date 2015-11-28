@@ -84,19 +84,23 @@
 (define consumable%
   (class* item% (base-item<%>)
     (super-new)
-    (inherit-field image)
-    (inherit get-image)
+    (inherit-field image
+                   name
+                   description)
+    (inherit get-image
+             get-name)
     (init-field
      effect ;; a function that takes a character and produces a character
      animation ;; a list of images that is the consumable's animation
+     number ;; an int that is the number of this item the player has
      )
     (define/public (get-effect) effect) ;; gets items effect
     (define/public (get-animation) animation) ;; gets items animation
+    (define/public (get-number) number) ;; gets the number of this item player has
     ))
 
 ;; an inventory is a (make-inventory weapon list-of-equipment list-of-consumables list-of-items)
 (define-struct inventory (weapon equiped consumables miscellaneous))
-;; when I added #:transperent I got an error: define-struct: unrecognized struct-specification keyword in: #:transperent
 
 ;; a spell is a (make-spell string string effect list-of-images)
 (define-struct spell (name discription effect animation))
@@ -405,7 +409,8 @@
                         [weakness (send c get-weakness)]
                         [resistance (send c get-resistance)]
                         [animation (send c get-animation)]))]
-         [animation empty]))
+         [animation empty]
+         [number 1]))
   
   ;; PLAYERS
   (define TESTPLAYER1
