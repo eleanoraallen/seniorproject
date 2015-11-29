@@ -334,7 +334,7 @@
       ((send c get-effect) this))
     (define/public (apply-attack attacker-accuracy attacker-damage weapon-type)
       (send this clone #:health (- health (if (attack-landed? base-agility attacker-accuracy)
-                                         (damage-character this attacker-damage weapon-type) 0))))))
+                                              (damage-character this attacker-damage weapon-type) 0))))))
 
 (module+ test
   (require rackunit)
@@ -372,7 +372,7 @@
             [animation (send c get-animation)]))
      empty
      5
-    (square 20 'solid 'blue)))
+     (square 20 'solid 'blue)))
   
   ;; WEAPONS
   (define TESTSWORD

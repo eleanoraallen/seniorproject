@@ -56,12 +56,52 @@
    10
    (bitmap/file "doom-rock.png")))
 
+(define EVIL-DOOM-ROCK
+  (make-spell
+   'player
+   "Doom Rock"
+   "-100 spell damage"
+   (lambda (c)
+     (new player%
+          [name (send c get-name)] 
+          [health (if (>= 50 (send c get-health)) 0 (- (send c get-health) 50))] 
+          [max-health (send c get-max-health)]
+          [base-agility (send c get-base-agility)] [agility (send c get-agility)]
+          [base-strength (send c get-base-strength)] [strength (send c get-strength)]
+          [spells (send c get-spells)] [character-inventory (send c get-inventory)]
+          [weakness (send c get-weakness)] [resistance (send c get-resistance)]
+          [animation (send c get-animation)] [level (send c get-level)] 
+          [max-mp (send c get-max-mp)] [mp (send c get-mp)]
+          [current-xp (send c get-current-xp)]))
+   (list (flip-horizontal (bitmap/file "doomrock1.png"))
+         (flip-horizontal (bitmap/file "doomrock2.png"))
+         (flip-horizontal (bitmap/file "doomrock3.png"))
+         (flip-horizontal (bitmap/file "doomrock4.png"))
+         (flip-horizontal (bitmap/file "doomrock5.png"))
+         (flip-horizontal (bitmap/file "doomrock6.png"))
+         (flip-horizontal (bitmap/file "doomrock7.png"))
+         (flip-horizontal (bitmap/file "doomrock8.png"))
+         (flip-horizontal (bitmap/file "doomrock9.png"))
+         (flip-horizontal (bitmap/file "doomrock10.png"))
+         (flip-horizontal (bitmap/file "doomrock11.png"))
+         (flip-horizontal (bitmap/file "doomrock12.png"))
+         (flip-horizontal (bitmap/file "doomrock13.png"))
+         (flip-horizontal (bitmap/file "doomrock14.png"))
+         (flip-horizontal (bitmap/file "doomrock15.png"))
+         (flip-horizontal (bitmap/file "doomrock16.png"))
+         (flip-horizontal (bitmap/file "doomrock17.png"))
+         (flip-horizontal (bitmap/file "doomrock18.png"))
+         (flip-horizontal (bitmap/file "doomrock19.png"))
+         (flip-horizontal (bitmap/file "doomrock20.png")))
+   10
+   (bitmap/file "doom-rock.png")))
+
 ;; Consumables -------------------------------------------------------------------------------------------
 (define MAGIC-POTION
   (new consumable%
        [name "Magic Potion"] 
        [description "Fully restores MP."]
-       [image (square 20 'solid 'white)]
+       [image (bitmap/file "magic-potion.gif")]
        [effect (lambda (c)
                  (new player% 
                       [name (send c get-name)] [health (send c get-health)]
@@ -76,12 +116,50 @@
                         (circle 7 'solid 'orange) (circle 6 'solid 'orange) (circle 5 'solid 'orange))]
        [number 3]))
 
+(define HEALING-POTION
+  (new consumable%
+       [name "Health Potion"] 
+       [description "+ 25 health"]
+       [image (bitmap/file "health-potion.gif")]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (if (>= (+ (send c get-health) 25) (send c get-max-health))
+                                                           (send c get-max-health) (+ 25 (send c get-health)))]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [level (send c get-level)] [max-mp (send c get-max-mp)] [mp (send c get-mp)]
+                      [current-xp (send c get-current-xp)]))]
+       [animation (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
+                        (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green))]
+       [number 3]))
+
+(define HEALING-PHILTER
+  (new consumable%
+       [name "Healing Philter"] 
+       [description "Fully restores health"]
+       [image (square 20 'solid 'white)]
+       [effect (lambda (c)
+                 (new npc% 
+                      [name (send c get-name)] [health (send c get-max-health)]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [xp-award (send c get-xp-award)]))]
+       [animation (list (circle 10 'solid 'orange) (circle 9 'solid 'orange) (circle 8 'solid 'orange) 
+                        (circle 7 'solid 'orange) (circle 6 'solid 'orange) (circle 5 'solid 'orange))]
+       [number 1]))
+
 ;; Weapons ------------------------------------------------------------------------------------------------
 (define SWORD
   (new weapon%
        [name "Steel Sword"]
        [description "A sturdy steel sword."]
-       [weapon-damage 10]
+       [weapon-damage 100]
        [weapon-accuracy .95]
        [type 'metal]
        [image (square 20 'solid 'white)]))
@@ -98,8 +176,12 @@
 (define PLAYER
   (new player%
        [name "You"] [health 500] [max-health 500] [base-agility 1]
-       [agility 1] [base-strength 5] [strength 5] [spells (list HEAL DOOM-ROCK)]
-       [character-inventory (make-inventory SWORD empty (list MAGIC-POTION) empty)]
+       [agility 1] [base-strength 5] [strength 5] [spells (list HEAL DOOM-ROCK HEAL 
+                                                                DOOM-ROCK HEAL DOOM-ROCK 
+                                                                HEAL HEAL HEAL)]
+       [character-inventory (make-inventory SWORD empty (list MAGIC-POTION HEALING-POTION MAGIC-POTION
+                                                              HEALING-POTION MAGIC-POTION HEALING-POTION
+                                                              MAGIC-POTION MAGIC-POTION MAGIC-POTION) empty)]
        [weakness 'none] [resistance 'none]
        [animation (make-animation (flip-horizontal (bitmap/file "knight_standby.png"))
                                   (flip-horizontal (bitmap/file "knight_attack.png"))
@@ -113,8 +195,8 @@
   (new npc%
        [name "Rogue Knight"] [health 500] [max-health 500] 
        [base-agility .95] [agility 1] [base-strength 5]
-       [strength 5] [spells empty]
-       [character-inventory (make-inventory STAFF empty empty empty)]
+       [strength 5] [spells (list EVIL-DOOM-ROCK)]
+       [character-inventory (make-inventory STAFF empty (list HEALING-PHILTER) empty)]
        [weakness 'fire] [resistance 'ice]
        [animation (make-animation (bitmap/file "knight_standby.png")
                                   (bitmap/file "knight_attack.png")
@@ -141,6 +223,7 @@
 ;; - 'm
 ;; - 's
 ;; - 'i
+;; - 'e
 ;; the list of images are the images in the animation queue
 (define-struct world (player npc phase menu loi))
 (define DEFAULT-WORLD (make-world PLAYER NPC 'p 'm empty))
@@ -175,7 +258,8 @@
 ;; render-menu : player symbol --> image
 ;; takes a player and a symbol and outputs the appropriate menu
 (define (render-menu p m)
-  (cond
+  (cond  
+    ;; main menu
     [(symbol=? m 'm) 
      (overlay 
       (beside 
@@ -198,6 +282,7 @@
                         (scale .14 (bitmap/file "phlogiston.png")))
                  (rectangle 190 130 'solid 'gray) (rectangle 200 140 'solid 'black))))
       (rectangle 800 165 'solid (make-color 60 60 60)))]
+    ;; item menu
     [(symbol=? m 'i) 
      (cond 
        [(empty? (inventory-consumables (send p get-inventory)))
@@ -235,7 +320,8 @@
                (rectangle 15 0 'solid 'black)
                (rotate 270 (overlay (isosceles-triangle 30 120 'solid 'white)
                                     (isosceles-triangle 40 120 'solid 'black))))
-              (rectangle 800 165 'solid (make-color 60 60 60)))])]
+              (rectangle 800 165 'solid (make-color 60 60 60)))])] 
+    ;; spell menu
     [(symbol=? m 's)
      (cond 
        [(empty? (send p get-spells))
@@ -271,7 +357,8 @@
                  (rectangle 15 0 'solid 'black)
                  (rotate 270 (overlay (isosceles-triangle 30 120 'solid 'white)
                                       (isosceles-triangle 40 120 'solid 'black))))
-         (rectangle 800 165 'solid (make-color 60 60 60)))])]))
+         (rectangle 800 165 'solid (make-color 60 60 60)))])]
+    [else (rectangle 800 165 'solid (make-color 60 60 60))]))
 
 
 
@@ -347,51 +434,263 @@
     [(eq? p 'ps) (animation-cast a)]
     [else (animation-standby a)]))
 
+;; Tock ------------------------------------------------------------------------------------------------ 
+
 ;; tock: world --> world
 (define (tock w)
   (cond
-    [(not (empty? (world-loi w))) (make-world (world-player w) (world-npc w) (world-phase w) 'm (rest (world-loi w)))]
+    [(not (empty? (world-loi w))) (make-world (world-player w) (world-npc w) (world-phase w) 'e (rest (world-loi w)))]
     [(send (world-player w) dead?) (make-world (world-player w) (world-npc w) 'l 'm empty)]
     [(send (world-npc w) dead?) (make-world (world-player w) (world-npc w) 'w 'm empty)]
-    [(symbol=? (world-phase w) 'e) (make-world
-                                    (send (world-player w) apply-attack 
-                                          (send (inventory-weapon (send (world-npc w) get-inventory)) get-accuracy) 
-                                          (send (world-npc w) get-damage)
-                                          (send (inventory-weapon (send (world-npc w) get-inventory)) get-type))
-                                    (world-npc w)
-                                    'ea
-                                    'm
-                                    (make-list 20 (bitmap/file "blankbackground.png")))]
+    [(symbol=? (world-phase w) 'e) (npc-action w)]
     [(and (symbol=? (world-phase w) 'ea) (empty? (world-loi w))) (make-world (world-player w) (world-npc w) 'p 'm empty)]
-    [(and (symbol=? (world-phase w) 'pa) (empty? (world-loi w))) (make-world (world-player w) (world-npc w) 'e 'm empty)]
-    [(and (symbol=? (world-phase w) 'ps) (empty? (world-loi w))) (make-world (world-player w) (world-npc w) 'e 'm empty)]
+    [(and (symbol=? (world-phase w) 'pa) (empty? (world-loi w))) (make-world (world-player w) (world-npc w) 'e 'e empty)]
+    [(and (symbol=? (world-phase w) 'ps) (empty? (world-loi w))) (make-world (world-player w) (world-npc w) 'e 'e empty)]
     [else w]))
+
+;; npc-action : world --> world
+;; makes the npc take an action
+(define (npc-action w)
+  (cond
+    [(and (> (/ (send (world-npc w) get-max-health) 4) (send (world-npc w) get-health))
+          (not (empty? (inventory-consumables (send (world-npc w) get-inventory)))))
+     (make-world
+      (world-player w)
+      (send (send (world-npc w) 
+                  clone #:character-inventory 
+                  (make-inventory
+                   (inventory-weapon (send (world-npc w) get-inventory))
+                   (inventory-equiped (send (world-npc w) get-inventory))
+                   (if (> (send (first (inventory-consumables (send (world-npc w) get-inventory))) get-number) 1)
+                       (cons (new consumable% 
+                                  [image (send (first (inventory-consumables (send (world-npc w) get-inventory))) get-image)]
+                                  [name (send (first (inventory-consumables (send (world-npc w) get-inventory))) get-name)]
+                                  [description (send (first (inventory-consumables (send (world-npc w) get-inventory))) get-description)]
+                                  [effect (send (first (inventory-consumables (send (world-npc w) get-inventory))) get-effect)]
+                                  [animation (send (first (inventory-consumables (send (world-npc w) get-inventory))) get-animation)]
+                                  [number (- (send (first (inventory-consumables (send (world-npc w) get-inventory))) get-number) 1)])
+                             (rest (inventory-consumables (send (world-npc w) get-inventory))))
+                       (rest (inventory-consumables (send (world-npc w) get-inventory))))
+                   (inventory-miscellaneous (send (world-npc w) get-inventory))))
+            use-consumable (first (inventory-consumables (send (world-npc w) get-inventory)))) 
+      'ea 'e (send (first (inventory-consumables (send (world-npc w) get-inventory))) get-animation))]
+    [(= (random 2) 1) (set-up-spell w (list-ref (send (world-npc w) get-spells) (random (length (send (world-npc w) get-spells)))))]
+    [else
+     (make-world
+      (send (world-player w) apply-attack 
+            (send (inventory-weapon (send (world-npc w) get-inventory)) get-accuracy) 
+            (send (world-npc w) get-damage)
+            (send (inventory-weapon (send (world-npc w) get-inventory)) get-type))
+      (world-npc w)
+      'ea
+      'e
+      (make-list 10 (bitmap/file "blankbackground.png")))]))
+
+;; set-up-spell world spell --> world
+;; takes a world and a spell cast by the enemy and outputs updated world
+(define (set-up-spell w s)
+  (make-world
+   (send (world-player w) apply-spell s)
+   (world-npc w)
+   'ea
+   'e
+   (spell-animation s)))
+
+;; Handle Key ------------------------------------------------------------------------------------------------ 
 
 ;; handle-key : world --> world
 (define (handle-key w k)
   (if (symbol=? (world-phase w) 'p)
       (cond
+        ;; main menu
         [(symbol=? (world-menu w) 'm)
          (cond
-           [(key=? k "1") (make-world (world-player w) 
-                                      (send (world-npc w) apply-attack
-                                            (send (inventory-weapon (send (world-player w) get-inventory)) get-accuracy)
-                                            (send (world-player w) get-damage)
-                                            (send (inventory-weapon (send (world-player w) get-inventory)) get-type))
-                                      'pa 'm 
-                                      (make-list 20 (bitmap/file "blankbackground.png")))]
-           [(key=? k "2") (make-world (world-player w)
-                                      (world-npc w)
-                                      'p 'i empty)]
-           [(key=? k "3") (make-world (world-player w)
-                                      (world-npc w)
-                                      'p 's empty)]
+           [(key=? k "1") 
+            (make-world 
+             (world-player w) 
+             (send (world-npc w) apply-attack 
+                   (send (inventory-weapon (send (world-player w) get-inventory)) get-accuracy)
+                   (send (world-player w) get-damage) 
+                   (send (inventory-weapon (send (world-player w) get-inventory)) get-type))
+             'pa 'e (make-list 10 (bitmap/file "blankbackground.png")))]
+           [(key=? k "2") 
+            (make-world (world-player w)
+                        (world-npc w)
+                        'p 'i empty)]
+           [(key=? k "3") 
+            (make-world (world-player w)
+                        (world-npc w)
+                        'p 's empty)]
            [else w])]
-        [(symbol=? (world-menu w) 'i) w]
-        [(symbol=? (world-menu w) 's) w])
-      w))
+        ;; spell menu
+        [(symbol=? (world-menu w) 's)
+         (cond
+           [(and (> (length (send (world-player w) get-spells)) 0) (key=? k "1"))
+            (if (>= (send (world-player w) get-mp) (spell-cost (first (send (world-player w) get-spells))))
+                (if (eq? (spell-target (first (send (world-player w) get-spells))) 'player)
+                    (make-world 
+                     (send (send (world-player w) 
+                                 clone #:mp (- (send (world-player w) get-mp) 
+                                               (spell-cost (first (send (world-player w) get-spells)))))
+                           apply-spell (first (send (world-player w) get-spells)))
+                     (world-npc w) 'pa 'e (spell-animation (first (send (world-player w) get-spells))))
+                    (make-world 
+                     (send (world-player w) 
+                           clone #:mp (- (send (world-player w) get-mp) 
+                                         (spell-cost (first (send (world-player w) get-spells)))))
+                     (send (world-npc w) apply-spell (first (send (world-player w) get-spells)))
+                     'pa 'e (spell-animation (first (send (world-player w) get-spells))))) w)]
+           [(and (> (length (send (world-player w) get-spells)) 1) (key=? k "2"))
+            (if (>= (send (world-player w) get-mp) (spell-cost (second (send (world-player w) get-spells))))
+                (if (eq? (spell-target (second (send (world-player w) get-spells))) 'player)
+                    (make-world 
+                     (send (send (world-player w) 
+                                 clone #:mp (- (send (world-player w) get-mp) 
+                                               (spell-cost (second (send (world-player w) get-spells)))))
+                           apply-spell (second (send (world-player w) get-spells)))
+                     (world-npc w) 'pa 'e (spell-animation (second (send (world-player w) get-spells))))
+                    (make-world 
+                     (send (world-player w) 
+                           clone #:mp (- (send (world-player w) get-mp) 
+                                         (spell-cost (second (send (world-player w) get-spells)))))
+                     (send (world-npc w) apply-spell (second (send (world-player w) get-spells)))
+                     'pa 'e (spell-animation (second (send (world-player w) get-spells))))) w)]
+           [(and (> (length (send (world-player w) get-spells)) 2) (key=? k "3"))
+            (if (>= (send (world-player w) get-mp) (spell-cost (third (send (world-player w) get-spells))))
+                (if (eq? (spell-target (third (send (world-player w) get-spells))) 'player)
+                    (make-world 
+                     (send (send (world-player w) 
+                                 clone #:mp (- (send (world-player w) get-mp) 
+                                               (spell-cost (third (send (world-player w) get-spells)))))
+                           apply-spell (third (send (world-player w) get-spells)))
+                     (world-npc w) 'pa 'e (spell-animation (third (send (world-player w) get-spells))))
+                    (make-world 
+                     (send (world-player w) 
+                           clone #:mp (- (send (world-player w) get-mp) 
+                                         (spell-cost (third (send (world-player w) get-spells)))))
+                     (send (world-npc w) apply-spell (third (send (world-player w) get-spells)))
+                     'pa 'e (spell-animation (third (send (world-player w) get-spells))))) w)]
+           [(and (> (length (send (world-player w) get-spells)) 3) (or (key=? k "right") (key=? k "d")))
+            (make-world
+             (send (world-player w) 
+                   clone #:spells (append (rest (rest (rest (send (world-player w) get-spells))))
+                                          (list (first (send (world-player w) get-spells))
+                                                (second (send (world-player w) get-spells))
+                                                (third (send (world-player w) get-spells)))))
+             (world-npc w) 'p 's empty)]
+           [(and (> (length (send (world-player w) get-spells)) 3) (or (key=? k "left") (key=? k "a")))
+            (make-world
+             (send (world-player w) 
+                   clone #:spells (append (list (third (reverse (send (world-player w) get-spells)))
+                                                (second (reverse (send (world-player w) get-spells)))
+                                                (first (reverse (send (world-player w) get-spells))))
+                                          (reverse (rest (rest (rest (reverse (send (world-player w) get-spells))))))))
+             (world-npc w) 'p 's empty)]
+           [(or (key=? k "escape") (key=? k "\b"))
+            (make-world (world-player w)                                                
+                        (world-npc w)
+                        'p 'm empty)]
+           [else w])]
+        ;; item menu
+        [(symbol=? (world-menu w) 'i)
+         (cond
+           [(and (> (length (inventory-consumables (send (world-player w) get-inventory))) 0) (key=? k "1"))
+            (make-world 
+             (send (send (world-player w) clone #:character-inventory
+                         (make-inventory
+                          (inventory-weapon (send (world-player w) get-inventory))
+                          (inventory-equiped (send (world-player w) get-inventory))
+                          (if (> (send (first (inventory-consumables (send (world-player w) get-inventory))) get-number) 1)
+                              (cons (new consumable% 
+                                         [image (send (first (inventory-consumables (send (world-player w) get-inventory))) get-image)]
+                                         [name (send (first (inventory-consumables (send (world-player w) get-inventory))) get-name)]
+                                         [description (send (first (inventory-consumables (send (world-player w) get-inventory))) get-description)]
+                                         [effect (send (first (inventory-consumables (send (world-player w) get-inventory))) get-effect)]
+                                         [animation (send (first (inventory-consumables (send (world-player w) get-inventory))) get-animation)]
+                                         [number (- (send (first (inventory-consumables (send (world-player w) get-inventory))) get-number) 1)])
+                                    (rest (inventory-consumables (send (world-player w) get-inventory))))
+                              (rest (inventory-consumables (send (world-player w) get-inventory))))
+                          (inventory-miscellaneous (send (world-player w) get-inventory))))
+                   use-consumable (first (inventory-consumables (send (world-player w) get-inventory))))
+             (world-npc w) 'pa 'e (send (first (inventory-consumables (send (world-player w) get-inventory))) get-animation))]
+           [(and (> (length (inventory-consumables (send (world-player w) get-inventory))) 1) (key=? k "2"))
+            (make-world 
+             (send (send (world-player w) clone #:character-inventory
+                         (make-inventory
+                          (inventory-weapon (send (world-player w) get-inventory))
+                          (inventory-equiped (send (world-player w) get-inventory))
+                          (if (> (send (second (inventory-consumables (send (world-player w) get-inventory))) get-number) 1)
+                              (append
+                               (list (first (inventory-consumables (send (world-player w) get-inventory)))
+                                     (new consumable% 
+                                          [image (send (second (inventory-consumables (send (world-player w) get-inventory))) get-image)]
+                                          [name (send (second (inventory-consumables (send (world-player w) get-inventory))) get-name)]
+                                          [description (send (second (inventory-consumables (send (world-player w) get-inventory))) get-description)]
+                                          [effect (send (second (inventory-consumables (send (world-player w) get-inventory))) get-effect)]
+                                          [animation (send (second (inventory-consumables (send (world-player w) get-inventory))) get-animation)]
+                                          [number (- (send (second (inventory-consumables (send (world-player w) get-inventory))) get-number) 1)]))
+                               (rest (rest (inventory-consumables (send (world-player w) get-inventory)))))
+                              (cons (first (inventory-consumables (send (world-player w) get-inventory))) (rest (rest (inventory-consumables (send (world-player w) get-inventory))))))
+                          (inventory-miscellaneous (send (world-player w) get-inventory))))
+                   use-consumable (second (inventory-consumables (send (world-player w) get-inventory))))
+             (world-npc w) 'pa 'e (send (second (inventory-consumables (send (world-player w) get-inventory))) get-animation))]
+           [(and (> (length (inventory-consumables (send (world-player w) get-inventory))) 2) (key=? k "3"))
+            (make-world 
+             (send (send (world-player w) clone #:character-inventory
+                         (make-inventory
+                          (inventory-weapon (send (world-player w) get-inventory))
+                          (inventory-equiped (send (world-player w) get-inventory))
+                          (if (> (send (third (inventory-consumables (send (world-player w) get-inventory))) get-number) 1)
+                              (append
+                               (list (first (inventory-consumables (send (world-player w) get-inventory)))
+                                     (second (inventory-consumables (send (world-player w) get-inventory)))
+                                     (new consumable% 
+                                          [image (send (third (inventory-consumables (send (world-player w) get-inventory))) get-image)]
+                                          [name (send (third (inventory-consumables (send (world-player w) get-inventory))) get-name)]
+                                          [description (send (third (inventory-consumables (send (world-player w) get-inventory))) get-description)]
+                                          [effect (send (third (inventory-consumables (send (world-player w) get-inventory))) get-effect)]
+                                          [animation (send (third (inventory-consumables (send (world-player w) get-inventory))) get-animation)]
+                                          [number (- (send (third (inventory-consumables (send (world-player w) get-inventory))) get-number) 1)]))
+                               (rest (rest (rest (inventory-consumables (send (world-player w) get-inventory))))))
+                              (append (list (first (inventory-consumables (send (world-player w) get-inventory)))
+                                            (second (inventory-consumables (send (world-player w) get-inventory))))
+                                      (rest (rest (rest (inventory-consumables (send (world-player w) get-inventory)))))))
+                          (inventory-miscellaneous (send (world-player w) get-inventory))))
+                   use-consumable (third (inventory-consumables (send (world-player w) get-inventory))))
+             (world-npc w) 'pa 'e (send (third (inventory-consumables (send (world-player w) get-inventory))) get-animation))]
+           [(and (> (length (inventory-consumables (send (world-player w) get-inventory))) 3) (or (key=? k "right") (key=? k "d")))
+            (make-world
+             (send (world-player w) 
+                   clone #:character-inventory
+                   (make-inventory
+                    (inventory-weapon (send (world-player w) get-inventory))
+                    (inventory-equiped (send (world-player w) get-inventory))
+                    (append (rest (rest (rest (inventory-consumables (send (world-player w) get-inventory)))))
+                            (list (first (inventory-consumables (send (world-player w) get-inventory)))
+                                  (second (inventory-consumables (send (world-player w) get-inventory)))
+                                  (third (inventory-consumables (send (world-player w) get-inventory)))))
+                    (inventory-miscellaneous (send (world-player w) get-inventory))))
+             (world-npc w) 'p 'i empty)]
+           [(and (> (length (inventory-consumables (send (world-player w) get-inventory))) 3) (or (key=? k "left") (key=? k "a")))
+            (make-world
+             (send (world-player w) 
+                   clone #:character-inventory
+                   (make-inventory
+                    (inventory-weapon (send (world-player w) get-inventory))
+                    (inventory-equiped (send (world-player w) get-inventory))
+                    (append (list (third (reverse (inventory-consumables (send (world-player w) get-inventory))))
+                                                (second (reverse (inventory-consumables (send (world-player w) get-inventory))))
+                                                (first (reverse (inventory-consumables (send (world-player w) get-inventory)))))
+                                          (reverse (rest (rest (rest (reverse (inventory-consumables (send (world-player w) get-inventory))))))))
+                    (inventory-miscellaneous (send (world-player w) get-inventory))))
+             (world-npc w) 'p 'i empty)]
+           [(or (key=? k "escape") (key=? k "\b"))
+            (make-world (world-player w)                                                
+                        (world-npc w)
+                        'p 'm empty)]
+           [else w])]) w))
 
-
+;; Main ------------------------------------------------------------------------------------------------ 
 
 ;; main
 (define (main w)
