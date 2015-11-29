@@ -1,13 +1,6 @@
 Must do:
- * Using an item should remove it from inventory
- * Make enemy choose actions other than just attacking
- * Menu-based combat
-   * Create keyboard menus
-   * Write key handler for menu item selection
  * Player animations
- * View inventory
  * Make animation for heal
- * Make animation for light ray
  * Startup screen
    * splash screen graphic
    * key handling for starting game
@@ -31,3 +24,11 @@ Nice to have:
  * Add additional types of enemy
  * Improve/replace background
  * More spells
+
+Done:
+ * Using an item should remove it from inventory
+ * Make enemy choose actions other than just attacking
+ * Menu-based combat
+   * Create keyboard menus
+   * Write key handler for menu item selection
+   * View inventory
