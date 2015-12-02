@@ -176,12 +176,8 @@
 (define PLAYER
   (new player%
        [name "You"] [health 500] [max-health 500] [base-agility 1]
-       [agility 1] [base-strength 5] [strength 5] [spells (list HEAL DOOM-ROCK HEAL 
-                                                                DOOM-ROCK HEAL DOOM-ROCK 
-                                                                HEAL HEAL HEAL)]
-       [character-inventory (make-inventory SWORD empty (list MAGIC-POTION HEALING-POTION MAGIC-POTION
-                                                              HEALING-POTION MAGIC-POTION HEALING-POTION
-                                                              MAGIC-POTION MAGIC-POTION MAGIC-POTION) empty)]
+       [agility 1] [base-strength 5] [strength 5] [spells (list HEAL DOOM-ROCK)]
+       [character-inventory (make-inventory SWORD empty (list MAGIC-POTION HEALING-POTION) empty)]
        [weakness 'none] [resistance 'none]
        [animation (make-animation (flip-horizontal (bitmap/file "knight_standby.png"))
                                   (flip-horizontal (bitmap/file "knight_attack.png"))
