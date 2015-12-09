@@ -18,7 +18,6 @@ Really want to do:
  * Make different images for enemy
 
 Nice to have:
- * Character selection at beginning of game
  * Add additional types of enemy
  * Improve/replace background
  * More spells
@@ -34,3 +33,4 @@ Done:
    * key handling for starting game
 * End-game screen:
    * key handling for restarting game
+ * Character selection at beginning of game
