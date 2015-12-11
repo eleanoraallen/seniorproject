@@ -29,10 +29,15 @@
                            (text "2) Mage" 40 'black)
                            (text "3) Spellsword" 40 'black))
                           (rectangle 810 630 'solid 'gray))]
-    [(combat? w) (render-combat w)]))
+    [(combat? w) (render-combat w)]
+    [(dungeon? w) (render-dungeon w)]))
 
 ;; tock: game --> game
-(define (tock w) (if (or (image? w) (string? w)) w (combat-tock w)))
+(define (tock w) 
+  (cond
+    [(or (image? w) (string? w)) w]
+    [(combat? w) (combat-tock w)]
+    [(dungeon? w) (dungeon-tock w)]))
 
 ;; handle-key : game --> game
 (define (handle-key w k)
@@ -49,7 +54,8 @@
        [(key=? k "2") (make-combat MAGE NPC 'p 'm empty)]
        [(key=? k "3") (make-combat SPELLSWORD NPC 'p 'm empty)]
        [else w])]
-    [else (handle-combat-key w k)]))
+    [(combat? w) (handle-combat-key w k)]
+    [(dungeon? w) (handle-dungeon-key w k)]))
 
 ;; main
 (define (main w)
@@ -60,4 +66,4 @@
 
 ;; -----------------------------------------------------------------------------------
 ;; run
-(main (overlay (text "Press Enter to Play" 50 'black) (rectangle 810 630 'solid 'gray)))
+(main TESTDUNGEON1)
