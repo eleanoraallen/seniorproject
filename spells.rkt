@@ -61,7 +61,7 @@
 (define EVIL-DOOM-ROCK
   (make-spell
    'player
-   "Doom Rock"
+   "Evil Doom Rock"
    "-100 spell damage"
    (lambda (c)
      (new player%
@@ -76,25 +76,6 @@
           [map-animation (send c get-map-animation)] [level (send c get-level)] 
           [max-mp (send c get-max-mp)] [mp (send c get-mp)]
           [current-xp (send c get-current-xp)]))
-   (list (flip-horizontal (bitmap/file "doomrock1.png"))
-         (flip-horizontal (bitmap/file "doomrock2.png"))
-         (flip-horizontal (bitmap/file "doomrock3.png"))
-         (flip-horizontal (bitmap/file "doomrock4.png"))
-         (flip-horizontal (bitmap/file "doomrock5.png"))
-         (flip-horizontal (bitmap/file "doomrock6.png"))
-         (flip-horizontal (bitmap/file "doomrock7.png"))
-         (flip-horizontal (bitmap/file "doomrock8.png"))
-         (flip-horizontal (bitmap/file "doomrock9.png"))
-         (flip-horizontal (bitmap/file "doomrock10.png"))
-         (flip-horizontal (bitmap/file "doomrock11.png"))
-         (flip-horizontal (bitmap/file "doomrock12.png"))
-         (flip-horizontal (bitmap/file "doomrock13.png"))
-         (flip-horizontal (bitmap/file "doomrock14.png"))
-         (flip-horizontal (bitmap/file "doomrock15.png"))
-         (flip-horizontal (bitmap/file "doomrock16.png"))
-         (flip-horizontal (bitmap/file "doomrock17.png"))
-         (flip-horizontal (bitmap/file "doomrock18.png"))
-         (flip-horizontal (bitmap/file "doomrock19.png"))
-         (flip-horizontal (bitmap/file "doomrock20.png")))
+   (make-list 5 (text "Evil Spell" 10 'black))
    10
    (bitmap/file "doom-rock.png")))

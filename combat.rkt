@@ -589,18 +589,6 @@
     [(eq? p 'ps) (animation-cast a)]
     [else (animation-standby a)]))
 
-;; combat-tock : combat --> combat
-(define (combat-tock w)
-  (cond
-    [(not (empty? (combat-loi w))) (make-combat (combat-player w) (combat-npc w) (combat-phase w) 'e (rest (combat-loi w)))]
-    [(send (combat-player w) dead?) (overlay (above (text "You Died!" 50 'black) (text "Press Enter to replay" 40 'black)) (rectangle 810 630 'solid 'gray))]
-    [(send (combat-npc w) dead?) (overlay (above (text "You Win!" 50 'black) (text "Press Enter to replay" 40 'black)) (rectangle 810 630 'solid 'gray))]
-    [(symbol=? (combat-phase w) 'e) (npc-action w)]
-    [(and (symbol=? (combat-phase w) 'ea) (empty? (combat-loi w))) (make-combat (combat-player w) (combat-npc w) 'p 'm empty)]
-    [(and (symbol=? (combat-phase w) 'pa) (empty? (combat-loi w))) (make-combat (combat-player w) (combat-npc w) 'e 'e empty)]
-    [(and (symbol=? (combat-phase w) 'ps) (empty? (combat-loi w))) (make-combat (combat-player w) (combat-npc w) 'e 'e empty)]
-    [else w]))
-
 ;; npc-action : combat --> combat
 ;; makes the npc take an action
 (define (npc-action w)
