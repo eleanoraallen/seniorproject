@@ -17,7 +17,7 @@
                       [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
                       [resistance (send c get-resistance)] [animation (send c get-animation)]
                       [position (send c get-position)] [map-animation (send c get-map-animation)]
-                      [level (send c get-level)] [max-mp (send c get-max-mp)] 
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
                       [mp (send c get-max-mp)] [current-xp (send c get-current-xp)]))]
        [animation (list (circle 10 'solid 'orange) (circle 9 'solid 'orange) (circle 8 'solid 'orange) 
                         (circle 7 'solid 'orange) (circle 6 'solid 'orange) (circle 5 'solid 'orange))]
@@ -38,7 +38,7 @@
                       [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
                       [resistance (send c get-resistance)] [animation (send c get-animation)]
                       [position (send c get-position)]  [map-animation (send c get-map-animation)]
-                      [level (send c get-level)] [max-mp (send c get-max-mp)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
                       [mp (send c get-mp)] [current-xp (send c get-current-xp)]))]
        [animation (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
                         (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green))]
@@ -57,8 +57,8 @@
                       [strength (send c get-strength)] [spells (send c get-spells)]
                       [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
                       [resistance (send c get-resistance)] [animation (send c get-animation)]
-                      [position (send c get-position)] [map-animation (send c get-map-animation)] 
-                      [xp-award (send c get-xp-award)]))]
+                      [position (send c get-position)] [dir (send c get-dir)] 
+                      [map-animation (send c get-map-animation)] [xp-award (send c get-xp-award)]))]
        [animation (list (circle 10 'solid 'orange) (circle 9 'solid 'orange) (circle 8 'solid 'orange) 
                         (circle 7 'solid 'orange) (circle 6 'solid 'orange) (circle 5 'solid 'orange))]
        [number 1]))
@@ -80,3 +80,14 @@
        [weapon-accuracy 1]
        [type 'wood]
        [image (square 20 'solid 'white)]))
+
+;; Gold --------------------------------------------------------------------------------------------------
+;; add-gold number --> makes n many gold
+(define (add-gold n)
+  (new gold%
+       [name "gold"]
+       [description "The coin of the relm."]
+       [image (circle 10 'solid 'gold)]
+       [number n]))
+  
+       

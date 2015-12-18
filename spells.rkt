@@ -8,19 +8,19 @@
 (define HEAL
   (make-spell
    'player
-   "heal" "+ 50 health"
+   "heal" "+ 100 health"
    (lambda (c)
      (new player%
           [name (send c get-name)]
-          [health (if (>= (+ 50 (send c get-health)) (send c get-max-health))
-                      (send c get-max-health) (+ 50 (send c get-health)))]
+          [health (if (>= (+ 100 (send c get-health)) (send c get-max-health))
+                      (send c get-max-health) (+ 100 (send c get-health)))]
           [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
           [agility (send c get-agility)] [base-strength (send c get-base-strength)]
           [strength (send c get-strength)] [spells (send c get-spells)]
           [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
           [resistance (send c get-resistance)] [animation (send c get-animation)]
           [position (send c get-position)] [map-animation (send c get-map-animation)]
-          [level (send c get-level)] [max-mp (send c get-max-mp)]
+          [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
           [mp (send c get-mp)] [current-xp (send c get-current-xp)]))
    (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
          (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green))
@@ -32,18 +32,19 @@
   (make-spell
    'npc
    "Doom Rock"
-   "Deal 100 rock damage"
+   "Deal 250 rock damage"
    (lambda (c)
      (new npc%
           [name (send c get-name)] 
-          [health (if (>= 100 (send c get-health)) 0 (- (send c get-health) 100))] 
+          [health (if (>= 125 (send c get-health)) 0 (- (send c get-health) 250))] 
           [max-health (send c get-max-health)]
           [base-agility (send c get-base-agility)] [agility (send c get-agility)]
           [base-strength (send c get-base-strength)] [strength (send c get-strength)]
           [spells (send c get-spells)] [character-inventory (send c get-inventory)]
           [weakness (send c get-weakness)] [resistance (send c get-resistance)]
           [animation (send c get-animation)] [position (send c get-position)] 
-          [map-animation (send c get-map-animation)] [xp-award (send c get-xp-award)]))
+          [map-animation (send c get-map-animation)] [dir (send c get-dir)] 
+          [xp-award (send c get-xp-award)]))
    (list (bitmap/file "doomrock1.png") (bitmap/file "doomrock2.png")
          (bitmap/file "doomrock3.png") (bitmap/file "doomrock4.png")
          (bitmap/file "doomrock5.png") (bitmap/file "doomrock6.png")
@@ -73,8 +74,8 @@
           [spells (send c get-spells)] [character-inventory (send c get-inventory)]
           [weakness (send c get-weakness)] [resistance (send c get-resistance)]
           [animation (send c get-animation)] [position (send c get-position)]
-          [map-animation (send c get-map-animation)] [level (send c get-level)] 
-          [max-mp (send c get-max-mp)] [mp (send c get-mp)]
+          [map-animation (send c get-map-animation)] [dir (send c get-dir)] 
+          [level (send c get-level)] [max-mp (send c get-max-mp)] [mp (send c get-mp)]
           [current-xp (send c get-current-xp)]))
    (make-list 5 (text "Evil Spell" 10 'black))
    10

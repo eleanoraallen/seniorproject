@@ -44,7 +44,7 @@
 
 (define TILES1 (list
                 (list B B B B B B B B B B B B B B B B B B B B B B B B)
-                (list B W W B W W W W B W W W B W W B B B B B W W W B)
+                (list B W W B W W W W B W W W B W W W W B B B W W W B)
                 (list B W B B W B B W W W B W B W B B W W W W W B W B)
                 (list B W B B W W B B B B B W W W W W W B W B B B W B)
                 (list B W B B B W B W W W W W B W B B B B W B W B W B)
@@ -73,154 +73,14 @@
 ;; the posn is the position in the room to which the portal leads
 (define-struct portal (name position))
 
-;; a dungen is a (make-dungeon player list-of-rooms loi)
-(define-struct dungeon (player rooms images))
+;; a dungen is a (make-dungeon player list-of-rooms loi menu)
+(define-struct dungeon (player rooms images name))
 
-(define TESTDUNGEON1 (make-dungeon SPELLSWORD (list TESTROOM1) empty))
+(define TESTDUNGEON1 (make-dungeon SPELLSWORD (list TESTROOM1) empty "test_dungeon_1"))
 
-;; RENDER -----------------------------------------------------------------------
-(define (render-dungeon d)
-  (overlay
-   (if (empty? (dungeon-images d)) (square 0 'solid 'blue) (first (dungeon-images d)))
-   (render-room (send (dungeon-player d) get-position)
-                (send (dungeon-player d) get-map-animation)
-                (first (dungeon-rooms d)))))
+;; DUNGEON-DIRECTORY (the list of all the dungeons)
+(define DUNGEON-DIRECTORY (list TESTDUNGEON1))
 
-(define (render-room p a r)
-  (overlay
-   (map-animation-forward-stationary a)
-   (place-image
-    (tiles->image (room-tiles r))
-    (+ 405 (- (/ (image-width (tiles->image (room-tiles r))) 2) (posn-x p)))
-    (+ 315 (- (/ (image-height (tiles->image (room-tiles r))) 2) (posn-y p)))
-    (overlay/align "left" "bottom" (text (room-name r) 15 'red) (rectangle 810 630 'solid 'black)))))
+(define (get-dungeon s) (first (filter (lambda (x) (string=? (dungeon-name x) s)) DUNGEON-DIRECTORY)))
 
-(define (tiles->image t)
-  (cond
-    [(empty? t) (square 0 'solid 'gold)]
-    [(cons? t) (above (render-tile-row (first t))
-                      (tiles->image (rest t)))]))
-
-(define (render-tile-row r)
-  (cond
-    [(empty? r) (square 0 'solid 'red)]
-    [(cons? r) (beside (send (first r) get-image)
-                       (render-tile-row (rest r)))]))
-
-;; TOCK -----------------------------------------------------------------------
-
-;; dungeon-tock : dungeon --> dungeon
-(define (dungeon-tock d)
-  (cond
-    [(empty? (dungeon-images d)) d]
-    [(= 1 (image-height (first (dungeon-images d))))
-     (make-combat (dungeon-player d)
-                  (list-ref (room-possible-encounters (first (dungeon-rooms d)))
-                            (random (length (room-possible-encounters (first (dungeon-rooms d))))))
-                  'p
-                  'm
-                  empty)]
-    [else (make-dungeon (dungeon-player d)
-                        (dungeon-rooms d)
-                        (rest (dungeon-images d)))]))
-
-;; KEY-HANDLING -------------------------------------------------------------------
-
-;; handle-dungeon-key : dungeon --> dungeon
-(define (handle-dungeon-key d k)
-  (if (or
-       (not (empty? (dungeon-images d)))
-       (not (or (key=? k "w") (key=? k "s")
-                (key=? k "a") (key=? k "d"))))
-      d
-      (cond
-        [(> (room-encounter-probability (first (dungeon-rooms d))) (random 1000)) (make-dungeon (dungeon-player d)
-                                                                                                (dungeon-rooms d)
-                                                                                                (append
-                                                                                                 (make-list 20 (overlay
-                                                                                                 (text "An enemy appears!" 20 'black)
-                                                                                                 (rectangle 220 40 'outline 'black)
-                                                                                                 (rectangle 220 40 'solid 'gray)))
-                                                                                                 (list (square 1 'solid 'blue))))]
-        [(and (key=? k "w") (enough-space-above? d)) (make-dungeon 
-                                                      (send (dungeon-player d) clone #:position 
-                                                            (make-posn
-                                                             (posn-x (send (dungeon-player d) get-position))
-                                                             (- (posn-y (send (dungeon-player d) get-position)) PLAYER-SPEED)))
-                                                      (dungeon-rooms d)
-                                                      (dungeon-images d))]
-        [(and (key=? k "s") (enough-space-below? d)) (make-dungeon 
-                                                      (send (dungeon-player d) clone #:position 
-                                                            (make-posn
-                                                             (posn-x (send (dungeon-player d) get-position))
-                                                             (+ (posn-y (send (dungeon-player d) get-position)) PLAYER-SPEED)))
-                                                      (dungeon-rooms d)
-                                                      (dungeon-images d))]
-        [(and (key=? k "a") (enough-space-left? d)) (make-dungeon 
-                                                     (send (dungeon-player d) clone #:position 
-                                                           (make-posn
-                                                            (- (posn-x (send (dungeon-player d) get-position)) PLAYER-SPEED)
-                                                            (posn-y (send (dungeon-player d) get-position))))
-                                                     (dungeon-rooms d)
-                                                     (dungeon-images d))]
-        [(and (key=? k "d") (enough-space-right? d)) (make-dungeon 
-                                                      (send (dungeon-player d) clone #:position 
-                                                            (make-posn
-                                                             (+ (posn-x (send (dungeon-player d) get-position)) PLAYER-SPEED)
-                                                             (posn-y (send (dungeon-player d) get-position))))
-                                                      (dungeon-rooms d)
-                                                      (dungeon-images d))]
-        [else d])))
-
-;; enough-space-above? : dungeon --> boolean
-(define (enough-space-above? d) 
-  (not
-   (or (>= (/ (image-height (map-animation-forward-stationary (send (dungeon-player d) get-map-animation))) 2)
-           (posn-y (send (dungeon-player d) get-position))) 
-       (not (send (get-tile (make-posn (posn-x (send (dungeon-player d) get-position)) (- (posn-y (send (dungeon-player d) get-position))
-                                                                                          (/ (image-height (map-animation-forward-stationary (send (dungeon-player d) get-map-animation))) 2)))
-                            (room-tiles (first (dungeon-rooms d)))) passable?)))))
-
-;; get-tile : posn lolot --> tile
-(define (get-tile p l)
-  (list-ref (list-ref l (round-down (/ (posn-y p) (image-height (send (first (first l)) get-image)))))
-            (round-down (/ (posn-x p) (image-width (send (first (first l)) get-image))))))
-
-;; round-down
-(define (round-down n)
-  (cond
-    [(> 1 n) 0]
-    [else (+ 1 (round-down (- n 1)))]))
-
-;; enough-space-below? : dungeon --> boolean
-(define (enough-space-below? d)
-  (not
-   (or (<= (- (* (image-height (send (first (first (room-tiles (first (dungeon-rooms d))))) get-image))
-                 (length (room-tiles (first (dungeon-rooms d)))))
-              (/ (image-height (map-animation-forward-stationary (send (dungeon-player d) get-map-animation))) 2))
-           (posn-y (send (dungeon-player d) get-position))) 
-       (not (send (get-tile (make-posn (posn-x (send (dungeon-player d) get-position)) (+ (posn-y (send (dungeon-player d) get-position))
-                                                                                          (/ (image-height (map-animation-forward-stationary (send (dungeon-player d) get-map-animation))) 2)))
-                            (room-tiles (first (dungeon-rooms d)))) passable?)))))
-
-;; enough-space-left? : dungeon --> boolean
-(define (enough-space-left? d)
-  (not
-   (or (>= (/ (image-width (map-animation-forward-stationary (send (dungeon-player d) get-map-animation))) 2)
-           (posn-x (send (dungeon-player d) get-position))) 
-       (not (send (get-tile (make-posn (- (posn-x (send (dungeon-player d) get-position))
-                                          (/ (image-width (map-animation-forward-stationary (send (dungeon-player d) get-map-animation))) 2))
-                                       (posn-y (send (dungeon-player d) get-position)))
-                            (room-tiles (first (dungeon-rooms d)))) passable?)))))
-
-;; enough-space-right? : dungeon --> boolean
-(define (enough-space-right? d)
-  (not
-   (or (<= (- (* (image-width (send (first (first (room-tiles (first (dungeon-rooms d))))) get-image))
-                 (length (first (room-tiles (first (dungeon-rooms d))))))
-              (/ (image-width (map-animation-forward-stationary (send (dungeon-player d) get-map-animation))) 2))
-           (posn-x (send (dungeon-player d) get-position))) 
-       (not (send (get-tile (make-posn (+ (posn-x (send (dungeon-player d) get-position))
-                                          (/ (image-width (map-animation-forward-stationary (send (dungeon-player d) get-map-animation))) 2))
-                                       (posn-y (send (dungeon-player d) get-position)))
-                            (room-tiles (first (dungeon-rooms d)))) passable?)))))
+(define (get-room d s) (first (filter (lambda (x) (string=? (room-name x) s)) (dungeon-rooms d))))
