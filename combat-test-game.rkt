@@ -234,7 +234,10 @@
 ;; renders a dungeon as an image
 (define (render-dungeon d)
   (overlay
-   (if (empty? (dungeon-images d)) (square 0 'solid 'blue) (first (dungeon-images d)))
+   (if (empty? (dungeon-images d)) (square 0 'solid 'blue) 
+       (if (= (image-height (first (dungeon-images d))) 1)
+           (rectangle 810 630 'solid 'black)
+           (first (dungeon-images d))))
    (render-room (send (dungeon-player d) get-position)
                 (send (dungeon-player d) get-dir)
                 (send (dungeon-player d) get-map-animation)
@@ -313,11 +316,11 @@
 
 ;; construct-dungeon : combat --> dungeon
 (define (construct-dungeon c)
-  (make-dungeon (send (combat-player c) clone 
+  (make-dungeon (send (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)) clone 
                       #:character-inventory (merge-inventories (send (combat-player c) get-inventory)
                                                                (send (combat-npc c) get-inventory))
-                      #:current-xp (+ (send (combat-player c) get-current-xp)
-                                      (send (combat-npc c) get-xp-award)))
+                      #:agility (send (combat-player c) get-base-agility)
+                      #:strength (send (combat-player c) get-base-strength))
                 (cons (get-room (get-dungeon (combat-dungeon-name c)) (combat-room-name c))
                       (filter (lambda (x) (not (string=? (room-name x) (combat-room-name c))))
                               (dungeon-rooms (get-dungeon (combat-dungeon-name c)))))
@@ -329,9 +332,15 @@
                                                      (number->string (send (combat-npc c) get-xp-award))
                                                      " XP") 20 'black)
                                 (text " " 20 'black)
-                                (text "You looted:" 20 'black)
-                                (text " " 15 'black)
-                                (loi->image (inventory-miscellaneous (send (combat-npc c) get-inventory))))
+                                (text "Loot Gained:" 30 'black)
+                                (loi->image (inventory-miscellaneous (send (combat-npc c) get-inventory)))
+                                (if (leveled-up? (combat-player c) (send (combat-npc c) get-xp-award))
+                                    (above 
+                                     (text "" 20 'black)
+                                     (text "Leveled Up!" 30 'black)
+                                           (text (string-append "Lvl. " (number->string (send (combat-player c) get-level))
+                                                                " --> Lvl. " (number->string (send (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)) get-level))) 20 'black))
+                                    (square 0 'solid 'blue)))
                                (rectangle 810 630 'solid 'gray))) (combat-dungeon-name c)))
 
 ;; merge-invintories : invintory invintory --> invintory

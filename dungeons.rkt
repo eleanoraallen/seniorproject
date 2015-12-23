@@ -11,7 +11,7 @@
          (struct-out dungeon)
          (all-defined-out))
 
-(define PLAYER-SPEED 15)
+(define PLAYER-SPEED 20)
 ;; ----------------------------------------------------------------------------
 (define base-tile<%>
   (interface ()

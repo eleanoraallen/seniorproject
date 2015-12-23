@@ -68,7 +68,7 @@
   (new weapon%
        [name "Steel Sword"]
        [description "A sturdy steel sword."]
-       [weapon-damage 100]
+       [weapon-damage 10]
        [weapon-accuracy .95]
        [type 'metal]
        [image (square 20 'solid 'white)]))

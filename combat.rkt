@@ -166,7 +166,7 @@
     (define/public (use-consumable c)
       ((send c get-effect) this))
     (define/public (apply-attack attacker-accuracy attacker-damage weapon-type)
-      (send this clone #:health (- health (if (attack-landed? base-agility attacker-accuracy)
+      (send this clone #:health (- health (if (attack-landed? agility attacker-accuracy)
                                               (damage-character this attacker-damage weapon-type) 0))))))
 
 ;; attack-landed? : num num --> bool
