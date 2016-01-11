@@ -338,8 +338,8 @@
                                     (above 
                                      (text "" 20 'black)
                                      (text "Leveled Up!" 30 'black)
-                                           (text (string-append "Lvl. " (number->string (send (combat-player c) get-level))
-                                                                " --> Lvl. " (number->string (send (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)) get-level))) 20 'black))
+                                     (text (string-append "Lvl. " (number->string (send (combat-player c) get-level))
+                                                          " --> Lvl. " (number->string (send (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)) get-level))) 20 'black))
                                     (square 0 'solid 'blue)))
                                (rectangle 810 630 'solid 'gray))) (combat-dungeon-name c)))
 
@@ -672,54 +672,64 @@
 
 ;; handle-dungeon-key : dungeon --> dungeon
 (define (handle-dungeon-key d k)
-  (if (or
-       (not (empty? (dungeon-images d)))
-       (not (or (key=? k "w") (key=? k "s")
-                (key=? k "a") (key=? k "d"))))
-      d
-      (cond
-        ;; maybe initiate combat
-        [(> (room-encounter-probability (first (dungeon-rooms d))) (random 1000))
-         (make-dungeon (dungeon-player d)
-                       (dungeon-rooms d)
-                       (append
-                        (make-list 20 (overlay
-                                       (text "An enemy appears!" 30 'black)
-                                       (rectangle 810 630 'solid 'gray)))
-                        (list (square 1 'solid 'blue))) (dungeon-name d))]
-        [(and (key=? k "w") (enough-space-above? d))
-         (make-dungeon 
-          (send (dungeon-player d) clone #:position 
-                (make-posn
-                 (posn-x (send (dungeon-player d) get-position))
-                 (- (posn-y (send (dungeon-player d) get-position)) PLAYER-SPEED))
-                #:dir 'n)
-          (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
-        [(and (key=? k "s") (enough-space-below? d))
-         (make-dungeon 
-          (send (dungeon-player d) clone #:position 
-                (make-posn
-                 (posn-x (send (dungeon-player d) get-position))
-                 (+ (posn-y (send (dungeon-player d) get-position)) PLAYER-SPEED))
-                #:dir 's)
-          (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
-        [(and (key=? k "a") (enough-space-left? d))
-         (make-dungeon 
-          (send (dungeon-player d) clone #:position 
-                (make-posn
-                 (- (posn-x (send (dungeon-player d) get-position)) PLAYER-SPEED)
-                 (posn-y (send (dungeon-player d) get-position)))
-                #:dir 'w)
-          (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
-        [(and (key=? k "d") (enough-space-right? d))
-         (make-dungeon 
-          (send (dungeon-player d) clone #:position 
-                (make-posn
-                 (+ (posn-x (send (dungeon-player d) get-position)) PLAYER-SPEED)
-                 (posn-y (send (dungeon-player d) get-position)))
-                #:dir 'e)
-          (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
-        [else d])))
+  (cond
+    [(send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) portal?)
+     (make-dungeon
+      (send (dungeon-player d) clone #:position (portal-position (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))
+      (cons (get-room (get-dungeon (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))
+                      (portal-room (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))
+            (filter (lambda (x) (not (string=? (room-name x) (portal-room (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))))
+                    (dungeon-rooms (get-dungeon (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal))))))
+      empty
+      (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))]
+    
+    [(or
+      (not (empty? (dungeon-images d)))
+      (not (or (key=? k "w") (key=? k "s")
+               (key=? k "a") (key=? k "d")))) d]
+    [else
+     (cond
+       [(> (room-encounter-probability (first (dungeon-rooms d))) (random 1000))
+        (make-dungeon (dungeon-player d)
+                      (dungeon-rooms d)
+                      (append
+                       (make-list 20 (overlay
+                                      (text "An enemy appears!" 30 'black)
+                                      (rectangle 810 630 'solid 'gray)))
+                       (list (square 1 'solid 'blue))) (dungeon-name d))]
+       [(and (key=? k "w") (enough-space-above? d))
+        (make-dungeon 
+         (send (dungeon-player d) clone #:position 
+               (make-posn
+                (posn-x (send (dungeon-player d) get-position))
+                (- (posn-y (send (dungeon-player d) get-position)) PLAYER-SPEED))
+               #:dir 'n)
+         (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
+       [(and (key=? k "s") (enough-space-below? d))
+        (make-dungeon 
+         (send (dungeon-player d) clone #:position 
+               (make-posn
+                (posn-x (send (dungeon-player d) get-position))
+                (+ (posn-y (send (dungeon-player d) get-position)) PLAYER-SPEED))
+               #:dir 's)
+         (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
+       [(and (key=? k "a") (enough-space-left? d))
+        (make-dungeon 
+         (send (dungeon-player d) clone #:position 
+               (make-posn
+                (- (posn-x (send (dungeon-player d) get-position)) PLAYER-SPEED)
+                (posn-y (send (dungeon-player d) get-position)))
+               #:dir 'w)
+         (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
+       [(and (key=? k "d") (enough-space-right? d))
+        (make-dungeon 
+         (send (dungeon-player d) clone #:position 
+               (make-posn
+                (+ (posn-x (send (dungeon-player d) get-position)) PLAYER-SPEED)
+                (posn-y (send (dungeon-player d) get-position)))
+               #:dir 'e)
+         (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
+       [else d])]))
 
 ;; enough-space-above? : dungeon --> boolean
 (define (enough-space-above? d) 
