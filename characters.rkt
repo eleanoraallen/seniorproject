@@ -9,7 +9,7 @@
 (define SPELLSWORD
   (new player%
        [name "You"] [health 50] [max-health 50] [base-agility 1]
-       [agility 1] [base-strength 5] [strength 5] [spells (list HEAL DOOM-ROCK)]
+       [agility 1] [base-strength 5] [strength 5] [spells empty]
        [character-inventory (make-inventory SWORD empty (list MAGIC-POTION HEALING-POTION) (list (add-gold 0)))]
        [weakness 'none] [resistance 'none]
        [animation (make-animation (flip-horizontal (bitmap/file "knight_standby.png"))

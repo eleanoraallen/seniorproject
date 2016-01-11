@@ -319,6 +319,7 @@
   (make-dungeon (send (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)) clone 
                       #:character-inventory (merge-inventories (send (combat-player c) get-inventory)
                                                                (send (combat-npc c) get-inventory))
+                      #:spells (get-player-spells (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)))
                       #:agility (send (combat-player c) get-base-agility)
                       #:strength (send (combat-player c) get-base-strength))
                 (cons (get-room (get-dungeon (combat-dungeon-name c)) (combat-room-name c))
@@ -340,8 +341,46 @@
                                      (text "Leveled Up!" 30 'black)
                                      (text (string-append "Lvl. " (number->string (send (combat-player c) get-level))
                                                           " --> Lvl. " (number->string (send (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)) get-level))) 20 'black))
+                                    (square 0 'solid 'blue))
+                                (if (learned-spell? (combat-player c) (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)))
+                                    (above 
+                                     (text "" 20 'black)
+                                     (text "Learned New Spell(s)!" 30 'black)
+                                     (spell-text (subtract-lists (get-player-spells (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)))
+                                                                 (get-player-spells (combat-player c)))))
                                     (square 0 'solid 'blue)))
                                (rectangle 810 630 'solid 'gray))) (combat-dungeon-name c)))
+
+;; spell-text : list-of-spells --> image
+(define (spell-text l)
+  (cond
+    [(empty? l) (circle 0 'solid 'gold)]
+    [(cons? l) (above
+                (text (spell-name (first l)) 20 'black)
+                (spell-text (rest l)))]))
+
+;; subtract-lists : list list --> list
+(define (subtract-lists l1 l2)
+  (cond
+    [(empty? l2) l1]
+    [(cons? l2) (subtract-lists (rest l1) (rest l2))]))
+
+;; learned-spell? player player --> bool
+;; true iff player1 knows a spell player2 doesn't
+(define (learned-spell? p1 p2) (< (length (get-player-spells p1)) (length (get-player-spells p2))))
+
+;; get-player-spells : player --> list
+(define (get-player-spells p) (get-spell-list (send p get-level) SPELL-LIST))
+
+;; get-spell-list : number list --> list
+(define (get-spell-list n l)
+  (cond
+    [(empty? l) empty]
+    [(cons? l)
+     (if (>= n (first (first l)))
+         (cons (second (first l))
+               (get-spell-list n (rest l)))
+         (get-spell-list n (rest l)))]))
 
 ;; merge-invintories : invintory invintory --> invintory
 (define (merge-inventories p n)

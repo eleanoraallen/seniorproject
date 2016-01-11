@@ -58,7 +58,13 @@
    3
    (bitmap/file "doom-rock.png")))
 
-;; Evil Doom Rock
+
+;; a list of lists of spells and their prequisit levels
+(define SPELL-LIST (list (list 3 HEAL)
+                         (list 5 DOOM-ROCK)))
+
+
+;; ENIMY SPELLS ---------------------------------------------------------------------
 (define EVIL-DOOM-ROCK
   (make-spell
    'player
