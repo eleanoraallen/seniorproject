@@ -58,10 +58,35 @@
    3
    (bitmap/file "doom-rock.png")))
 
+;; Gambler's Gambit
+(define GAMBLERS-GAMBIT
+  (make-spell
+   'player
+   "Gambler's Gambit"
+   "x2 Strength, 1/2 Health"
+   (lambda (c)
+     (new player%
+          [name (send c get-name)]
+          [health (if (= (send c get-health) 1) 0
+                      (round (/ (send c get-health) 2)))]
+          [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+          [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+          [strength (round (* 2 (send c get-strength)))] [spells (send c get-spells)]
+          [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+          [resistance (send c get-resistance)] [animation (send c get-animation)]
+          [position (send c get-position)] [map-animation (send c get-map-animation)]
+          [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
+          [mp (send c get-mp)] [current-xp (send c get-current-xp)]))
+   (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
+         (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green))
+   1
+   (bitmap/file "gamblers_gambit.png")))
 
-;; a list of lists of spells and their prequisit levels
+
+;; a list of lists of player spells and their prequisit levels
 (define SPELL-LIST (list (list 3 HEAL)
-                         (list 5 DOOM-ROCK)))
+                         (list 5 DOOM-ROCK)
+                         (list 6 GAMBLERS-GAMBIT)))
 
 
 ;; ENIMY SPELLS ---------------------------------------------------------------------

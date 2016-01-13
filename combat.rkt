@@ -371,7 +371,7 @@
     ))
 
 ;; an inventory is a (make-inventory weapon list-of-equipment list-of-consumables list-of-items)
-(define-struct inventory (weapon equiped consumables miscellaneous))
+(define-struct inventory (weapon equiped equipment consumables miscellaneous))
 
 ;; a spell is a (make-spell target string string effect list-of-images int image)
 (define-struct spell (target name discription effect animation cost image))

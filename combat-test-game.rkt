@@ -233,15 +233,149 @@
 ;; render-dungeon : dungeon --> image
 ;; renders a dungeon as an image
 (define (render-dungeon d)
-  (overlay
-   (if (empty? (dungeon-images d)) (square 0 'solid 'blue) 
-       (if (= (image-height (first (dungeon-images d))) 1)
-           (rectangle 810 630 'solid 'black)
-           (first (dungeon-images d))))
-   (render-room (send (dungeon-player d) get-position)
-                (send (dungeon-player d) get-dir)
-                (send (dungeon-player d) get-map-animation)
-                (first (dungeon-rooms d)))))
+  (if (empty? (dungeon-menu d))
+      (overlay
+       (if (empty? (dungeon-images d)) (square 0 'solid 'blue) 
+           (if (= (image-height (first (dungeon-images d))) 1)
+               (rectangle 810 630 'solid 'black)
+               (first (dungeon-images d))))
+       (render-room (send (dungeon-player d) get-position)
+                    (send (dungeon-player d) get-dir)
+                    (send (dungeon-player d) get-map-animation)
+                    (first (dungeon-rooms d))))
+      (render-dungeon-menu d)))
+
+;; render-dungeon-menu : dungeon --> image
+(define (render-dungeon-menu d)
+  (above (render-tabs (dungeon-menu d))
+         (render-menu-data d)))
+
+;; render-tabs : symbol --> image
+(define (render-tabs m) 
+  (cond
+    [(symbol=? m 'player-info)
+     (overlay (beside (overlay/align "middle" "bottom" 
+                                     (overlay (text "Player Data" 20 'black)
+                                              (rectangle 197 50 'solid 'gray))
+                                     (rectangle 202 55 'solid 'black))
+                      (overlay (text "Items" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black))
+                      (overlay (text "Equipment" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black))
+                      (overlay (text "Spells" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black)))
+              (rectangle 810 55 'solid 'black))]
+    [(symbol=? m 'items)
+     (overlay (beside (overlay (text "Player Data" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black))
+                      (overlay/align "middle" "bottom" 
+                                     (overlay (text "Items" 20 'black)
+                                              (rectangle 197 50 'solid 'gray))
+                                     (rectangle 202 55 'solid 'black))
+                      (overlay (text "Equipment" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black))
+                      (overlay (text "Spells" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black)))
+              (rectangle 810 55 'solid 'black))]
+    [(symbol=? m 'equipment)
+     (overlay (beside (overlay (text "Player Data" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black))
+                      (overlay (text "Items" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black))
+                      (overlay/align "middle" "bottom" 
+                                     (overlay (text "Equipment" 20 'black)
+                                              (rectangle 197 50 'solid 'gray))
+                                     (rectangle 202 55 'solid 'black))
+                      (overlay (text "Spells" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black)))
+              (rectangle 810 55 'solid 'black))]
+    [(symbol=? m 'spells)
+     (overlay (beside (overlay (text "Player Data" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black))
+                      (overlay (text "Items" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black))
+                      (overlay (text "Equipment" 20 'black)
+                               (rectangle 197 45 'solid (make-color 60 60 60))
+                               (rectangle 202 55 'solid 'black))
+                      (overlay/align "middle" "bottom" 
+                                     (overlay (text "Spells" 20 'black)
+                                              (rectangle 197 50 'solid 'gray))
+                                     (rectangle 202 55 'solid 'black)))
+              (rectangle 810 55 'solid 'black))]
+    [else (rectangle 810 55 'solid 'black)]))
+
+;; render-menu-data : dungeon --> image
+(define (render-menu-data d)
+  (cond
+    [(symbol=? (dungeon-menu d) 'player-info)
+     (overlay/align "left" "top"
+                    (beside (rectangle 40 0 'solid 'red)
+                            (above (rectangle 0 30 'solid 'blue)
+                                   (beside
+                                    (above
+                                    (above/align "left"
+                                                 (beside (text (send (dungeon-player d) get-name) 20 'black)
+                                                         (rectangle (- 260 (image-width (text (send (dungeon-player d) get-name) 20 'black))
+                                                                       (image-width (text (string-append "Lvl. " (number->string (send (dungeon-player d) get-level))) 20 'black))) 0 'solid 'black)
+                                                         (text (string-append "Lvl. " (number->string (send (dungeon-player d) get-level))) 20 'black))
+                                                 (rectangle 0 5 'solid 'black)
+                                                 (overlay (bitmap/file "portrait.jpg") (square 260 'solid 'black)))
+                                    (rectangle 0 44 'solid 'black)
+                                                 (text (string-append "Health: " (number->string (send (dungeon-player d) get-health))
+                                                                      "/" (number->string (send (dungeon-player d) get-max-health))) 20 'black)
+                                                 (rectangle 0 20 'solid 'black)
+                                                 (text (string-append "MP: " (number->string (send (dungeon-player d) get-mp))
+                                                                      "/" (number->string (send (dungeon-player d) get-max-mp))) 20 'black)
+                                                 (rectangle 0 20 'solid 'black)
+                                                 (text (string-append "Strength: " (number->string (send (dungeon-player d) get-strength))) 20 'black)
+                                                 (rectangle 0 20 'solid 'black)
+                                                 (text (string-append "Agility: " (number->string (send (dungeon-player d) get-agility))) 20 'black))
+                                    (rectangle 100 0 'solid 'black)
+                                    (above/align "left"
+                                                 (text (string-append "Location: " (dungeon-name d)) 20 'black)
+                                                 (rectangle 0 20 'solid 'black)
+                                                 (text (string-append "Gold: " 
+                                                                      (number->string 
+                                                                       (send (first 
+                                                                              (filter (lambda (x) (string=? (send x get-name) "gold")) 
+                                                                                      (inventory-miscellaneous (send (dungeon-player d) get-inventory))))
+                                                                             get-number))) 20 'black)
+                                                 (rectangle 0 20 'solid 'black)
+                                                 (text (string-append "Items: " (number->string
+                                                                                 (+ (item-number (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                    (length (filter (lambda (x) (not (string=? (send x get-name) "gold"))) 
+                                                                                      (inventory-miscellaneous (send (dungeon-player d) get-inventory)))))))
+                                                       20 'black)
+                                                 (rectangle 0 20 'solid 'black)
+                                                 (text (string-append "Equipment: " (number->string (+ (length (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                       (length (inventory-equiped (send (dungeon-player d) get-inventory)))
+                                                                                                       (if (empty? (inventory-weapon (send (dungeon-player d) get-inventory))) 0 1)))) 20 'black)
+                                                 (rectangle 0 20 'solid 'black)
+                                                 (text (string-append "Spells: " (number->string (length (send (dungeon-player d) get-spells)))) 20 'black)
+                                                 ))))
+                    (overlay/align "middle" "top"
+                                   (rectangle 802 570 'solid 'gray)
+                                   (rectangle 810 575 'solid 'black)))]
+    [else (overlay/align "middle" "top"
+                         (rectangle 802 570 'solid 'gray)
+                         (rectangle 810 575 'solid 'black))]))
+
+;; item-number : list --> number
+(define (item-number l)
+  (cond
+    [(empty? l) 0]
+    [(cons? l) (+ (send (first l) get-number) (item-number (rest l)))]))
 
 
 ;; render-room : position dir animation room --> image
@@ -349,7 +483,7 @@
                                      (spell-text (subtract-lists (get-player-spells (apply-xp (combat-player c) (send (combat-npc c) get-xp-award)))
                                                                  (get-player-spells (combat-player c)))))
                                     (square 0 'solid 'blue)))
-                               (rectangle 810 630 'solid 'gray))) (combat-dungeon-name c)))
+                               (rectangle 810 630 'solid 'gray))) (combat-dungeon-name c) 'empty))
 
 ;; spell-text : list-of-spells --> image
 (define (spell-text l)
@@ -386,6 +520,7 @@
 (define (merge-inventories p n)
   (make-inventory (inventory-weapon p)
                   (inventory-equiped p)
+                  (inventory-equipment p)
                   (inventory-consumables p)
                   (merge-gold
                    (append (inventory-miscellaneous p)
@@ -439,6 +574,7 @@
                   (make-inventory
                    (inventory-weapon (send (combat-npc w) get-inventory))
                    (inventory-equiped (send (combat-npc w) get-inventory))
+                   (inventory-equipment (send (combat-npc w) get-inventory))
                    (if (> (send 
                            (first (inventory-consumables (send (combat-npc w) get-inventory))) get-number) 1)
                        (cons (new consumable% 
@@ -493,7 +629,8 @@
     [else (make-dungeon (dungeon-player d)
                         (dungeon-rooms d)
                         (rest (dungeon-images d))
-                        (dungeon-name d))]))
+                        (dungeon-name d)
+                        empty)]))
 
 ;; HANDLE-KEY -------------------------------------------------------------------------------------------------------------------------
 
@@ -516,11 +653,17 @@
          (cond
            [(key=? k "1") 
             (make-combat 
-             (combat-player w) 
+             (combat-player w)
+             (if 
+              (empty? (inventory-weapon (send (combat-player w) get-inventory)))
+              (send (combat-npc w) apply-attack 
+                   1
+                   (send (combat-player w) get-strength) 
+                   'none)
              (send (combat-npc w) apply-attack 
                    (send (inventory-weapon (send (combat-player w) get-inventory)) get-accuracy)
                    (send (combat-player w) get-damage) 
-                   (send (inventory-weapon (send (combat-player w) get-inventory)) get-type))
+                   (send (inventory-weapon (send (combat-player w) get-inventory)) get-type)))
              'pa 'e (make-list 10 (bitmap/file "blankbackground.png")) (combat-dungeon-name w) (combat-room-name w))]
            [(key=? k "2") 
             (make-combat (combat-player w)
@@ -588,18 +731,14 @@
            [(and (> (length (send (combat-player w) get-spells)) 3) (or (key=? k "right") (key=? k "d")))
             (make-combat
              (send (combat-player w) 
-                   clone #:spells (append (rest (rest (rest (send (combat-player w) get-spells))))
-                                          (list (first (send (combat-player w) get-spells))
-                                                (second (send (combat-player w) get-spells))
-                                                (third (send (combat-player w) get-spells)))))
+                   clone #:spells (append (rest (send (combat-player w) get-spells))
+                                          (list (first (send (combat-player w) get-spells)))))
              (combat-npc w) 'p 's empty (combat-dungeon-name w) (combat-room-name w))]
            [(and (> (length (send (combat-player w) get-spells)) 3) (or (key=? k "left") (key=? k "a")))
             (make-combat
              (send (combat-player w) 
-                   clone #:spells (append (list (third (reverse (send (combat-player w) get-spells)))
-                                                (second (reverse (send (combat-player w) get-spells)))
-                                                (first (reverse (send (combat-player w) get-spells))))
-                                          (reverse (rest (rest (rest (reverse (send (combat-player w) get-spells))))))))
+                   clone #:spells (append (list (first (reverse (send (combat-player w) get-spells))))
+                                          (reverse (rest (send (combat-player w) get-spells)))))
              (combat-npc w) 'p 's empty (combat-dungeon-name w) (combat-room-name w))]
            [(or (key=? k "escape") (key=? k "\b"))
             (make-combat (combat-player w)                                                
@@ -615,6 +754,7 @@
                          (make-inventory
                           (inventory-weapon (send (combat-player w) get-inventory))
                           (inventory-equiped (send (combat-player w) get-inventory))
+                           (inventory-equipment (send (combat-player w) get-inventory))
                           (if (> (send (first (inventory-consumables (send (combat-player w) get-inventory))) get-number) 1)
                               (cons (new consumable% 
                                          [image (send (first (inventory-consumables (send (combat-player w) get-inventory))) get-image)]
@@ -635,6 +775,7 @@
                          (make-inventory
                           (inventory-weapon (send (combat-player w) get-inventory))
                           (inventory-equiped (send (combat-player w) get-inventory))
+                          (inventory-equipment (send (combat-player w) get-inventory))
                           (if (> (send (second (inventory-consumables (send (combat-player w) get-inventory))) get-number) 1)
                               (append
                                (list (first (inventory-consumables (send (combat-player w) get-inventory)))
@@ -658,6 +799,7 @@
                          (make-inventory
                           (inventory-weapon (send (combat-player w) get-inventory))
                           (inventory-equiped (send (combat-player w) get-inventory))
+                           (inventory-equipment (send (combat-player w) get-inventory))
                           (if (> (send (third (inventory-consumables (send (combat-player w) get-inventory))) get-number) 1)
                               (append
                                (list (first (inventory-consumables (send (combat-player w) get-inventory)))
@@ -684,10 +826,9 @@
                    (make-inventory
                     (inventory-weapon (send (combat-player w) get-inventory))
                     (inventory-equiped (send (combat-player w) get-inventory))
-                    (append (rest (rest (rest (inventory-consumables (send (combat-player w) get-inventory)))))
-                            (list (first (inventory-consumables (send (combat-player w) get-inventory)))
-                                  (second (inventory-consumables (send (combat-player w) get-inventory)))
-                                  (third (inventory-consumables (send (combat-player w) get-inventory)))))
+                     (inventory-equipment (send (combat-player w) get-inventory))
+                    (append (rest (inventory-consumables (send (combat-player w) get-inventory)))
+                            (list (first (inventory-consumables (send (combat-player w) get-inventory)))))
                     (inventory-miscellaneous (send (combat-player w) get-inventory))))
              (combat-npc w) 'p 'i empty (combat-dungeon-name w) (combat-room-name w))]
            [(and (> (length (inventory-consumables (send (combat-player w) get-inventory))) 3) (or (key=? k "left") (key=? k "a")))
@@ -697,10 +838,9 @@
                    (make-inventory
                     (inventory-weapon (send (combat-player w) get-inventory))
                     (inventory-equiped (send (combat-player w) get-inventory))
-                    (append (list (third (reverse (inventory-consumables (send (combat-player w) get-inventory))))
-                                  (second (reverse (inventory-consumables (send (combat-player w) get-inventory))))
-                                  (first (reverse (inventory-consumables (send (combat-player w) get-inventory)))))
-                            (reverse (rest (rest (rest (reverse (inventory-consumables (send (combat-player w) get-inventory))))))))
+                     (inventory-equipment (send (combat-player w) get-inventory))
+                    (append (list (first (reverse (inventory-consumables (send (combat-player w) get-inventory)))))
+                            (reverse (rest (reverse (inventory-consumables (send (combat-player w) get-inventory))))))
                     (inventory-miscellaneous (send (combat-player w) get-inventory))))
              (combat-npc w) 'p 'i empty (combat-dungeon-name w) (combat-room-name w))]
            [(or (key=? k "escape") (key=? k "\b"))
@@ -720,8 +860,11 @@
             (filter (lambda (x) (not (string=? (room-name x) (portal-room (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))))
                     (dungeon-rooms (get-dungeon (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal))))))
       empty
-      (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))]
-    
+      (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)) empty)]
+    [(and (not (empty? (dungeon-images d))) (or (key=? k "\r") (key=? k " ")))
+     (make-dungeon (dungeon-player d) (dungeon-rooms d) empty (dungeon-name d) empty)]
+    [(not (empty? (dungeon-menu d))) (handle-menu-key d k)]
+    [(key=? k "escape") (make-dungeon (dungeon-player d) (dungeon-rooms d) empty (dungeon-name d) 'player-info)]
     [(or
       (not (empty? (dungeon-images d)))
       (not (or (key=? k "w") (key=? k "s")
@@ -735,7 +878,7 @@
                        (make-list 20 (overlay
                                       (text "An enemy appears!" 30 'black)
                                       (rectangle 810 630 'solid 'gray)))
-                       (list (square 1 'solid 'blue))) (dungeon-name d))]
+                       (list (square 1 'solid 'blue))) (dungeon-name d) empty)]
        [(and (key=? k "w") (enough-space-above? d))
         (make-dungeon 
          (send (dungeon-player d) clone #:position 
@@ -743,7 +886,7 @@
                 (posn-x (send (dungeon-player d) get-position))
                 (- (posn-y (send (dungeon-player d) get-position)) PLAYER-SPEED))
                #:dir 'n)
-         (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
+         (dungeon-rooms d) (dungeon-images d) (dungeon-name d) empty)]
        [(and (key=? k "s") (enough-space-below? d))
         (make-dungeon 
          (send (dungeon-player d) clone #:position 
@@ -751,7 +894,7 @@
                 (posn-x (send (dungeon-player d) get-position))
                 (+ (posn-y (send (dungeon-player d) get-position)) PLAYER-SPEED))
                #:dir 's)
-         (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
+         (dungeon-rooms d) (dungeon-images d) (dungeon-name d) empty)]
        [(and (key=? k "a") (enough-space-left? d))
         (make-dungeon 
          (send (dungeon-player d) clone #:position 
@@ -759,7 +902,7 @@
                 (- (posn-x (send (dungeon-player d) get-position)) PLAYER-SPEED)
                 (posn-y (send (dungeon-player d) get-position)))
                #:dir 'w)
-         (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
+         (dungeon-rooms d) (dungeon-images d) (dungeon-name d) empty)]
        [(and (key=? k "d") (enough-space-right? d))
         (make-dungeon 
          (send (dungeon-player d) clone #:position 
@@ -767,8 +910,66 @@
                 (+ (posn-x (send (dungeon-player d) get-position)) PLAYER-SPEED)
                 (posn-y (send (dungeon-player d) get-position)))
                #:dir 'e)
-         (dungeon-rooms d) (dungeon-images d) (dungeon-name d))]
+         (dungeon-rooms d) (dungeon-images d) (dungeon-name d) empty)]
        [else d])]))
+
+;; handle-menu-key : dungeon, keyevent --> dungeon
+(define (handle-menu-key d k)
+  (cond
+    [(key=? k "escape") (make-dungeon (dungeon-player d) (dungeon-rooms d) empty (dungeon-name d) empty)]
+    [(symbol=? (dungeon-menu d) 'player-info) (cond [(key=? k "right") (make-dungeon
+                                                                        (dungeon-player d)
+                                                                        (dungeon-rooms d)
+                                                                        empty
+                                                                        (dungeon-name d)
+                                                                        'items)]
+                                                    [(key=? k "left") (make-dungeon
+                                                                       (dungeon-player d)
+                                                                       (dungeon-rooms d)
+                                                                       empty
+                                                                       (dungeon-name d)
+                                                                       'spells)]
+                                                    [else d])]
+    [(symbol=? (dungeon-menu d) 'items) (cond [(key=? k "right") (make-dungeon
+                                                                  (dungeon-player d)
+                                                                  (dungeon-rooms d)
+                                                                  empty
+                                                                  (dungeon-name d)
+                                                                  'equipment)]
+                                              [(key=? k "left") (make-dungeon
+                                                                 (dungeon-player d)
+                                                                 (dungeon-rooms d)
+                                                                 empty
+                                                                 (dungeon-name d)
+                                                                 'player-info)]
+                                              [else d])]
+    [(symbol=? (dungeon-menu d) 'equipment) (cond [(key=? k "right") (make-dungeon
+                                                                      (dungeon-player d)
+                                                                      (dungeon-rooms d)
+                                                                      empty
+                                                                      (dungeon-name d)
+                                                                      'spells)]
+                                                  [(key=? k "left") (make-dungeon
+                                                                     (dungeon-player d)
+                                                                     (dungeon-rooms d)
+                                                                     empty
+                                                                     (dungeon-name d)
+                                                                     'items)]
+                                                  [else d])]
+    [(symbol=? (dungeon-menu d) 'spells) (cond [(key=? k "right") (make-dungeon
+                                                                   (dungeon-player d)
+                                                                   (dungeon-rooms d)
+                                                                   empty
+                                                                   (dungeon-name d)
+                                                                   'player-info)]
+                                               [(key=? k "left") (make-dungeon
+                                                                  (dungeon-player d)
+                                                                  (dungeon-rooms d)
+                                                                  empty
+                                                                  (dungeon-name d)
+                                                                  'equipment)]
+                                               [else d])]
+    [else d]))
 
 ;; enough-space-above? : dungeon --> boolean
 (define (enough-space-above? d) 

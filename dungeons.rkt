@@ -114,11 +114,18 @@
 (define TESTROOM2 (make-room "test room 2" TILES2 5 (list NPC)))
 (define TESTROOM3 (make-room "test room 3" TILES3 5 (list NPC)))
 
-;; a dungen is a (make-dungeon player list-of-rooms loi menu)
-(define-struct dungeon (player rooms images name))
+;; a menu one of:
+;; - empty
+;; - 'player-info
+;; - 'items
+;; - 'equipment
+;; - 'spells
 
-(define TESTDUNGEON1 (make-dungeon SPELLSWORD (list TESTROOM1 TESTROOM2) empty "test_dungeon_1"))
-(define TESTDUNGEON2 (make-dungeon SPELLSWORD (list TESTROOM3) empty "test_dungeon_2"))
+;; a dungeon is a (make-dungeon player list-of-rooms loi menu)
+(define-struct dungeon (player rooms images name menu))
+
+(define TESTDUNGEON1 (make-dungeon SPELLSWORD (list TESTROOM1 TESTROOM2) empty "test_dungeon_1" empty))
+(define TESTDUNGEON2 (make-dungeon SPELLSWORD (list TESTROOM3) empty "test_dungeon_2" empty))
 
 ;; DUNGEON-DIRECTORY (the list of all the dungeons)
 (define DUNGEON-DIRECTORY (list TESTDUNGEON1 TESTDUNGEON2))
