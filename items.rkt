@@ -85,7 +85,7 @@
 ;; add-gold number --> makes n many gold
 (define (add-gold n)
   (new gold%
-       [name "gold"]
+       [name "Gold"]
        [description "The coin of the relm."]
        [image (circle 10 'solid 'gold)]
        [number n]))

@@ -10,7 +10,7 @@
   (new player%
        [name "You"] [health 50] [max-health 50] [base-agility 1]
        [agility 1] [base-strength 5] [strength 5] [spells empty]
-       [character-inventory (make-inventory SWORD empty empty (list MAGIC-POTION HEALING-POTION) (list (add-gold 0)))]
+       [character-inventory (make-inventory SWORD empty empty (list MAGIC-POTION HEALING-POTION) (list (add-gold 5)))]
        [weakness 'none] [resistance 'none]
        [animation (make-animation (flip-horizontal (bitmap/file "knight_standby.png"))
                                   (flip-horizontal (bitmap/file "knight_attack.png"))
@@ -30,7 +30,7 @@
        [name "Enemy"] [health 25] [max-health 25] 
        [base-agility .95] [agility 1] [base-strength 0]
        [strength 0] [spells (list EVIL-DOOM-ROCK)]
-       [character-inventory (make-inventory STAFF empty empty (list HEALING-PHILTER) (list (add-gold 10) SWORD STAFF))]
+       [character-inventory (make-inventory STAFF empty (list SWORD) (list HEALING-PHILTER) (list (add-gold 10)))]
        [weakness 'fire] [resistance 'ice]
        [animation (make-animation (bitmap/file "knight_standby.png")
                                   (bitmap/file "knight_attack.png")
