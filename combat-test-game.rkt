@@ -1089,30 +1089,131 @@
   (cond
     [(key=? k "escape") (make-dungeon (dungeon-player d) (dungeon-rooms d) empty (dungeon-name d) empty)]
     [(symbol=? (dungeon-menu d) 'player-info) (cond [(key=? k "d") (make-dungeon
-                                                                        (dungeon-player d)
-                                                                        (dungeon-rooms d)
-                                                                        empty
-                                                                        (dungeon-name d)
-                                                                        'items)]
+                                                                    (dungeon-player d)
+                                                                    (dungeon-rooms d)
+                                                                    empty
+                                                                    (dungeon-name d)
+                                                                    'items)]
                                                     [(key=? k "a") (make-dungeon
-                                                                       (dungeon-player d)
-                                                                       (dungeon-rooms d)
-                                                                       empty
-                                                                       (dungeon-name d)
-                                                                       'spells)]
+                                                                    (dungeon-player d)
+                                                                    (dungeon-rooms d)
+                                                                    empty
+                                                                    (dungeon-name d)
+                                                                    'spells)]
                                                     [else d])]
     [(symbol=? (dungeon-menu d) 'items) (cond [(key=? k "d") (make-dungeon
-                                                                  (dungeon-player d)
-                                                                  (dungeon-rooms d)
-                                                                  empty
-                                                                  (dungeon-name d)
-                                                                  'equipment)]
+                                                              (dungeon-player d)
+                                                              (dungeon-rooms d)
+                                                              empty
+                                                              (dungeon-name d)
+                                                              'equipment)]
                                               [(key=? k "a") (make-dungeon
-                                                                 (dungeon-player d)
-                                                                 (dungeon-rooms d)
-                                                                 empty
-                                                                 (dungeon-name d)
-                                                                 'player-info)]
+                                                              (dungeon-player d)
+                                                              (dungeon-rooms d)
+                                                              empty
+                                                              (dungeon-name d)
+                                                              'player-info)]
+                                              [(and (>= (length (inventory-consumables (send (dungeon-player d) get-inventory))) 1) (key=? k "1"))
+                                               (make-dungeon (send (send (dungeon-player d) use-consumable (first (inventory-consumables (send (dungeon-player d) get-inventory)))) clone 
+                                                                   #:character-inventory
+                                                                   (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                   (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                   (inventory-equipment (send (dungeon-player d) get-inventory))
+                                                                                   (if (<= (send (first (inventory-consumables (send (dungeon-player d) get-inventory))) get-number) 1)
+                                                                                       (rest (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                       (cons (new consumable% 
+                                                                                                  [image (send (first (inventory-consumables (send (dungeon-player d) get-inventory))) get-image)]
+                                                                                                  [name (send (first (inventory-consumables (send (dungeon-player d) get-inventory))) get-name)]
+                                                                                                  [description (send (first (inventory-consumables (send (dungeon-player d) get-inventory))) get-description)]
+                                                                                                  [effect (send (first (inventory-consumables (send (dungeon-player d) get-inventory))) get-effect)]
+                                                                                                  [animation (send (first (inventory-consumables (send (dungeon-player d) get-inventory))) get-animation)]
+                                                                                                  [number (- (send (first (inventory-consumables (send (dungeon-player d) get-inventory))) get-number) 1)])
+                                                                                             (rest (inventory-consumables (send (dungeon-player d) get-inventory)))))
+                                                                                   (inventory-miscellaneous (send (dungeon-player d) get-inventory))))
+                                                             (dungeon-rooms d)
+                                                             empty
+                                                             (dungeon-name d)
+                                                             'items)]
+                                              [(and (>= (length (inventory-consumables (send (dungeon-player d) get-inventory))) 2) (key=? k "2"))
+                                               (make-dungeon (send (send (dungeon-player d) use-consumable (first (inventory-consumables (send (dungeon-player d) get-inventory)))) clone 
+                                                                   #:character-inventory
+                                                                   (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                   (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                   (inventory-equipment (send (dungeon-player d) get-inventory))
+                                                                                   (if (<= (send (second (inventory-consumables (send (dungeon-player d) get-inventory))) get-number) 1)
+                                                                                       (cons (first (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                             (rest (rest (inventory-consumables (send (dungeon-player d) get-inventory)))))
+                                                                                       (append 
+                                                                                        (list (first (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                              (new consumable% 
+                                                                                                   [image (send (second (inventory-consumables (send (dungeon-player d) get-inventory))) get-image)]
+                                                                                                   [name (send (second (inventory-consumables (send (dungeon-player d) get-inventory))) get-name)]
+                                                                                                   [description (send (second (inventory-consumables (send (dungeon-player d) get-inventory))) get-description)]
+                                                                                                   [effect (send (second (inventory-consumables (send (dungeon-player d) get-inventory))) get-effect)]
+                                                                                                   [animation (send (second (inventory-consumables (send (dungeon-player d) get-inventory))) get-animation)]
+                                                                                                   [number (- (send (second (inventory-consumables (send (dungeon-player d) get-inventory))) get-number) 1)]))
+                                                                                        (rest (rest (inventory-consumables (send (dungeon-player d) get-inventory))))))
+                                                                                   (inventory-miscellaneous (send (dungeon-player d) get-inventory))))
+                                                             (dungeon-rooms d)
+                                                             empty
+                                                             (dungeon-name d)
+                                                             'items)]
+                                              [(and (>= (length (inventory-consumables (send (dungeon-player d) get-inventory))) 3) (key=? k "3"))
+                                               (make-dungeon (send (send (dungeon-player d) use-consumable (first (inventory-consumables (send (dungeon-player d) get-inventory)))) clone 
+                                                                   #:character-inventory
+                                                                   (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                   (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                   (inventory-equipment (send (dungeon-player d) get-inventory))
+                                                                                   (if (<= (send (third (inventory-consumables (send (dungeon-player d) get-inventory))) get-number) 1)
+                                                                                       (append
+                                                                                        (list (first (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                              (second (inventory-consumables (send (dungeon-player d) get-inventory))))
+                                                                                        (rest (rest (inventory-consumables (send (dungeon-player d) get-inventory)))))
+                                                                                       (append 
+                                                                                        (list (first (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                              (second (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                              (new consumable% 
+                                                                                                   [image (send (third (inventory-consumables (send (dungeon-player d) get-inventory))) get-image)]
+                                                                                                   [name (send (third (inventory-consumables (send (dungeon-player d) get-inventory))) get-name)]
+                                                                                                   [description (send (third (inventory-consumables (send (dungeon-player d) get-inventory))) get-description)]
+                                                                                                   [effect (send (third (inventory-consumables (send (dungeon-player d) get-inventory))) get-effect)]
+                                                                                                   [animation (send (third (inventory-consumables (send (dungeon-player d) get-inventory))) get-animation)]
+                                                                                                   [number (- (send (third (inventory-consumables (send (dungeon-player d) get-inventory))) get-number) 1)]))
+                                                                                        (rest (rest (rest (inventory-consumables (send (dungeon-player d) get-inventory)))))))
+                                                                                   (inventory-miscellaneous (send (dungeon-player d) get-inventory))))
+                                                             (dungeon-rooms d)
+                                                             empty
+                                                             (dungeon-name d)
+                                                             'items)]
+                                              [(and (>= (length (inventory-consumables (send (dungeon-player d) get-inventory))) 4) (key=? k "4"))
+                                               (make-dungeon (send (send (dungeon-player d) use-consumable (first (inventory-consumables (send (dungeon-player d) get-inventory)))) clone 
+                                                                   #:character-inventory
+                                                                   (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                   (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                   (inventory-equipment (send (dungeon-player d) get-inventory))
+                                                                                   (if (<= (send (fourth (inventory-consumables (send (dungeon-player d) get-inventory))) get-number) 1)
+                                                                                       (append
+                                                                                        (list (first (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                              (second (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                              (third (inventory-consumables (send (dungeon-player d) get-inventory))))
+                                                                                        (rest (rest (rest (rest (inventory-consumables (send (dungeon-player d) get-inventory)))))))
+                                                                                       (append 
+                                                                                        (list (first (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                              (second (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                              (third (inventory-consumables (send (dungeon-player d) get-inventory)))
+                                                                                              (new consumable% 
+                                                                                                   [image (send (fourth (inventory-consumables (send (dungeon-player d) get-inventory))) get-image)]
+                                                                                                   [name (send (fourth (inventory-consumables (send (dungeon-player d) get-inventory))) get-name)]
+                                                                                                   [description (send (fourth (inventory-consumables (send (dungeon-player d) get-inventory))) get-description)]
+                                                                                                   [effect (send (fourth (inventory-consumables (send (dungeon-player d) get-inventory))) get-effect)]
+                                                                                                   [animation (send (fourth (inventory-consumables (send (dungeon-player d) get-inventory))) get-animation)]
+                                                                                                   [number (- (send (fourth (inventory-consumables (send (dungeon-player d) get-inventory))) get-number) 1)]))
+                                                                                        (rest (rest (rest (rest (inventory-consumables (send (dungeon-player d) get-inventory))))))))
+                                                                                   (inventory-miscellaneous (send (dungeon-player d) get-inventory))))
+                                                             (dungeon-rooms d)
+                                                             empty
+                                                             (dungeon-name d)
+                                                             'items)]
                                               [(and (>= (length (inventory-consumables (send (dungeon-player d) get-inventory))) 5) (key=? k "w"))
                                                (make-dungeon (send (dungeon-player d) clone #:character-inventory (make-inventory
                                                                                                                    (inventory-weapon (send (dungeon-player d) get-inventory))
@@ -1139,30 +1240,30 @@
                                                              'items)]
                                               [else d])]
     [(symbol=? (dungeon-menu d) 'equipment) (cond [(key=? k "d") (make-dungeon
-                                                                      (dungeon-player d)
-                                                                      (dungeon-rooms d)
-                                                                      empty
-                                                                      (dungeon-name d)
-                                                                      'spells)]
-                                                  [(key=? k "a") (make-dungeon
-                                                                     (dungeon-player d)
-                                                                     (dungeon-rooms d)
-                                                                     empty
-                                                                     (dungeon-name d)
-                                                                     'items)]
-                                                  [else d])]
-    [(symbol=? (dungeon-menu d) 'spells) (cond [(key=? k "d") (make-dungeon
-                                                                   (dungeon-player d)
-                                                                   (dungeon-rooms d)
-                                                                   empty
-                                                                   (dungeon-name d)
-                                                                   'player-info)]
-                                               [(key=? k "a") (make-dungeon
                                                                   (dungeon-player d)
                                                                   (dungeon-rooms d)
                                                                   empty
                                                                   (dungeon-name d)
-                                                                  'equipment)]
+                                                                  'spells)]
+                                                  [(key=? k "a") (make-dungeon
+                                                                  (dungeon-player d)
+                                                                  (dungeon-rooms d)
+                                                                  empty
+                                                                  (dungeon-name d)
+                                                                  'items)]
+                                                  [else d])]
+    [(symbol=? (dungeon-menu d) 'spells) (cond [(key=? k "d") (make-dungeon
+                                                               (dungeon-player d)
+                                                               (dungeon-rooms d)
+                                                               empty
+                                                               (dungeon-name d)
+                                                               'player-info)]
+                                               [(key=? k "a") (make-dungeon
+                                                               (dungeon-player d)
+                                                               (dungeon-rooms d)
+                                                               empty
+                                                               (dungeon-name d)
+                                                               'equipment)]
                                                [else d])]
     [else d]))
 
