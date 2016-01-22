@@ -177,10 +177,7 @@
 ;; takes a character, attacker damage, and wepon type, and produces amount of damage to be applied
 (define (damage-character c dmg type)
   (local 
-    [(define (get-armor-defense e) 
-       (cond [(empty? e) 0]
-             [(cons? e) (+ (send (first e) get-defence) (get-armor-defense (rest e)))]))
-     (define (apply-damage attack-power)
+    [(define (apply-damage attack-power)
        (if (>= (get-armor-defense (inventory-equiped (send c get-inventory))) attack-power)
            1 (- attack-power (get-armor-defense (inventory-equiped (send c get-inventory))))))]
     (cond
@@ -189,6 +186,11 @@
       [(and (eq? type (send c get-resistance)) (not (eq? (send c get-resistance) 'none)))
        (apply-damage (round (* dmg .5)))]
       [else (apply-damage dmg)])))
+
+;; get-armor-defence
+(define (get-armor-defense e) 
+       (cond [(empty? e) 0]
+             [(cons? e) (+ (send (first e) get-defence) (get-armor-defense (rest e)))]))
 
 (define npc%
   (class* character% (base-character<%>)
@@ -322,7 +324,7 @@
      image)
     (init-field
      defence ;; a nat that is the equipments defence
-     equipment-portion ;; a symbol that is the portion of the body the equipment goes on
+     equipment-portion ;; a symbol that is the portion of the body the equipment goes on 'h 'b 'a 'l
      )
     (define/public (get-defence) ;; produces the equipment's defence
       defence)
@@ -370,7 +372,7 @@
     (define/public (get-number) number) ;; gets the number of this item player has
     ))
 
-;; an inventory is a (make-inventory weapon list-of-equipment list-of-consumables list-of-items)
+;; an inventory is a (make-inventory weapon list-of-equipment list-of-lists-of-items list-of-consumables list-of-items)
 (define-struct inventory (weapon equiped equipment consumables miscellaneous))
 
 ;; a spell is a (make-spell target string string effect list-of-images int image)
