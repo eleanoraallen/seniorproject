@@ -566,9 +566,136 @@
                     (overlay/align "middle" "top"
                                    (rectangle 802 570 'solid 'gray)
                                    (rectangle 810 575 'solid 'black)))]                                   
-    [else (overlay/align "middle" "top"
-                         (rectangle 802 570 'solid 'gray)
-                         (rectangle 810 575 'solid 'black))]))
+    [(and (symbol? (dungeon-menu d)) (symbol=? (dungeon-menu d) 'spells))
+     (overlay
+           (above
+            (beside
+            (if (>= (length (send (dungeon-player d) get-spells)) 1)
+               (overlay/align "left" "middle"
+                              (beside 
+                               (rectangle 5 0 'solid 'pink)
+                               (rectangle 10 0 'solid 'pink)
+                               (spell-image (first (send (dungeon-player d) get-spells)))
+                               (rectangle 30 0 'solid 'pink)
+                               (above/align "left" (text (spell-name (first (send (dungeon-player d) get-spells))) 18 'black)
+                                            (text (string-append "MP cost:" (number->string (spell-cost (first (send (dungeon-player d) get-spells))))) 18 'black)
+                                      (text (spell-discription (first (send (dungeon-player d) get-spells))) 15 'black)))
+                              (overlay
+                               (rectangle 340 90 'solid (make-color 80 80 80))
+                               (rectangle 350 100 'solid 'black)))
+               (text "No Spells Known!" 40 'black))
+            (rectangle 30 0 'solid 'black)
+            (if (>= (length (send (dungeon-player d) get-spells)) 2)
+               (overlay/align "left" "middle"
+                              (beside 
+                               (rectangle 5 0 'solid 'pink)
+                               (rectangle 10 0 'solid 'pink)
+                               (spell-image (second (send (dungeon-player d) get-spells)))
+                               (rectangle 30 0 'solid 'pink)
+                               (above/align "left" (text (spell-name (second (send (dungeon-player d) get-spells))) 18 'black)
+                                            (text (string-append "MP cost:" (number->string (spell-cost (second (send (dungeon-player d) get-spells))))) 18 'black)
+                                      (text (spell-discription (second (send (dungeon-player d) get-spells))) 15 'black)))
+                              (overlay
+                               (rectangle 340 90 'solid (make-color 80 80 80))
+                               (rectangle 350 100 'solid 'black)))
+               (square 0 'solid 'pink)))
+            (rectangle 0 20 'solid 'black)
+            (beside
+            (if (>= (length (send (dungeon-player d) get-spells)) 3)
+               (overlay/align "left" "middle"
+                              (beside 
+                               (rectangle 5 0 'solid 'pink)
+                               (rectangle 10 0 'solid 'pink)
+                               (spell-image (third (send (dungeon-player d) get-spells)))
+                               (rectangle 30 0 'solid 'pink)
+                               (above/align "left" (text (spell-name (third (send (dungeon-player d) get-spells))) 18 'black)
+                                            (text (string-append "MP cost:" (number->string (spell-cost (third (send (dungeon-player d) get-spells))))) 18 'black)
+                                      (text (spell-discription (third (send (dungeon-player d) get-spells))) 15 'black)))
+                              (overlay
+                               (rectangle 340 90 'solid (make-color 80 80 80))
+                               (rectangle 350 100 'solid 'black)))
+               (square 0 'solid 'pink))
+            (rectangle 30 0 'solid 'black)
+            (if (>= (length (send (dungeon-player d) get-spells)) 4)
+               (overlay/align "left" "middle"
+                              (beside 
+                               (rectangle 5 0 'solid 'pink)
+                               (rectangle 10 0 'solid 'pink)
+                               (spell-image (fourth (send (dungeon-player d) get-spells)))
+                               (rectangle 30 0 'solid 'pink)
+                               (above/align "left" (text (spell-name (fourth (send (dungeon-player d) get-spells))) 18 'black)
+                                            (text (string-append "MP cost:" (number->string (spell-cost (fourth (send (dungeon-player d) get-spells))))) 18 'black)
+                                      (text (spell-discription (fourth (send (dungeon-player d) get-spells))) 15 'black)))
+                              (overlay
+                               (rectangle 340 90 'solid (make-color 80 80 80))
+                               (rectangle 350 100 'solid 'black)))
+               (square 0 'solid 'pink)))
+            (rectangle 0 20 'solid 'pink)
+            (beside
+            (if (>= (length (send (dungeon-player d) get-spells)) 5)
+               (overlay/align "left" "middle"
+                              (beside 
+                               (rectangle 5 0 'solid 'pink)
+                               (rectangle 10 0 'solid 'pink)
+                               (spell-image (fifth (send (dungeon-player d) get-spells)))
+                               (rectangle 30 0 'solid 'pink)
+                               (above/align "left" (text (spell-name (fifth (send (dungeon-player d) get-spells))) 18 'black)
+                                            (text (string-append "MP cost:" (number->string (spell-cost (fifth (send (dungeon-player d) get-spells))))) 18 'black)
+                                      (text (spell-discription (fifth (send (dungeon-player d) get-spells))) 15 'black)))
+                              (overlay
+                               (rectangle 340 90 'solid (make-color 80 80 80))
+                               (rectangle 350 100 'solid 'black)))
+               (square 0 'solid 'pink))
+            (rectangle 30 0 'solid 'black)
+            (if (>= (length (send (dungeon-player d) get-spells)) 6)
+               (overlay/align "left" "middle"
+                              (beside 
+                               (rectangle 5 0 'solid 'pink)
+                               (rectangle 10 0 'solid 'pink)
+                               (spell-image (sixth (send (dungeon-player d) get-spells)))
+                               (rectangle 30 0 'solid 'pink)
+                               (above/align "left" (text (spell-name (sixth (send (dungeon-player d) get-spells))) 18 'black)
+                                            (text (string-append "MP cost:" (number->string (spell-cost (sixth (send (dungeon-player d) get-spells))))) 18 'black)
+                                      (text (spell-discription (sixth (send (dungeon-player d) get-spells))) 15 'black)))
+                              (overlay
+                               (rectangle 340 90 'solid (make-color 80 80 80))
+                               (rectangle 350 100 'solid 'black)))
+               (square 0 'solid 'pink)))
+            (rectangle 0 20 'solid 'pink)
+            (beside
+            (if (>= (length (send (dungeon-player d) get-spells)) 7)
+               (overlay/align "left" "middle"
+                              (beside 
+                               (rectangle 5 0 'solid 'pink)
+                               (rectangle 10 0 'solid 'pink)
+                               (spell-image (seventh (send (dungeon-player d) get-spells)))
+                               (rectangle 30 0 'solid 'pink)
+                               (above/align "left" (text (spell-name (seventh (send (dungeon-player d) get-spells))) 18 'black)
+                                            (text (string-append "MP cost:" (number->string (spell-cost (seventh (send (dungeon-player d) get-spells))))) 18 'black)
+                                      (text (spell-discription (seventh (send (dungeon-player d) get-spells))) 15 'black)))
+                              (overlay
+                               (rectangle 340 90 'solid (make-color 80 80 80))
+                               (rectangle 350 100 'solid 'black)))
+               (square 0 'solid 'pink))
+            (rectangle 30 0 'solid 'black)
+            (if (>= (length (send (dungeon-player d) get-spells)) 8)
+               (overlay/align "left" "middle"
+                              (beside 
+                               (rectangle 5 0 'solid 'pink)
+                               (rectangle 10 0 'solid 'pink)
+                               (spell-image (eighth (send (dungeon-player d) get-spells)))
+                               (rectangle 30 0 'solid 'pink)
+                               (above/align "left" (text (spell-name (eighth (send (dungeon-player d) get-spells))) 18 'black)
+                                            (text (string-append "MP cost:" (number->string (spell-cost (eighth (send (dungeon-player d) get-spells))))) 18 'black)
+                                      (text (spell-discription (eighth (send (dungeon-player d) get-spells))) 15 'black)))
+                              (overlay
+                               (rectangle 340 90 'solid (make-color 80 80 80))
+                               (rectangle 350 100 'solid 'black)))
+               (square 0 'solid 'pink))))
+           (overlay/align "middle" "top"
+                          (rectangle 802 570 'solid 'gray)
+                          (rectangle 810 575 'solid 'black)))]
+    [else (square 1000 'solid 'gray)]))
 
 ;; item-number : list --> number
 (define (item-number l)
