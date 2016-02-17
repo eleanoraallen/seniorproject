@@ -8,6 +8,7 @@
        [name "Magic Potion"] 
        [description "Fully restores MP."]
        [image (bitmap/file "magic-potion.gif")]
+       [value 10]
        [effect (lambda (c)
                  (new player% 
                       [name (send c get-name)] [health (send c get-health)]
@@ -28,6 +29,7 @@
        [name "Health Potion"] 
        [description "+ 25 health"]
        [image (bitmap/file "health-potion.gif")]
+       [value 10]
        [effect (lambda (c)
                  (new player% 
                       [name (send c get-name)] [health (if (>= (+ (send c get-health) 25) (send c get-max-health))
@@ -49,6 +51,7 @@
        [name "Healing Philter"] 
        [description "Fully restores health"]
        [image (square 20 'solid 'white)]
+       [value 10]
        [effect (lambda (c)
                  (new npc% 
                       [name (send c get-name)] [health (send c get-max-health)]
@@ -68,6 +71,7 @@
   (new weapon%
        [name "Steel Sword"]
        [description "A sturdy steel sword."]
+       [value 10]
        [weapon-damage 10]
        [weapon-accuracy .95]
        [type 'metal]
@@ -76,6 +80,7 @@
   (new weapon%
        [name "Wood Staff"]
        [description "A flimsy wooden quarterstaff."]
+       [value 10]
        [weapon-damage 5]
        [weapon-accuracy 1]
        [type 'wood]
@@ -88,6 +93,6 @@
        [name "Gold"]
        [description "The coin of the relm."]
        [image (circle 10 'solid 'gold)]
+       [value n]
        [number n]))
   
-       

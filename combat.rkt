@@ -280,10 +280,12 @@
      name ;; string that is the items name
      description ;; string that is the description of the item
      image ;; an image of the item
+     value ;; an int which is the items base value
      )
     (define/public (get-name) name)
     (define/public (get-description) description)
-    (define/public (get-image) image)))
+    (define/public (get-image) image)
+    (define/public (get-value) value)))
 
 (define weapon%
   (class item%
@@ -295,10 +297,12 @@
      )
     (inherit 
       get-name
-      get-description)
+      get-description
+      get-value)
     (inherit-field
      name
-     description)
+     description
+     value)
     (define/public (get-accuracy) ;; produces weapon's accuracy
       weapon-accuracy)
     (define/public (get-damage) ;; produces weapon's damage
@@ -306,11 +310,13 @@
     (define/public (get-type) ;; produces weapon's type
       type)
     (define/public (clone #:name [new-name name] #:description [new-description description]
+                          #:value [new-value value]
                           #:weapon-accuracy [new-weapon-accuracy weapon-accuracy]
                           #:weapon-damage [new-weapon-damage weapon-damage] #:type [new-type type])
       (new this%
            [name new-name]
            [description new-description]
+           [value new-value]
            [weapon-accuracy new-weapon-accuracy]
            [weapon-damage new-weapon-damage]
            [type new-type]))))
@@ -321,7 +327,13 @@
     (inherit-field
      name
      description
-     image)
+     image
+     value)
+    (inherit
+      get-name
+      get-description
+      get-image
+      get-value)
     (init-field
      defence ;; a nat that is the equipments defence
      equipment-portion ;; a symbol that is the portion of the body the equipment goes on 'h 'b 'a 'l
@@ -331,12 +343,13 @@
     (define/public (get-portion) ;; produces the equipment's portion
       equipment-portion)
     (define/public (clone #:name [new-name name] #:description [new-description description]
-                          #:image [new-image image] #:defence [new-defence defence] 
+                          #:image [new-image image] #:value [new-value value] #:defence [new-defence defence] 
                           #:equipment-portion [new-equipment-portion equipment-portion])
       (new this%
            [name new-name]
            [description new-description]
            [image new-image]
+           [value new-value]
            [defence new-defence]
            [equipment-portion new-equipment-portion]))))
 
@@ -345,9 +358,11 @@
     (super-new)
     (inherit-field image
                    name
-                   description)
+                   description
+                   value)
     (inherit get-image
-             get-name)
+             get-name
+             get-value)
     (init-field
      effect ;; a function that takes a character and produces a character
      animation ;; a list of images that is the consumable's animation
