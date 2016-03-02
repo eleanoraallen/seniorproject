@@ -86,6 +86,79 @@
        [type 'wood]
        [image (square 20 'solid 'white)]))
 
+;; Armor -------------------------------------------------------------------------------------------------
+(define HELMET
+  (new equipment%
+       [name "Steel Helmet"]
+       [description "A sturdy steel helmet"]
+       [image (circle 10 'solid 'gray)]
+       [value 50]
+       [defence 10]
+       [equipment-portion 'h]))
+
+(define HAT
+  (new equipment%
+       [name "Wool Hat"]
+       [description "A warm woolen hat"]
+       [image (circle 10 'solid 'gray)]
+       [value 5]
+       [defence 1]
+       [equipment-portion 'h]))
+
+(define COAT
+  (new equipment%
+       [name "Trenchcoat"]
+       [description "Now you look like a detective"]
+       [image (circle 10 'solid 'gray)]
+       [value 20]
+       [defence 1]
+       [equipment-portion 'b]))
+
+(define MAIL
+  (new equipment%
+       [name "Chain Mail"]
+       [description "Strong steel chain mail"]
+       [image (circle 10 'solid 'gray)]
+       [value 100]
+       [defence 20]
+       [equipment-portion 'b]))
+
+(define BOOTS
+  (new equipment%
+       [name "Leather Boots"]
+       [description "Good for keeping your feet dry"]
+       [image (circle 10 'solid 'gray)]
+       [value 10]
+       [defence 1]
+       [equipment-portion 'l]))
+
+(define STEEL-BOOTS
+  (new equipment%
+       [name "Steel Boots"]
+       [description "Surprisingly heavy"]
+       [image (circle 10 'solid 'gray)]
+       [value 40]
+       [defence 10]
+       [equipment-portion 'l]))
+
+(define GAUNTLETS
+  (new equipment%
+       [name "Steel Gauntlets"]
+       [description "Protect your arms"]
+       [image (circle 10 'solid 'gray)]
+       [value 40]
+       [defence 10]
+       [equipment-portion 'a]))
+
+(define MITTENS
+  (new equipment%
+       [name "Fuzzy Mittens"]
+       [description "Good for snowball fights"]
+       [image (circle 10 'solid 'gray)]
+       [value 5]
+       [defence 1]
+       [equipment-portion 'a]))
+
 ;; Gold --------------------------------------------------------------------------------------------------
 ;; add-gold number --> makes n many gold
 (define (add-gold n)

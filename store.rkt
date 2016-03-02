@@ -27,7 +27,8 @@
                 empty (store-dungeon s) 'empty)]
        [(key=? "2") (make-store (store-player s) (store-inventory s) 2 (store-sym s) (store-dungeon s) (store-room s))]
        [(key=? "1") (make-store (store-player s) (store-inventory s) 1 (store-sym s) (store-dungeon s) (store-room s))]
-       [else s])]))
+       [else s])]
+    [else s]))
     
 
 

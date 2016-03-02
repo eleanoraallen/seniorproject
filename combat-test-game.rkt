@@ -539,11 +539,10 @@
                                                   (rectangle 802 570 'solid 'gray) 
                                                   (rectangle 810 575 'solid 'black))))]
     [(and (list? (dungeon-menu d)) (not (empty? (dungeon-menu d))))
-     (overlay/align "left" "top"
-                    (beside (rectangle 50 0 'solid 'pink)
-                            (above/align "left"
-                                         (rectangle 0 50 'solid 'pink)
-                                         (text (string-append (send (dungeon-player d) get-name) ":") 25 'black)
+     (overlay/align "middle" "top"
+                            (above
+                                         (rectangle 0 20 'solid 'pink)
+                                         (above (text (string-append (send (dungeon-player d) get-name) ":") 25 'black)
                                          (beside (text (string-append "Attack: " (number->string (send (dungeon-player d) get-strength)) " + ") 20 'black)
                                                  (text (if 
                                                         (empty? (inventory-weapon (send (dungeon-player d) get-inventory))) 
@@ -562,140 +561,289 @@
                                          (beside (text (string-append "Defense: " (number->string (send (dungeon-player d) get-strength)) " + ") 20 'black)
                                                  (text (number->string (get-armor-defense (inventory-equiped (send (dungeon-player d) get-inventory)))) 20 (if (symbol=? (first (dungeon-menu d)) 'w) 'black 'red))
                                                  (text (string-append " = " (number->string (+ (send (dungeon-player d) get-strength)
-                                                                                               (get-armor-defense (inventory-equiped (send (dungeon-player d) get-inventory)))))) 20 'black))))
+                                                                                               (get-armor-defense (inventory-equiped (send (dungeon-player d) get-inventory)))))) 20 'black)))
+                                         (rectangle 0 50 'solid 'pink)
+                                         (beside/align "top"
+                                          (above
+                                         (text (string-append "Equiped " (cond
+                                                                           [(symbol=? (first (dungeon-menu d)) 'w) "Weapon"]
+                                                                           [(symbol=? (first (dungeon-menu d)) 'h) "Helment"]
+                                                                           [(symbol=? (first (dungeon-menu d)) 'b) "Body Armor"]
+                                                                           [(symbol=? (first (dungeon-menu d)) 'a) "Arm Armor"]
+                                                                           [(symbol=? (first (dungeon-menu d)) 'l) "Leg Armor"]) ":") 20 'black)
+                                         (rectangle 0 30 'solid 'pink)
+                                         (cond
+                                           [(symbol=? (first (dungeon-menu d)) 'w) (if (empty? (inventory-weapon (send (dungeon-player d) get-inventory)))
+                                                                                       (text "No weapon equiped" 20 'black)
+                                                                                       (render-weapon-block
+                                                                                    (inventory-weapon (send (dungeon-player d) get-inventory))))]
+                                           [(symbol=? (first (dungeon-menu d)) 'h) (if (empty? (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h))
+                                                                                       (text "No helmet equiped" 20 'black)
+                                                                                       (render-equipment-block
+                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory))) 'h)))]
+                                           [(symbol=? (first (dungeon-menu d)) 'b) (if (empty? (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b))
+                                                                                       (text "No body armor equiped" 20 'black)
+                                                                                       (render-equipment-block
+                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory))) 'b)))]
+                                           [(symbol=? (first (dungeon-menu d)) 'a) (if (empty? (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a))
+                                                                                       (text "No arm armor equiped" 20 'black)
+                                                                                       (render-equipment-block
+                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory))) 'a)))]
+                                           [(symbol=? (first (dungeon-menu d)) 'l) (if (empty? (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))
+                                                                                       (text "No leg armor equiped" 20 'black)
+                                                                                       (render-equipment-block
+                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory))) 'l)))]))
+                                          (rectangle 25 0 'solid 'pink)
+                            (above
+                             (beside
+                              (if (or (and (symbol=? (first (dungeon-menu d)) 'w) (> (length (first (inventory-equipment (send (dungeon-player d) get-inventory)))) 3))
+                                      (and (symbol=? (first (dungeon-menu d)) 'h) (> (length (second (inventory-equipment (send (dungeon-player d) get-inventory)))) 3))
+                                      (and (symbol=? (first (dungeon-menu d)) 'b) (> (length (third (inventory-equipment (send (dungeon-player d) get-inventory)))) 3))
+                                      (and (symbol=? (first (dungeon-menu d)) 'a) (> (length (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))) 3))
+                                      (and (symbol=? (first (dungeon-menu d)) 'l) (> (length (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))) 3)))
+                                  (beside (triangle 15 'solid 'black) (rectangle 3 0 'solid 'pink)) (square 0 'solid 'pink))
+                              (text (string-append "Available " (cond
+                                                                           [(symbol=? (first (dungeon-menu d)) 'w) "Weapons"]
+                                                                           [(symbol=? (first (dungeon-menu d)) 'h) "Helments"]
+                                                                           [(symbol=? (first (dungeon-menu d)) 'b) "Body Armor"]
+                                                                           [(symbol=? (first (dungeon-menu d)) 'a) "Arm Armor"]
+                                                                           [(symbol=? (first (dungeon-menu d)) 'l) "Leg Armor"]) ":") 20 'black)
+                              (if (or (and (symbol=? (first (dungeon-menu d)) 'w) (> (length (first (inventory-equipment (send (dungeon-player d) get-inventory)))) 3))
+                                      (and (symbol=? (first (dungeon-menu d)) 'h) (> (length (second (inventory-equipment (send (dungeon-player d) get-inventory)))) 3))
+                                      (and (symbol=? (first (dungeon-menu d)) 'b) (> (length (third (inventory-equipment (send (dungeon-player d) get-inventory)))) 3))
+                                      (and (symbol=? (first (dungeon-menu d)) 'a) (> (length (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))) 3))
+                                      (and (symbol=? (first (dungeon-menu d)) 'l) (> (length (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))) 3)))
+                                  (beside (rectangle 3 0 'solid 'pink) (rotate 180 (triangle 15 'solid 'black))) (square 0 'solid 'pink)))
+                             (rectangle 0 30 'solid 'pink)
+                                                  (cond
+                              [(symbol=? (first (dungeon-menu d)) 'w) (above
+                                                                        (if (<= 1 (length (first (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-weapon-block (first (first (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (overlay (text "No Weapons!" 20 'black) (rectangle 350 100 'solid 'gray)))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 2 (length (first (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-weapon-block (second (first (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 3 (length (first (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-weapon-block (third (first (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink)))]
+                              [(symbol=? (first (dungeon-menu d)) 'h) (above
+                                                                        (if (<= 1 (length (second (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (first (second (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (overlay (text "No Head Armor!" 20 'black) (rectangle 350 100 'solid 'gray)))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 2 (length (second (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (second (second (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 3 (length (second (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (third (second (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink)))]
+                              [(symbol=? (first (dungeon-menu d)) 'b) (above
+                                                                        (if (<= 1 (length (third (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (first (third (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (overlay (text "No Body Armor!" 20 'black) (rectangle 350 100 'solid 'gray)))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 2 (length (third (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (second (third (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 3 (length (third (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (third (third (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink)))]
+                              [(symbol=? (first (dungeon-menu d)) 'a) (above
+                                                                        (if (<= 1 (length (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (first (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (overlay (text "No Arm Armor!" 20 'black) (rectangle 350 100 'solid 'gray)))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 2 (length (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (second (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 3 (length (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (third (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink)))]
+                              [(symbol=? (first (dungeon-menu d)) 'l) (above
+                                                                        (if (<= 1 (length (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (first (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (overlay (text "No Leg Armor!" 20 'black) (rectangle 350 100 'solid 'gray)))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 2 (length (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (second (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink))
+                                                                        (rectangle 0 25 'solid 'pink)
+                                                                        (if (<= 3 (length (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (render-equipment-block (third (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                            (square 0 'solid 'pink)))]))))                         
                     (overlay/align "middle" "top"
                                    (rectangle 802 570 'solid 'gray)
                                    (rectangle 810 575 'solid 'black)))]                                   
     [(and (symbol? (dungeon-menu d)) (symbol=? (dungeon-menu d) 'spells))
      (overlay
-           (above
-            (beside
-            (if (>= (length (send (dungeon-player d) get-spells)) 1)
-               (overlay/align "left" "middle"
-                              (beside 
-                               (rectangle 5 0 'solid 'pink)
-                               (rectangle 10 0 'solid 'pink)
-                               (spell-image (first (send (dungeon-player d) get-spells)))
-                               (rectangle 30 0 'solid 'pink)
-                               (above/align "left" (text (spell-name (first (send (dungeon-player d) get-spells))) 18 'black)
-                                            (text (string-append "MP cost:" (number->string (spell-cost (first (send (dungeon-player d) get-spells))))) 18 'black)
-                                      (text (spell-discription (first (send (dungeon-player d) get-spells))) 15 'black)))
-                              (overlay
-                               (rectangle 340 90 'solid (make-color 80 80 80))
-                               (rectangle 350 100 'solid 'black)))
-               (text "No Spells Known!" 40 'black))
-            (rectangle 30 0 'solid 'black)
-            (if (>= (length (send (dungeon-player d) get-spells)) 2)
-               (overlay/align "left" "middle"
-                              (beside 
-                               (rectangle 5 0 'solid 'pink)
-                               (rectangle 10 0 'solid 'pink)
-                               (spell-image (second (send (dungeon-player d) get-spells)))
-                               (rectangle 30 0 'solid 'pink)
-                               (above/align "left" (text (spell-name (second (send (dungeon-player d) get-spells))) 18 'black)
-                                            (text (string-append "MP cost:" (number->string (spell-cost (second (send (dungeon-player d) get-spells))))) 18 'black)
-                                      (text (spell-discription (second (send (dungeon-player d) get-spells))) 15 'black)))
-                              (overlay
-                               (rectangle 340 90 'solid (make-color 80 80 80))
-                               (rectangle 350 100 'solid 'black)))
-               (square 0 'solid 'pink)))
-            (rectangle 0 20 'solid 'black)
-            (beside
-            (if (>= (length (send (dungeon-player d) get-spells)) 3)
-               (overlay/align "left" "middle"
-                              (beside 
-                               (rectangle 5 0 'solid 'pink)
-                               (rectangle 10 0 'solid 'pink)
-                               (spell-image (third (send (dungeon-player d) get-spells)))
-                               (rectangle 30 0 'solid 'pink)
-                               (above/align "left" (text (spell-name (third (send (dungeon-player d) get-spells))) 18 'black)
-                                            (text (string-append "MP cost:" (number->string (spell-cost (third (send (dungeon-player d) get-spells))))) 18 'black)
-                                      (text (spell-discription (third (send (dungeon-player d) get-spells))) 15 'black)))
-                              (overlay
-                               (rectangle 340 90 'solid (make-color 80 80 80))
-                               (rectangle 350 100 'solid 'black)))
-               (square 0 'solid 'pink))
-            (rectangle 30 0 'solid 'black)
-            (if (>= (length (send (dungeon-player d) get-spells)) 4)
-               (overlay/align "left" "middle"
-                              (beside 
-                               (rectangle 5 0 'solid 'pink)
-                               (rectangle 10 0 'solid 'pink)
-                               (spell-image (fourth (send (dungeon-player d) get-spells)))
-                               (rectangle 30 0 'solid 'pink)
-                               (above/align "left" (text (spell-name (fourth (send (dungeon-player d) get-spells))) 18 'black)
-                                            (text (string-append "MP cost:" (number->string (spell-cost (fourth (send (dungeon-player d) get-spells))))) 18 'black)
-                                      (text (spell-discription (fourth (send (dungeon-player d) get-spells))) 15 'black)))
-                              (overlay
-                               (rectangle 340 90 'solid (make-color 80 80 80))
-                               (rectangle 350 100 'solid 'black)))
-               (square 0 'solid 'pink)))
-            (rectangle 0 20 'solid 'pink)
-            (beside
-            (if (>= (length (send (dungeon-player d) get-spells)) 5)
-               (overlay/align "left" "middle"
-                              (beside 
-                               (rectangle 5 0 'solid 'pink)
-                               (rectangle 10 0 'solid 'pink)
-                               (spell-image (fifth (send (dungeon-player d) get-spells)))
-                               (rectangle 30 0 'solid 'pink)
-                               (above/align "left" (text (spell-name (fifth (send (dungeon-player d) get-spells))) 18 'black)
-                                            (text (string-append "MP cost:" (number->string (spell-cost (fifth (send (dungeon-player d) get-spells))))) 18 'black)
-                                      (text (spell-discription (fifth (send (dungeon-player d) get-spells))) 15 'black)))
-                              (overlay
-                               (rectangle 340 90 'solid (make-color 80 80 80))
-                               (rectangle 350 100 'solid 'black)))
-               (square 0 'solid 'pink))
-            (rectangle 30 0 'solid 'black)
-            (if (>= (length (send (dungeon-player d) get-spells)) 6)
-               (overlay/align "left" "middle"
-                              (beside 
-                               (rectangle 5 0 'solid 'pink)
-                               (rectangle 10 0 'solid 'pink)
-                               (spell-image (sixth (send (dungeon-player d) get-spells)))
-                               (rectangle 30 0 'solid 'pink)
-                               (above/align "left" (text (spell-name (sixth (send (dungeon-player d) get-spells))) 18 'black)
-                                            (text (string-append "MP cost:" (number->string (spell-cost (sixth (send (dungeon-player d) get-spells))))) 18 'black)
-                                      (text (spell-discription (sixth (send (dungeon-player d) get-spells))) 15 'black)))
-                              (overlay
-                               (rectangle 340 90 'solid (make-color 80 80 80))
-                               (rectangle 350 100 'solid 'black)))
-               (square 0 'solid 'pink)))
-            (rectangle 0 20 'solid 'pink)
-            (beside
-            (if (>= (length (send (dungeon-player d) get-spells)) 7)
-               (overlay/align "left" "middle"
-                              (beside 
-                               (rectangle 5 0 'solid 'pink)
-                               (rectangle 10 0 'solid 'pink)
-                               (spell-image (seventh (send (dungeon-player d) get-spells)))
-                               (rectangle 30 0 'solid 'pink)
-                               (above/align "left" (text (spell-name (seventh (send (dungeon-player d) get-spells))) 18 'black)
-                                            (text (string-append "MP cost:" (number->string (spell-cost (seventh (send (dungeon-player d) get-spells))))) 18 'black)
-                                      (text (spell-discription (seventh (send (dungeon-player d) get-spells))) 15 'black)))
-                              (overlay
-                               (rectangle 340 90 'solid (make-color 80 80 80))
-                               (rectangle 350 100 'solid 'black)))
-               (square 0 'solid 'pink))
-            (rectangle 30 0 'solid 'black)
-            (if (>= (length (send (dungeon-player d) get-spells)) 8)
-               (overlay/align "left" "middle"
-                              (beside 
-                               (rectangle 5 0 'solid 'pink)
-                               (rectangle 10 0 'solid 'pink)
-                               (spell-image (eighth (send (dungeon-player d) get-spells)))
-                               (rectangle 30 0 'solid 'pink)
-                               (above/align "left" (text (spell-name (eighth (send (dungeon-player d) get-spells))) 18 'black)
-                                            (text (string-append "MP cost:" (number->string (spell-cost (eighth (send (dungeon-player d) get-spells))))) 18 'black)
-                                      (text (spell-discription (eighth (send (dungeon-player d) get-spells))) 15 'black)))
-                              (overlay
-                               (rectangle 340 90 'solid (make-color 80 80 80))
-                               (rectangle 350 100 'solid 'black)))
-               (square 0 'solid 'pink))))
-           (overlay/align "middle" "top"
-                          (rectangle 802 570 'solid 'gray)
-                          (rectangle 810 575 'solid 'black)))]
+      (above
+       (beside
+        (if (>= (length (send (dungeon-player d) get-spells)) 1)
+            (overlay/align "left" "middle"
+                           (beside 
+                            (rectangle 5 0 'solid 'pink)
+                            (rectangle 10 0 'solid 'pink)
+                            (spell-image (first (send (dungeon-player d) get-spells)))
+                            (rectangle 30 0 'solid 'pink)
+                            (above/align "left" (text (spell-name (first (send (dungeon-player d) get-spells))) 18 'black)
+                                         (text (string-append "MP cost:" (number->string (spell-cost (first (send (dungeon-player d) get-spells))))) 18 'black)
+                                         (text (spell-discription (first (send (dungeon-player d) get-spells))) 15 'black)))
+                           (overlay
+                            (rectangle 340 90 'solid (make-color 80 80 80))
+                            (rectangle 350 100 'solid 'black)))
+            (text "No Spells Known!" 40 'black))
+        (rectangle 30 0 'solid 'black)
+        (if (>= (length (send (dungeon-player d) get-spells)) 2)
+            (overlay/align "left" "middle"
+                           (beside 
+                            (rectangle 5 0 'solid 'pink)
+                            (rectangle 10 0 'solid 'pink)
+                            (spell-image (second (send (dungeon-player d) get-spells)))
+                            (rectangle 30 0 'solid 'pink)
+                            (above/align "left" (text (spell-name (second (send (dungeon-player d) get-spells))) 18 'black)
+                                         (text (string-append "MP cost:" (number->string (spell-cost (second (send (dungeon-player d) get-spells))))) 18 'black)
+                                         (text (spell-discription (second (send (dungeon-player d) get-spells))) 15 'black)))
+                           (overlay
+                            (rectangle 340 90 'solid (make-color 80 80 80))
+                            (rectangle 350 100 'solid 'black)))
+            (square 0 'solid 'pink)))
+       (rectangle 0 20 'solid 'black)
+       (beside
+        (if (>= (length (send (dungeon-player d) get-spells)) 3)
+            (overlay/align "left" "middle"
+                           (beside 
+                            (rectangle 5 0 'solid 'pink)
+                            (rectangle 10 0 'solid 'pink)
+                            (spell-image (third (send (dungeon-player d) get-spells)))
+                            (rectangle 30 0 'solid 'pink)
+                            (above/align "left" (text (spell-name (third (send (dungeon-player d) get-spells))) 18 'black)
+                                         (text (string-append "MP cost:" (number->string (spell-cost (third (send (dungeon-player d) get-spells))))) 18 'black)
+                                         (text (spell-discription (third (send (dungeon-player d) get-spells))) 15 'black)))
+                           (overlay
+                            (rectangle 340 90 'solid (make-color 80 80 80))
+                            (rectangle 350 100 'solid 'black)))
+            (square 0 'solid 'pink))
+        (rectangle 40 0 'solid 'pink)
+        (if (>= (length (send (dungeon-player d) get-spells)) 4)
+            (overlay/align "left" "middle"
+                           (beside 
+                            (rectangle 5 0 'solid 'pink)
+                            (rectangle 10 0 'solid 'pink)
+                            (spell-image (fourth (send (dungeon-player d) get-spells)))
+                            (rectangle 30 0 'solid 'pink)
+                            (above/align "left" (text (spell-name (fourth (send (dungeon-player d) get-spells))) 18 'black)
+                                         (text (string-append "MP cost:" (number->string (spell-cost (fourth (send (dungeon-player d) get-spells))))) 18 'black)
+                                         (text (spell-discription (fourth (send (dungeon-player d) get-spells))) 15 'black)))
+                           (overlay
+                            (rectangle 340 90 'solid (make-color 80 80 80))
+                            (rectangle 350 100 'solid 'black)))
+            (square 0 'solid 'pink)))
+       (rectangle 0 20 'solid 'pink)
+       (beside
+        (if (>= (length (send (dungeon-player d) get-spells)) 5)
+            (overlay/align "left" "middle"
+                           (beside 
+                            (rectangle 5 0 'solid 'pink)
+                            (rectangle 10 0 'solid 'pink)
+                            (spell-image (fifth (send (dungeon-player d) get-spells)))
+                            (rectangle 30 0 'solid 'pink)
+                            (above/align "left" (text (spell-name (fifth (send (dungeon-player d) get-spells))) 18 'black)
+                                         (text (string-append "MP cost:" (number->string (spell-cost (fifth (send (dungeon-player d) get-spells))))) 18 'black)
+                                         (text (spell-discription (fifth (send (dungeon-player d) get-spells))) 15 'black)))
+                           (overlay
+                            (rectangle 340 90 'solid (make-color 80 80 80))
+                            (rectangle 350 100 'solid 'black)))
+            (square 0 'solid 'pink))
+        (rectangle 30 0 'solid 'black)
+        (if (>= (length (send (dungeon-player d) get-spells)) 6)
+            (overlay/align "left" "middle"
+                           (beside 
+                            (rectangle 5 0 'solid 'pink)
+                            (rectangle 10 0 'solid 'pink)
+                            (spell-image (sixth (send (dungeon-player d) get-spells)))
+                            (rectangle 30 0 'solid 'pink)
+                            (above/align "left" (text (spell-name (sixth (send (dungeon-player d) get-spells))) 18 'black)
+                                         (text (string-append "MP cost:" (number->string (spell-cost (sixth (send (dungeon-player d) get-spells))))) 18 'black)
+                                         (text (spell-discription (sixth (send (dungeon-player d) get-spells))) 15 'black)))
+                           (overlay
+                            (rectangle 340 90 'solid (make-color 80 80 80))
+                            (rectangle 350 100 'solid 'black)))
+            (square 0 'solid 'pink)))
+       (rectangle 0 20 'solid 'pink)
+       (beside
+        (if (>= (length (send (dungeon-player d) get-spells)) 7)
+            (overlay/align "left" "middle"
+                           (beside 
+                            (rectangle 5 0 'solid 'pink)
+                            (rectangle 10 0 'solid 'pink)
+                            (spell-image (seventh (send (dungeon-player d) get-spells)))
+                            (rectangle 30 0 'solid 'pink)
+                            (above/align "left" (text (spell-name (seventh (send (dungeon-player d) get-spells))) 18 'black)
+                                         (text (string-append "MP cost:" (number->string (spell-cost (seventh (send (dungeon-player d) get-spells))))) 18 'black)
+                                         (text (spell-discription (seventh (send (dungeon-player d) get-spells))) 15 'black)))
+                           (overlay
+                            (rectangle 340 90 'solid (make-color 80 80 80))
+                            (rectangle 350 100 'solid 'black)))
+            (square 0 'solid 'pink))
+        (rectangle 30 0 'solid 'black)
+        (if (>= (length (send (dungeon-player d) get-spells)) 8)
+            (overlay/align "left" "middle"
+                           (beside 
+                            (rectangle 5 0 'solid 'pink)
+                            (rectangle 10 0 'solid 'pink)
+                            (spell-image (eighth (send (dungeon-player d) get-spells)))
+                            (rectangle 30 0 'solid 'pink)
+                            (above/align "left" (text (spell-name (eighth (send (dungeon-player d) get-spells))) 18 'black)
+                                         (text (string-append "MP cost:" (number->string (spell-cost (eighth (send (dungeon-player d) get-spells))))) 18 'black)
+                                         (text (spell-discription (eighth (send (dungeon-player d) get-spells))) 15 'black)))
+                           (overlay
+                            (rectangle 340 90 'solid (make-color 80 80 80))
+                            (rectangle 350 100 'solid 'black)))
+            (square 0 'solid 'pink))))
+      (overlay/align "middle" "top"
+                     (rectangle 802 570 'solid 'gray)
+                     (rectangle 810 575 'solid 'black)))]
     [else (square 1000 'solid 'gray)]))
+
+;; filter-equipment : list-of-equipment symbol --> image
+(define (filter-equipment l s)
+  (cond
+    [(empty? l) empty]
+    [(cons? l) (if (symbol=? (send (first l) get-equipment-portion) s)
+                         (cons (first l) (filter-equipment (rest l)))
+                         (filter-equipment (rest l)))]))
+
+;; render-weapon-block : weapon --> image
+(define (render-weapon-block w)
+  (overlay (beside
+            (send w get-image)
+            (rectangle 25 0 'solid 'pink)
+            (above (text (send w get-name) 13 'black)
+                   (text (send w get-description) 12 'black)
+                   (rectangle 0 10 'solid 'pink)
+                   (text (string-append "Damage: " (number->string (send w get-damage))) 12 'black)
+                   (text (string-append "Weapon Type: " (symbol->string (send w get-type))) 12 'black)
+                   (text (string-append "Value: " (number->string (send w get-value))) 12 'black)))
+           (rectangle 340 90 'solid (make-color 80 80 80))
+           (rectangle 350 100 'solid 'black)))
+
+;; render-equipment-block : equipment --> image
+(define (render-equipment-block e)
+  (overlay (beside
+            (send e get-image)
+            (rectangle 25 0 'solid 'pink)
+            (above (text (send e get-name) 13 'black)
+                   (text (send e get-description) 12 'black)
+                   (rectangle 0 10 'solid 'pink)
+                   (text (string-append "Defence: " (number->string (send e get-defence))) 12 'black)
+                   (text (string-append "Value: " (number->string (send e get-value))) 12 'black)))
+           (rectangle 340 90 'solid (make-color 80 80 80))
+           (rectangle 350 100 'solid 'black)))
 
 ;; item-number : list --> number
 (define (item-number l)
@@ -710,10 +858,10 @@
 (define (render-room p d a r)
   (overlay
    (cond
-     [(eq? d 'n) (map-animation-north-stationary a)]
-     [(eq? d 'e) (map-animation-east-stationary a)]
-     [(eq? d 's) (map-animation-south-stationary a)]
-     [(eq? d 'w) (map-animation-west-stationary a)])
+     [(eq? d 'n) (map-animation-north a)]
+     [(eq? d 'e) (map-animation-east a)]
+     [(eq? d 's) (map-animation-south a)]
+     [(eq? d 'w) (map-animation-west a)])
    (place-image
     (tiles->image (room-tiles r))
     (+ 405 (- (/ (image-width (tiles->image (room-tiles r))) 2) (posn-x p)))
@@ -1101,6 +1249,7 @@
                                          [image (send (first (inventory-consumables (send (combat-player w) get-inventory))) get-image)]
                                          [name (send (first (inventory-consumables (send (combat-player w) get-inventory))) get-name)]
                                          [description (send (first (inventory-consumables (send (combat-player w) get-inventory))) get-description)]
+                                         [value (send (first (inventory-consumables (send (combat-player w) get-inventory))) get-value)]
                                          [effect (send (first (inventory-consumables (send (combat-player w) get-inventory))) get-effect)]
                                          [animation (send (first (inventory-consumables (send (combat-player w) get-inventory))) get-animation)]
                                          [number (- (send (first (inventory-consumables (send (combat-player w) get-inventory))) get-number) 1)])
@@ -1438,14 +1587,14 @@
 ;; enough-space-above? : dungeon --> boolean
 (define (enough-space-above? d) 
   (not
-   (or (>= (/ (image-height (map-animation-north-stationary 
+   (or (>= (/ (image-height (map-animation-north
                              (send (dungeon-player d) get-map-animation))) 2)
            (posn-y (send (dungeon-player d) get-position))) 
        (not 
         (send (get-tile (make-posn (posn-x (send (dungeon-player d) get-position))
                                    (- (posn-y (send (dungeon-player d) get-position))
                                       (/ (image-height 
-                                          (map-animation-east-stationary 
+                                          (map-animation-east
                                            (send (dungeon-player d) get-map-animation))) 2)))
                         (room-tiles (first (dungeon-rooms d)))) passable?)))))
 
@@ -1466,26 +1615,26 @@
   (not
    (or (<= (- (* (image-height (send (first (first (room-tiles (first (dungeon-rooms d))))) get-image))
                  (length (room-tiles (first (dungeon-rooms d)))))
-              (/ (image-height (map-animation-south-stationary (send (dungeon-player d) get-map-animation))) 2))
+              (/ (image-height (map-animation-south (send (dungeon-player d) get-map-animation))) 2))
            (posn-y (send (dungeon-player d) get-position))) 
        (not (send (get-tile 
                    (make-posn (posn-x (send (dungeon-player d) get-position)) 
                               (+ (posn-y (send (dungeon-player d) get-position))
-                                 (/ (image-height (map-animation-east-stationary 
+                                 (/ (image-height (map-animation-east 
                                                    (send (dungeon-player d) get-map-animation))) 2)))
                    (room-tiles (first (dungeon-rooms d)))) passable?)))))
 
 ;; enough-space-left? : dungeon --> boolean
 (define (enough-space-left? d)
   (not
-   (or (>= (/ (image-width (map-animation-west-stationary 
+   (or (>= (/ (image-width (map-animation-west 
                             (send (dungeon-player d) get-map-animation))) 2)
            (posn-x (send (dungeon-player d) get-position))) 
        (not 
         (send (get-tile 
                (make-posn (- (posn-x (send (dungeon-player d) get-position))
                              (/ (image-width 
-                                 (map-animation-west-stationary 
+                                 (map-animation-west 
                                   (send (dungeon-player d) get-map-animation))) 2))
                           (posn-y (send (dungeon-player d) get-position)))
                (room-tiles (first (dungeon-rooms d)))) passable?)))))
@@ -1495,10 +1644,10 @@
   (not
    (or (<= (- (* (image-width (send (first (first (room-tiles (first (dungeon-rooms d))))) get-image))
                  (length (first (room-tiles (first (dungeon-rooms d))))))
-              (/ (image-width (map-animation-east-stationary (send (dungeon-player d) get-map-animation))) 2))
+              (/ (image-width (map-animation-east (send (dungeon-player d) get-map-animation))) 2))
            (posn-x (send (dungeon-player d) get-position))) 
        (not (send (get-tile (make-posn (+ (posn-x (send (dungeon-player d) get-position))
-                                          (/ (image-width (map-animation-east-stationary 
+                                          (/ (image-width (map-animation-east
                                                            (send (dungeon-player d) get-map-animation))) 2))
                                        (posn-y (send (dungeon-player d) get-position)))
                             (room-tiles (first (dungeon-rooms d)))) passable?)))))

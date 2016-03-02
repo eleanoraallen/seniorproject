@@ -12,6 +12,7 @@
          (struct-out animation)
          (struct-out combat)
          (struct-out map-animation)
+         (struct-out store)
          (all-defined-out))
 
 ;; CHARACTERS -----------------------------------------------------------
@@ -403,10 +404,10 @@
 (define-struct animation (standby attack cast flinch win loose))
 
 ;; a map-animation is a (make-map-animation image)
-(define-struct map-animation (north-stationary
-                              east-stationary
-                              south-stationary
-                              west-stationary))
+(define-struct map-animation (north
+                              east
+                              south
+                              west))
 
 ;; Combat ----------------------------------------------------------------------------------
 ;; a combat is a (make-combat player npc symbol symbol loi) where
@@ -427,3 +428,7 @@
 ;; - 'e
 ;; the list of images are the images in the animation queue
 (define-struct combat (player npc phase menu loi dungeon-name room-name))
+
+;; Store -----------------------------------------------------------------------------------
+;; a store is a (make-store player inventory number symbol string string)
+(define-struct store (player inventory num sym dungeon room))
