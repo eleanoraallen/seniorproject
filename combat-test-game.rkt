@@ -580,19 +580,19 @@
                                            [(symbol=? (first (dungeon-menu d)) 'h) (if (empty? (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h))
                                                                                        (text "No helmet equiped" 20 'black)
                                                                                        (render-equipment-block
-                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory))) 'h)))]
+                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h))))]
                                            [(symbol=? (first (dungeon-menu d)) 'b) (if (empty? (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b))
                                                                                        (text "No body armor equiped" 20 'black)
                                                                                        (render-equipment-block
-                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory))) 'b)))]
+                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b))))]
                                            [(symbol=? (first (dungeon-menu d)) 'a) (if (empty? (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a))
                                                                                        (text "No arm armor equiped" 20 'black)
                                                                                        (render-equipment-block
-                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory))) 'a)))]
+                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a))))]
                                            [(symbol=? (first (dungeon-menu d)) 'l) (if (empty? (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))
                                                                                        (text "No leg armor equiped" 20 'black)
                                                                                        (render-equipment-block
-                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory))) 'l)))]))
+                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))))]))
                                           (rectangle 25 0 'solid 'pink)
                             (above
                              (beside
@@ -814,9 +814,9 @@
 (define (filter-equipment l s)
   (cond
     [(empty? l) empty]
-    [(cons? l) (if (symbol=? (send (first l) get-equipment-portion) s)
-                         (cons (first l) (filter-equipment (rest l)))
-                         (filter-equipment (rest l)))]))
+    [(cons? l) (if (symbol=? (send (first l) get-portion) s)
+                         (cons (first l) (filter-equipment (rest l) s))
+                         (filter-equipment (rest l) s))]))
 
 ;; render-weapon-block : weapon --> image
 (define (render-weapon-block w)
@@ -1568,7 +1568,7 @@
                                                     empty
                                                     (dungeon-name d)
                                                     'items)]
-                                    [else d])]
+                                    [else (handle-equipment-menu-key d k)])]
     [(and (symbol? (dungeon-menu d)) (symbol=? (dungeon-menu d) 'spells)) (cond [(key=? k "d") (make-dungeon
                                                                                                 (dungeon-player d)
                                                                                                 (dungeon-rooms d)
@@ -1583,6 +1583,159 @@
                                                                                                 (list 'w))]
                                                                                 [else d])]
     [else d]))
+
+;; handle-equipment-menu-key : dungeon, key --> dungeon
+(define (handle-equipment-menu-key d k)
+  (cond
+    [(key=? k "right") (make-dungeon (dungeon-player d) (dungeon-rooms d) empty (dungeon-name d) 
+                                 (cond
+                     [(symbol=? (first (dungeon-menu d)) 'w) (list 'h)]
+                     [(symbol=? (first (dungeon-menu d)) 'h) (list 'b)]
+                     [(symbol=? (first (dungeon-menu d)) 'b) (list 'a)]
+                     [(symbol=? (first (dungeon-menu d)) 'a) (list 'l)]
+                     [(symbol=? (first (dungeon-menu d)) 'l) (list 'w)]))]
+    [(key=? k "left") (make-dungeon (dungeon-player d) (dungeon-rooms d) empty (dungeon-name d) 
+                                 (cond
+                     [(symbol=? (first (dungeon-menu d)) 'w) (list 'l)]
+                     [(symbol=? (first (dungeon-menu d)) 'h) (list 'w)]
+                     [(symbol=? (first (dungeon-menu d)) 'b) (list 'h)]
+                     [(symbol=? (first (dungeon-menu d)) 'a) (list 'b)]
+                     [(symbol=? (first (dungeon-menu d)) 'l) (list 'a)]))]
+    [(key=? k "\r") (make-dungeon (send (dungeon-player d) clone #:character-inventory
+                                       (cond
+                                         [(symbol=? (first (dungeon-menu d)) 'w) (if (not (empty? (first (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (first (first (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                 (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                                 (append (list (cons (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                                     (rest (first (inventory-equipment (send (dungeon-player d) get-inventory))))))
+                                                                                                         (rest (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                 (inventory-consumables (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]
+                                         [(symbol=? (first (dungeon-menu d)) 'h) (if (not (empty? (second (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                     (list 
+                                                                                                                     (first (second (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b)
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a)
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))
+                                                                                                 (append 
+                                                                                                  (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (rest (second (inventory-equipment (send (dungeon-player d) get-inventory))))) 
+                                                                                                         (rest (rest (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                                 (inventory-consumables (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]
+                                         [(symbol=? (first (dungeon-menu d)) 'b) (if (not (empty? (third (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                     (list 
+                                                                                                                     (first (third (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h)
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a)
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))
+                                                                                                 (append 
+                                                                                                  (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (second (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (rest (third (inventory-equipment (send (dungeon-player d) get-inventory))))) 
+                                                                                                         (rest (rest (rest (inventory-equipment (send (dungeon-player d) get-inventory))))))
+                                                                                                 (inventory-consumables (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]
+                                         [(symbol=? (first (dungeon-menu d)) 'a) (if (not (empty? (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                     (list 
+                                                                                                                     (first (fourth (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h)
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b)
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))
+                                                                                                 (append 
+                                                                                                  (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (second (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (third (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (rest (fourth (inventory-equipment (send (dungeon-player d) get-inventory))))) 
+                                                                                                         (rest (rest (rest (rest (inventory-equipment (send (dungeon-player d) get-inventory)))))))
+                                                                                                 (inventory-consumables (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]
+                                         [(symbol=? (first (dungeon-menu d)) 'l) (if (not (empty? (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                     (list 
+                                                                                                                     (first (fifth (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h)
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b)
+                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a))
+                                                                                                 (append 
+                                                                                                  (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (second (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (third (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (rest (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))) 
+                                                                                                 (inventory-consumables (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]))
+                                                  (dungeon-rooms d) empty (dungeon-name d) (dungeon-menu d))]
+    [(or (key=? k "up") (key=?  k "down")) (make-dungeon (send (dungeon-player d) clone #:character-inventory
+                                       (cond
+                                         [(symbol=? (first (dungeon-menu d)) 'w) (if (not (empty? (first (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                                 (append (list (append (rest (first (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                               (list (first (first (inventory-equipment (send (dungeon-player d) get-inventory)))))))
+                                                                                                         (rest (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                 (inventory-consumables (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]
+                                         [(symbol=? (first (dungeon-menu d)) 'h) (if (not (empty? (second (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                                 (append 
+                                                                                                  (list (first (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                  (list (append (rest (second (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                               (list (first (second (inventory-equipment (send (dungeon-player d) get-inventory)))))))
+                                                                                                         (rest (rest (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                                 (inventory-consumables (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]
+                                         [(symbol=? (first (dungeon-menu d)) 'b) (if (not (empty? (third (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                                 (append 
+                                                                                                  (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (second (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                  (list (append (rest (third (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                               (list (first (third (inventory-equipment (send (dungeon-player d) get-inventory)))))))
+                                                                                                         (rest (rest (rest (inventory-equipment (send (dungeon-player d) get-inventory))))))
+                                                                                                 (inventory-consumables (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]
+                                         [(symbol=? (first (dungeon-menu d)) 'a) (if (not (empty? (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                                 (append 
+                                                                                                  (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (second (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (third (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                  (list (append (rest (fourth (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                               (list (first (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))))
+                                                                                                         (rest (rest (rest (rest (inventory-equipment (send (dungeon-player d) get-inventory)))))))
+                                                                                                 (inventory-consumables (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]
+                                         [(symbol=? (first (dungeon-menu d)) 'l) (if (not (empty? (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))
+                                                                                     (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
+                                                                                                 (inventory-equiped (send (dungeon-player d) get-inventory))
+                                                                                                  (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (second (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (third (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                        (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))
+                                                                                                  (append (rest (fifth (inventory-equipment (send (dungeon-player d) get-inventory))))
+                                                                                                               (list (first (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))))
+                                                                                                  (inventory-consumables (send (dungeon-player d) get-consumables))
+                                                                                                 (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
+                                                                                     (send (dungeon-player d) get-inventory))]))
+                                                  (dungeon-rooms d) empty (dungeon-name d) (dungeon-menu d))]
+    [else d]))
+    
 
 ;; enough-space-above? : dungeon --> boolean
 (define (enough-space-above? d) 
