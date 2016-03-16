@@ -863,12 +863,21 @@
      [(eq? d 's) (map-animation-south a)]
      [(eq? d 'w) (map-animation-west a)])
    (place-image
-    (tiles->image (room-tiles r))
+    (place-npcs (room-npcs r) (tiles->image (room-tiles r)))
     (+ 405 (- (/ (image-width (tiles->image (room-tiles r))) 2) (posn-x p)))
     (+ 315 (- (/ (image-height (tiles->image (room-tiles r))) 2) (posn-y p)))
     (overlay/align "left" "bottom" 
                    (text (room-name r) 15 'red) 
                    (rectangle 810 630 'solid 'black)))))
+
+;; place-npcs :list-of-npcs, image --> image
+(define (place-npcs l i)
+  (cond
+    [(empty? l) i]
+    [(cons? l) (place-image (map-animation-south (send (first l) get-map-animation))
+                            (posn-x (send (first l) get-position))
+                            (posn-y (send (first l) get-position))
+                            (place-npcs (rest l) i))]))
 
 ;; tiles->image: lolot --> image
 ;; takes a list of lists of tiles and renders them as an image
@@ -1616,12 +1625,13 @@
                                                                                      (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
                                                                                                      (list 
                                                                                                                      (first (second (inventory-equipment (send (dungeon-player d) get-inventory))))
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b)
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a)
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l)))
                                                                                                  (append 
                                                                                                   (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
-                                                                                                        (rest (second (inventory-equipment (send (dungeon-player d) get-inventory))))) 
+                                                                                                        (cons (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h))
+                                                                                                              (rest (second (inventory-equipment (send (dungeon-player d) get-inventory)))))) 
                                                                                                          (rest (rest (inventory-equipment (send (dungeon-player d) get-inventory)))))
                                                                                                  (inventory-consumables (send (dungeon-player d) get-inventory))
                                                                                                  (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
@@ -1630,13 +1640,14 @@
                                                                                      (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
                                                                                                      (list 
                                                                                                                      (first (third (inventory-equipment (send (dungeon-player d) get-inventory))))
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h)
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a)
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h))
+                                                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a))
+                                                                                                                    (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l)))
                                                                                                  (append 
                                                                                                   (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
                                                                                                         (second (inventory-equipment (send (dungeon-player d) get-inventory)))
-                                                                                                        (rest (third (inventory-equipment (send (dungeon-player d) get-inventory))))) 
+                                                                                                        (cons (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b))
+                                                                                                        (rest (third (inventory-equipment (send (dungeon-player d) get-inventory)))))) 
                                                                                                          (rest (rest (rest (inventory-equipment (send (dungeon-player d) get-inventory))))))
                                                                                                  (inventory-consumables (send (dungeon-player d) get-inventory))
                                                                                                  (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
@@ -1645,14 +1656,15 @@
                                                                                      (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
                                                                                                      (list 
                                                                                                                      (first (fourth (inventory-equipment (send (dungeon-player d) get-inventory))))
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h)
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b)
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l)))
                                                                                                  (append 
                                                                                                   (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
                                                                                                         (second (inventory-equipment (send (dungeon-player d) get-inventory)))
                                                                                                         (third (inventory-equipment (send (dungeon-player d) get-inventory)))
-                                                                                                        (rest (fourth (inventory-equipment (send (dungeon-player d) get-inventory))))) 
+                                                                                                        (cons (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a))
+                                                                                                              (rest (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))))) 
                                                                                                          (rest (rest (rest (rest (inventory-equipment (send (dungeon-player d) get-inventory)))))))
                                                                                                  (inventory-consumables (send (dungeon-player d) get-inventory))
                                                                                                  (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
@@ -1661,15 +1673,16 @@
                                                                                      (make-inventory (inventory-weapon (send (dungeon-player d) get-inventory))
                                                                                                      (list 
                                                                                                                      (first (fifth (inventory-equipment (send (dungeon-player d) get-inventory))))
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h)
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b)
-                                                                                                                     (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'h))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'b))
+                                                                                                                     (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'a)))
                                                                                                  (append 
                                                                                                   (list (first (inventory-equipment (send (dungeon-player d) get-inventory)))
                                                                                                         (second (inventory-equipment (send (dungeon-player d) get-inventory)))
                                                                                                         (third (inventory-equipment (send (dungeon-player d) get-inventory)))
                                                                                                         (fourth (inventory-equipment (send (dungeon-player d) get-inventory)))
-                                                                                                        (rest (fifth (inventory-equipment (send (dungeon-player d) get-inventory)))))) 
+                                                                                                        (cons (first (filter-equipment (inventory-equiped (send (dungeon-player d) get-inventory)) 'l))
+                                                                                                              (rest (fifth (inventory-equipment (send (dungeon-player d) get-inventory))))))) 
                                                                                                  (inventory-consumables (send (dungeon-player d) get-inventory))
                                                                                                  (inventory-miscellaneous (send (dungeon-player d) get-inventory)))
                                                                                      (send (dungeon-player d) get-inventory))]))

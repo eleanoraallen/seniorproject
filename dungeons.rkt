@@ -108,11 +108,11 @@
 ;; - the list-of-(list-of-tiles) are th
 ;; - the number is the proboblility you will encounter an enemy on a givin step
 ;; - the list-of-npcs is the list of all possible npcs you could face
-(define-struct room (name tiles encounter-probability possible-encounters))
+(define-struct room (name tiles encounter-probability possible-encounters npcs))
 
-(define TESTROOM1 (make-room "test room 1" TILES1 5 (list NPC)))
-(define TESTROOM2 (make-room "test room 2" TILES2 5 (list NPC)))
-(define TESTROOM3 (make-room "test room 3" TILES3 5 (list NPC)))
+(define TESTROOM1 (make-room "test room 1" TILES1 5 (list NPC) (list NPC NPC2)))
+(define TESTROOM2 (make-room "test room 2" TILES2 10 (list NPC2) (list NPC2)))
+(define TESTROOM3 (make-room "test room 3" TILES3 10 (list NPC2) (list NPC NPC2)))
 
 ;; a menu one of:
 ;; - empty

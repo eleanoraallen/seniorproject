@@ -38,7 +38,7 @@
                                   (bitmap/file "knight_flinch.png")
                                   (bitmap/file "knight_standby.png")
                                   (bitmap/file "knight_standby.png"))]
-       [position (make-posn 0 0)] [map-animation (make-map-animation (circle 10 'solid 'black)
+       [position (make-posn 3000 2200)] [map-animation (make-map-animation (circle 10 'solid 'black)
                                                                      (circle 10 'solid 'black)
                                                                      (circle 10 'solid 'black)
                                                                      (circle 10 'solid 'black))] 
@@ -57,7 +57,7 @@
                                   (bitmap/file "knight_flinch.png")
                                   (bitmap/file "knight_standby.png")
                                   (bitmap/file "knight_standby.png"))]
-       [position (make-posn 0 0)] [map-animation (make-map-animation (circle 10 'solid 'black)
+       [position (make-posn 1000 1000)] [map-animation (make-map-animation (circle 10 'solid 'black)
                                                                      (circle 10 'solid 'black)
                                                                      (circle 10 'solid 'black)
                                                                      (circle 10 'solid 'black))] 
