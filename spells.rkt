@@ -4,6 +4,35 @@
 (require 2htdp/image)
 (provide (all-defined-out))
 
+;; functions for animating spells
+(define (draw-throw p1 p2 n i)
+  (cond
+    [(and (= 0 (- (posn-x p1) (posn-x p2)))
+          (= 0 (- (posn-y p1) (posn-y p2)))) empty]
+    [else
+     (append (draw-throw (make-posn (cond
+                                      [(> (posn-x p1) (posn-x p2)) (- (posn-x p1) n)]
+                                      [(< (posn-x p1) (posn-x p2)) (+ (posn-x p1) n)]
+                                      [else (posn-x p1)])
+                                    (cond
+                                      [(> (posn-y p1) (posn-y p2)) (- (posn-y p1) n)]
+                                      [(< (posn-y p1) (posn-y p2)) (+ (posn-y p1) n)]
+                                      [else (posn-y p1)])) p2 n i)
+                                     (list (place-image i (posn-x p1) (posn-y p1) (bitmap/file "blankbackground.png"))))]))
+
+(define (seal-release i)
+  (list
+   (overlay (scale 7 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 6 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 5 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 4 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 3 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 2 i) (bitmap/file "blankbackground.png"))
+   (overlay i (bitmap/file "blankbackground.png"))
+   (overlay i (bitmap/file "blankbackground.png"))
+   (overlay i (bitmap/file "blankbackground.png"))
+   (overlay i (bitmap/file "blankbackground.png"))))
+
 ;; Heal
 (define HEAL
   (make-spell
@@ -22,8 +51,9 @@
           [position (send c get-position)] [map-animation (send c get-map-animation)]
           [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
           [mp (send c get-mp)] [current-xp (send c get-current-xp)]))
-   (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
-         (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green))
+   (append (seal-release (bitmap/file "heal.png")) 
+           (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
+         (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green)))
    1
    (bitmap/file "heal.png")))
 
@@ -45,16 +75,8 @@
           [animation (send c get-animation)] [position (send c get-position)] 
           [map-animation (send c get-map-animation)] [dir (send c get-dir)] 
           [xp-award (send c get-xp-award)]))
-   (list (bitmap/file "doomrock1.png") (bitmap/file "doomrock2.png")
-         (bitmap/file "doomrock3.png") (bitmap/file "doomrock4.png")
-         (bitmap/file "doomrock5.png") (bitmap/file "doomrock6.png")
-         (bitmap/file "doomrock7.png") (bitmap/file "doomrock8.png")
-         (bitmap/file "doomrock9.png") (bitmap/file "doomrock10.png")
-         (bitmap/file "doomrock11.png") (bitmap/file "doomrock12.png")
-         (bitmap/file "doomrock13.png") (bitmap/file "doomrock14.png")
-         (bitmap/file "doomrock15.png") (bitmap/file "doomrock16.png")
-         (bitmap/file "doomrock17.png") (bitmap/file "doomrock18.png")
-         (bitmap/file "doomrock19.png") (bitmap/file "doomrock20.png"))
+   (append (seal-release (bitmap/file "doom-rock.png")) 
+           (reverse (draw-throw (make-posn 480 -40) (make-posn -60 520) 20 (scale .5 (bitmap/file "doomrock.png")))))
    3
    (bitmap/file "doom-rock.png")))
 
