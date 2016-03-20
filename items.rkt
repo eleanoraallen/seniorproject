@@ -2,6 +2,111 @@
 (require "combat.rkt")
 (require 2htdp/image)
 (provide (all-defined-out))
+
+;; Functions for item use animation 
+(define (use-consumable-1 i)
+  (append
+   (list
+   (place-image i 400 480
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 440
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 400
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 360
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 320
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 280
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 240
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png")))
+   (draw-bubble 40 (make-posn 400 225) i)
+   (draw-bubble 40 (make-posn 400 225) i)))
+
+(define (use-consumable-2 i)
+  (append
+   (list
+   (place-image i 400 480
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 440
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 400
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 360
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 320
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 280
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 240
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png")))
+   (draw-bubble 40 (make-posn 400 225) i)
+   (draw-bubble 40 (make-posn 400 225) i)
+   (draw-bubble 40 (make-posn 400 225) i)))
+
+(define (use-consumable-3 i)
+  (append
+   (list
+   (place-image i 400 480
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 440
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 400
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 360
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 320
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 280
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 240
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png")))
+   (draw-bubble 40 (make-posn 400 225) i)
+   (draw-bubble 40 (make-posn 400 225) i)
+   (draw-bubble 40 (make-posn 400 225) i)
+   (draw-bubble 40 (make-posn 400 225) i)))
+
+(define (draw-bubble n p i)
+  (cond
+    [(= (posn-x p) 680) empty]
+    [else
+     (cons
+      (place-image i 400 225
+      (place-image (circle 10 'solid 'white)
+                   (posn-x p) (posn-y p)
+                   (bitmap/file "blankbackground.png")))
+      (draw-bubble n (make-posn
+                       (+ (posn-x p) n)
+                       (posn-y p)) i))]))
+
+(define (flip-everything l)
+  (cond
+    [(empty? l) empty]
+    [(cons? l)
+     (cons (flip-horizontal (first l))
+           (flip-everything (rest l)))]))
+
+
+
 ;; Consumables -------------------------------------------------------------------------------------------
 (define MAGIC-POTION
   (new consumable%
@@ -20,8 +125,7 @@
                       [position (send c get-position)] [map-animation (send c get-map-animation)]
                       [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
                       [mp (send c get-max-mp)] [current-xp (send c get-current-xp)]))]
-       [animation (list (circle 10 'solid 'orange) (circle 9 'solid 'orange) (circle 8 'solid 'orange) 
-                        (circle 7 'solid 'orange) (circle 6 'solid 'orange) (circle 5 'solid 'orange))]
+       [animation (use-consumable-1 (bitmap/file "magic-potion.gif"))]
        [number 3]))
 
 (define HEALING-POTION
@@ -42,8 +146,7 @@
                       [position (send c get-position)]  [map-animation (send c get-map-animation)]
                       [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
                       [mp (send c get-mp)] [current-xp (send c get-current-xp)]))]
-       [animation (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
-                        (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green))]
+       [animation (use-consumable-1 (bitmap/file "health-potion.gif"))]
        [number 3]))
 
 (define HEALING-PHILTER
@@ -62,8 +165,7 @@
                       [resistance (send c get-resistance)] [animation (send c get-animation)]
                       [position (send c get-position)] [dir (send c get-dir)] 
                       [map-animation (send c get-map-animation)] [xp-award (send c get-xp-award)]))]
-       [animation (list (circle 10 'solid 'orange) (circle 9 'solid 'orange) (circle 8 'solid 'orange) 
-                        (circle 7 'solid 'orange) (circle 6 'solid 'orange) (circle 5 'solid 'orange))]
+       [animation (flip-everything (use-consumable-1 (bitmap/file "health-potion.gif")))]
        [number 1]))
 
 ;; Weapons ------------------------------------------------------------------------------------------------

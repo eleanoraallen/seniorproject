@@ -130,6 +130,6 @@
           [map-animation (send c get-map-animation)] [dir (send c get-dir)] 
           [level (send c get-level)] [max-mp (send c get-max-mp)] [mp (send c get-mp)]
           [current-xp (send c get-current-xp)]))
-   (make-list 5 (text "Evil Spell" 10 'black))
+   (flip-everything (reverse (draw-throw (make-posn 480 -40) (make-posn -60 520) 20 (scale .5 (bitmap/file "doomrock.png")))))
    10
    (bitmap/file "doom-rock.png")))

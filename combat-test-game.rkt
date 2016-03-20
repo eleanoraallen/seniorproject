@@ -1285,6 +1285,7 @@
                                           [description (send (second (inventory-consumables (send (combat-player w) get-inventory))) get-description)]
                                           [effect (send (second (inventory-consumables (send (combat-player w) get-inventory))) get-effect)]
                                           [animation (send (second (inventory-consumables (send (combat-player w) get-inventory))) get-animation)]
+                                          [value (send (second (inventory-consumables (send (combat-player w) get-inventory))) get-value)]
                                           [number (- (send (second (inventory-consumables (send (combat-player w) get-inventory))) get-number) 1)]))
                                (rest (rest (inventory-consumables (send (combat-player w) get-inventory)))))
                               (cons (first (inventory-consumables (send (combat-player w) get-inventory))) 
@@ -1310,6 +1311,7 @@
                                           [description (send (third (inventory-consumables (send (combat-player w) get-inventory))) get-description)]
                                           [effect (send (third (inventory-consumables (send (combat-player w) get-inventory))) get-effect)]
                                           [animation (send (third (inventory-consumables (send (combat-player w) get-inventory))) get-animation)]
+                                          [value (send (third (inventory-consumables (send (combat-player w) get-inventory))) get-value)]
                                           [number (- (send (third (inventory-consumables (send (combat-player w) get-inventory))) get-number) 1)]))
                                (rest (rest (rest (inventory-consumables (send (combat-player w) get-inventory))))))
                               (append (list (first (inventory-consumables (send (combat-player w) get-inventory)))
