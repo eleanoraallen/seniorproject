@@ -4,6 +4,7 @@
 (require "spells.rkt")
 (require "items.rkt")
 (require "dungeons.rkt")
+(require "store.rkt")
 (require 2htdp/image)
 (require 2htdp/universe)
 
@@ -14,6 +15,7 @@
 ;; a game is one of:
 ;; - combat
 ;; - dungeon
+;; - store
 ;; - image (splash screen/end screen)
 
 ;; RENDER --------------------------------------------------------------------------------------------------------
@@ -24,7 +26,8 @@
   (cond
     [(image? w) w]
     [(combat? w) (render-combat w)]
-    [(dungeon? w) (render-dungeon w)]))
+    [(dungeon? w) (render-dungeon w)]
+    [else (render-store w)]))
 
 ;; render-combat: combat --> image
 ;; renders a combat as an image
@@ -903,7 +906,8 @@
   (cond
     [(or (image? w)) w]
     [(combat? w) (combat-tock w)]
-    [(dungeon? w) (dungeon-tock w)]))
+    [(dungeon? w) (dungeon-tock w)]
+    [(store? w) w]))
 
 ;; combat-tock : combat --> combat
 ;; preforms necessary opperations for every tick when in combat
@@ -1141,7 +1145,8 @@
      (if (or (key=? k "escape")
              (key=? k "\r")) TESTDUNGEON1 w)]
     [(combat? w) (handle-combat-key w k)]
-    [(dungeon? w) (handle-dungeon-key w k)]))
+    [(dungeon? w) (handle-dungeon-key w k)]
+    [(store? w) (handle-store-key w k)]))
 
 ;; handle-combat-key : combat --> combat
 (define (handle-combat-key w k)
@@ -1365,6 +1370,7 @@
       (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)) empty)]
     [(not (empty? (dungeon-menu d))) (handle-menu-key d k)]
     [(key=? k "escape") (make-dungeon (dungeon-player d) (dungeon-rooms d) empty (dungeon-name d) 'player-info)]
+    [(key=? k "q") (make-store (dungeon-player d) STORE-INVENTORY1 0 'c (dungeon-name d) (room-name (first (dungeon-rooms d))))]
     [(or
       (not (empty? (dungeon-images d)))
       (not (or (key=? k "w") (key=? k "s")
