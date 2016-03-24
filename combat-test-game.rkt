@@ -5,6 +5,7 @@
 (require "items.rkt")
 (require "dungeons.rkt")
 (require "store.rkt")
+(require "create.rkt")
 (require 2htdp/image)
 (require 2htdp/universe)
 
@@ -27,6 +28,7 @@
     [(image? w) w]
     [(combat? w) (render-combat w)]
     [(dungeon? w) (render-dungeon w)]
+    [(create? w) (render-create w)]
     [else (render-store w)]))
 
 ;; render-combat: combat --> image
@@ -904,10 +906,9 @@
 ;; tock: game --> game
 (define (tock w) 
   (cond
-    [(or (image? w)) w]
     [(combat? w) (combat-tock w)]
     [(dungeon? w) (dungeon-tock w)]
-    [(store? w) w]))
+    [else w]))
 
 ;; combat-tock : combat --> combat
 ;; preforms necessary opperations for every tick when in combat
@@ -1143,7 +1144,8 @@
   (cond
     [(image? w)
      (if (or (key=? k "escape")
-             (key=? k "\r")) TESTDUNGEON1 w)]
+             (key=? k "\r")) STARTINGCREATE w)]
+    [(create? w) (handle-create-key w k)]
     [(combat? w) (handle-combat-key w k)]
     [(dungeon? w) (handle-dungeon-key w k)]
     [(store? w) (handle-store-key w k)]))
