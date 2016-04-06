@@ -85,6 +85,87 @@
    (draw-bubble 40 (make-posn 400 225) i)
    (draw-bubble 40 (make-posn 400 225) i)))
 
+(define (npc-use-consumable-1 i)
+  (append
+   (list
+   (place-image i 400 480
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 440
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 400
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 360
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 320
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 280
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 240
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png")))
+   (draw-npc-bubble 40 (make-posn 400 225) i)
+   (draw-npc-bubble 40 (make-posn 400 225) i)))
+
+(define (npc-use-consumable-2 i)
+  (append
+   (list
+   (place-image i 400 480
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 440
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 400
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 360
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 320
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 280
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 240
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png")))
+   (draw-npc-bubble 40 (make-posn 400 225) i)
+   (draw-npc-bubble 40 (make-posn 400 225) i)
+   (draw-npc-bubble 40 (make-posn 400 225) i)))
+
+(define (npc-use-consumable-3 i)
+  (append
+   (list
+   (place-image i 400 480
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 440
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 400
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 360
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 320
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 280
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 240
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png"))
+   (place-image i 400 225
+  (bitmap/file "blankbackground.png")))
+   (draw-npc-bubble 40 (make-posn 400 225) i)
+   (draw-npc-bubble 40 (make-posn 400 225) i)
+   (draw-npc-bubble 40 (make-posn 400 225) i)
+   (draw-npc-bubble 40 (make-posn 400 225) i)))
+
 (define (draw-bubble n p i)
   (cond
     [(= (posn-x p) 680) empty]
@@ -98,6 +179,19 @@
                        (+ (posn-x p) n)
                        (posn-y p)) i))]))
 
+(define (draw-npc-bubble n p i)
+  (cond
+    [(<= (posn-x p) 120) empty]
+    [else
+     (cons
+      (place-image i 400 225
+      (place-image (circle 10 'solid 'white)
+                   (posn-x p) (posn-y p)
+                   (bitmap/file "blankbackground.png")))
+      (draw-npc-bubble n (make-posn
+                       (- (posn-x p) n)
+                       (posn-y p)) i))]))
+
 (define (flip-everything l)
   (cond
     [(empty? l) empty]
@@ -108,6 +202,8 @@
 
 
 ;; Consumables -------------------------------------------------------------------------------------------
+
+;; player ---------------------------------------------
 (define MAGIC-POTION
   (new consumable%
        [name "Magic Potion"] 
@@ -149,6 +245,7 @@
        [animation (use-consumable-1 (bitmap/file "health-potion.gif"))]
        [number 3]))
 
+;; npc ---------------------------------------------
 (define HEALING-PHILTER
   (new consumable%
        [name "Healing Philter"] 
@@ -163,9 +260,9 @@
                       [strength (send c get-strength)] [spells (send c get-spells)]
                       [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
                       [resistance (send c get-resistance)] [animation (send c get-animation)]
-                      [position (send c get-position)] [dir (send c get-dir)] 
+                      [position (send c get-position)] [dir (send c get-dir)] [diologue (send c get-diologue)]
                       [map-animation (send c get-map-animation)] [xp-award (send c get-xp-award)]))]
-       [animation (flip-everything (use-consumable-1 (bitmap/file "health-potion.gif")))]
+       [animation (npc-use-consumable-3 (bitmap/file "health-potion.gif"))]
        [number 1]))
 
 ;; Weapons ------------------------------------------------------------------------------------------------

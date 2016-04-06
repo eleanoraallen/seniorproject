@@ -13,6 +13,7 @@
          (struct-out combat)
          (struct-out map-animation)
          (struct-out store)
+         (struct-out diologue-frame)
          (all-defined-out))
 
 ;; CHARACTERS -----------------------------------------------------------
@@ -74,6 +75,14 @@
     (define/public (dead?) (<= health 0))))
 
 (define-struct posn (x y))
+
+;; a diologue is one of
+;; - empty
+;; - diologue frame
+;; - symbol : 'e 'c
+
+;; a diologe-frame is a (make-diologue-frame list-of-strings image)
+(define-struct diologue-frame (strings image))
 
 (define player%
   (class* character% (base-character<%>)
@@ -198,6 +207,7 @@
     (super-new)
     (init-field
      xp-award ;; the xp award you get for defeating the enemy
+     diologue ;; diologue
      )
     (inherit get-name
              get-health
@@ -244,6 +254,7 @@
                           #:position [new-position position]
                           #:map-animation [new-map-animation map-animation]
                           #:dir [new-dir dir]
+                          #:diologue [new-diologue diologue]
                           #:xp-award [new-xp-award xp-award])
       (new this%
            [name new-name]
@@ -260,6 +271,7 @@
            [animation new-animation]
            [position new-position]
            [dir new-dir]
+           [diologue new-diologue]
            [map-animation new-map-animation]
            [xp-award new-xp-award]))
     (define/public (get-xp-award) xp-award)
@@ -267,6 +279,7 @@
       ((spell-effect spell) this))
     (define/public (use-consumable c)
       ((send c get-effect) this))
+    (define/public (get-diologue) diologue)
     (define/public (apply-attack attacker-accuracy attacker-damage weapon-type)
       (send this clone #:health (- health (if (attack-landed? base-agility attacker-accuracy)
                                               (damage-character this attacker-damage weapon-type) 0))))))

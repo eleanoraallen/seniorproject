@@ -33,7 +33,7 @@ Early Life:
 Reason For Adventuring:
 1 Money & Power: +2 strength
 2 Search For Knowledge: +2 MP
-3 Fulfillment of your life long dream: +2 health
+3 Revenge: +2 health
 4 Thirst for Adventure: +2 agility
 |#
 ;; a create is a (make-create int string symbol int int int)
@@ -41,35 +41,50 @@ Reason For Adventuring:
 (define STARTINGCREATE (make-create 1 "" 'm 0 0 0))
 
 ;;;;;;;;;;;;;;;;;;;;
-(define WELCOME (overlay (text "Welcome. Create character." 20 'black) (square 400 'solid 'pink)))
-(define GENDER (overlay (text "Choose Character's gender: Male, Female" 20 'black) (square 400 'solid 'pink)))
-(define BS1 (overlay (above (text "Parents were:" 20 'black)
-                            (text "farmers" 20 'black)
-                            (text "Mercenaries" 20 'black)
-                            (text "poachers" 20 'black)
-                            (text "thieves" 20 'black)) (square 40 'solid 'pink)))
-(define BS1a (square 400 'solid 'red))
-(define BS1b (square 400 'solid 'blue))
-(define BS1c (square 400 'solid 'green))
-(define BS1d (square 400 'solid 'yellow))
-(define BS2 (overlay (above (text "Childhood:" 20 'black)
-                            (text "school" 20 'black)
-                            (text "training" 20 'black)
-                            (text "storekeeper" 20 'black)
-                            (text "wanderer" 20 'black)) (square 40 'solid 'pink)))
-(define BS2a (square 400 'solid 'red))
-(define BS2b (square 400 'solid 'blue))
-(define BS2c (square 400 'solid 'green))
-(define BS2d (square 400 'solid 'yellow))
-(define BS3 (overlay (above (text "Why Adventure?:" 20 'black)
-                            (text "money and power" 20 'black)
-                            (text "archain knowledge" 20 'black)
-                            (text "your dreams" 20 'black)
-                            (text "thirst for adventure" 20 'black)) (square 40 'solid 'pink)))
-(define BS3a (square 400 'solid 'red))
-(define BS3b (square 400 'solid 'blue))
-(define BS3c (square 400 'solid 'green))
-(define BS3d (square 400 'solid 'yellow))
+(define WELCOME (overlay (text "You will now create your character and select their backstory." 20 'black)
+                         (rectangle 810 630 'solid 'gray)))
+
+(define GENDER (overlay (above
+                         (text "Choose your character's gender:" 20 'black)
+                         (text "" 20 'black)
+                         (text "1) Male" 20 'black)
+                         (text "2) Female" 20 'black)) (rectangle 810 630 'solid 'gray)))
+
+(define BS1 (overlay (above (text "Your parents were:" 20 'black)
+                            (text "" 20 'black)
+                            (text "1) Humble Farmers" 20 'black)
+                            (text "2) Fearsome Mercenaries" 20 'black)
+                            (text "3) Clever Poachers" 20 'black)
+                            (text "4) Notorious Thieves" 20 'black)) (rectangle 810 630 'solid 'gray)))
+
+(define BS1a (overlay (text "Your parents were humble farmers who taught you the value of hard work and percerverence." 12 'black) (rectangle 810 630 'solid 'gray)))
+(define BS1b (overlay (text "Your parents were fearsome mercenaries who taught you to fight at an early age." 12 'black) (rectangle 810 630 'solid 'gray)))
+(define BS1c (overlay (text "Your parents were clever poachers who taught you the ways of the forest" 12 'black) (rectangle 810 630 'solid 'gray)))
+(define BS1d (overlay (text "Your parents were notorious theives who taught you stealth and cunning." 12 'black) (rectangle 810 630 'solid 'gray)))
+
+(define BS2 (overlay (above (text "You spent adolecence:" 20 'black)
+                            (text "" 20 'black)
+                            (text "1) As a student at the local temple" 20 'black)
+                            (text "2) Training with various exotic weapons" 20 'black)
+                            (text "3) Working as a storekeeper" 20 'black)
+                            (text "4) Wandering the countryside" 20 'black)) (rectangle 810 630 'solid 'gray)))
+
+(define BS2a (overlay (text "You spent your adolecence as a student learning ancient and arcane magics from the priests and nuns of the temple." 12 'black) (rectangle 810 630 'solid 'gray)))
+(define BS2b (overlay (text "You spent your adolecence training, eventuly surpassing your teacher to become the best figher in your village." 12 'black) (rectangle 810 630 'solid 'gray)))
+(define BS2c (overlay (text "You spent your adolecence working in a store, expanding your practical knowledge and saving up some money." 12 'black) (rectangle 810 630 'solid 'gray)))
+(define BS2d (overlay (text "You spent your adolecence wandering the country, gaining an apreciation for adventuring and learning how to survive on your own." 12 'black) (rectangle 810 630 'solid 'gray)))
+
+(define BS3 (overlay (above (text "Why did you set out on this adventure?:" 20 'black)
+                            (text "" 20 'black)
+                            (text "1) Money and power" 20 'black)
+                            (text "2) A quest for knowledge" 20 'black)
+                            (text "3) Revenge!" 20 'black)
+                            (text "4) A thirst for adventure" 20 'black)) (rectangle 810 630 'solid 'gray)))
+
+(define BS3a (overlay (text "You care for nothing but money and power, and went adventuring in the hope of obtaining both." 12 'black) (rectangle 810 630 'solid 'gray)))
+(define BS3b (overlay (text "Yours is a quest for knowledge. Hopefuly to uncover some lost and ancient wisdom during your wanderings." 12 'black) (rectangle 810 630 'solid 'gray)))
+(define BS3c (overlay (text "You're not willing to say much now, but there's someone you need to track down and you can't do that in your village." 12 'black) (rectangle 810 630 'solid 'gray)))
+(define BS3d (overlay (text "All your life you've wanted to go out and see the world and have a grand adventure. This is your chance." 12 'black) (rectangle 810 630 'solid 'gray)))
 
 ;; render-create: create --> image
 (define (render-create c)
@@ -77,7 +92,7 @@ Reason For Adventuring:
     [(= (create-step c) 1) WELCOME]
     [(= (create-step c) 2) (overlay (above (text "Enter Name:" 20 'black)
                                            (text (create-name c) 20 'black))
-                                    (square 1000 'solid 'white))]
+                                    (rectangle 810 630 'solid 'gray))]
     [(= (create-step c) 3) GENDER]
     [(= (create-step c) 4) (cond
                              [(= (create-decision1 c) 0) BS1]
@@ -116,7 +131,7 @@ Reason For Adventuring:
                                    (not (key=? k "rshift"))
                                    (not (key=? k "escape"))
                                    (not (key=? k "control"))
-                                   (<= (length (explode (create-name c))) 12))
+                                   (<= (string-length (create-name c)) 12))
                               (make-create 2 (string-append (create-name c) k) (create-gender c)
                                         (create-decision1 c) (create-decision2 c)
                                         (create-decision3 c))]

@@ -38,11 +38,11 @@
                                   (bitmap/file "knight_flinch.png")
                                   (bitmap/file "knight_standby.png")
                                   (bitmap/file "knight_standby.png"))]
-       [position (make-posn 3000 2200)] [map-animation (make-map-animation (circle 10 'solid 'black)
-                                                                     (circle 10 'solid 'black)
-                                                                     (circle 10 'solid 'black)
-                                                                     (circle 10 'solid 'black))] 
-       [dir 'e] [xp-award 250]))
+       [position (make-posn 3000 2250)] [map-animation (make-map-animation (square 50 'solid 'black)
+                                                                     (square 50 'solid 'black)
+                                                                     (square 50 'solid 'black)
+                                                                     (square 50 'solid 'black))] 
+       [dir 'e] [diologue empty] [xp-award 250]))
 
 (define NPC2
   (new npc%
@@ -57,11 +57,11 @@
                                   (bitmap/file "knight_flinch.png")
                                   (bitmap/file "knight_standby.png")
                                   (bitmap/file "knight_standby.png"))]
-       [position (make-posn 1000 1000)] [map-animation (make-map-animation (circle 10 'solid 'black)
-                                                                     (circle 10 'solid 'black)
-                                                                     (circle 10 'solid 'black)
-                                                                     (circle 10 'solid 'black))] 
-       [dir 'e] [xp-award 250]))
+       [position (make-posn 1000 1000)] [map-animation (make-map-animation (square 30 'solid 'black)
+                                                                     (square 30 'solid 'black)
+                                                                     (square 30 'solid 'black)
+                                                                     (square 30 'solid 'black))] 
+       [dir 'e] [diologue empty] [xp-award 250]))
 
 ;; Player Functions --------------------------------------------------------------------------------------------
 
