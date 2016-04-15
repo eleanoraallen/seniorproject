@@ -80,6 +80,7 @@
 ;; - empty
 ;; - diologue frame
 ;; - symbol : 'e 'c
+;; NO IT ISN'T!
 
 ;; a diologe-frame is a (make-diologue-frame list-of-strings image)
 (define-struct diologue-frame (strings image))
@@ -385,6 +386,16 @@
     (define/public (get-effect) effect) ;; gets items effect
     (define/public (get-animation) animation) ;; gets items animation
     (define/public (get-number) number) ;; gets the number of this item player has
+    (define/public (clone #:image [new-image image] #:name [new-name name] #:description [new-description description] #:value [new-value value]
+                          #:effect [new-effect effect] #:animation [new-animation animation] #:number [new-number number])
+      (new this%
+           [image new-image]
+           [name new-name]
+           [description new-description]
+           [value new-value]
+           [effect new-effect]
+           [animation new-animation]
+           [number new-number]))
     ))
 
 (define gold%
@@ -392,13 +403,22 @@
     (super-new)
     (inherit-field name
                    image
-                   description)
+                   description
+                   value)
     (inherit get-image
              get-name)
     (init-field
      number ;; an int that is the number of this item the player has
      )
     (define/public (get-number) number) ;; gets the number of this item player has
+    (define/public (clone #:name [new-name name] #:image [new-image image] #:description [new-description description]
+                          #:value [new-value value] #:number [new-number number])
+      (new this%
+           [image new-image]
+           [name new-name]
+           [description new-description]
+           [value new-value]
+           [number new-number]))
     ))
 
 ;; an inventory is a (make-inventory weapon list-of-equipment list-of-lists-of-items list-of-consumables list-of-items)
@@ -440,7 +460,7 @@
 ;; - 'i
 ;; - 'e
 ;; the list of images are the images in the animation queue
-(define-struct combat (player npc phase menu loi dungeon-name room-name))
+(define-struct combat (player npc phase menu loi dungeon-name room-name bg))
 
 ;; Store -----------------------------------------------------------------------------------
 ;; a store is a (make-store player inventory number symbol string string)

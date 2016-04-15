@@ -114,6 +114,12 @@
 (define TESTROOM2 (make-room "test room 2" TILES2 10 (list NPC2) (list NPC2)))
 (define TESTROOM3 (make-room "test room 3" TILES3 10 (list NPC2) (list NPC NPC2)))
 
+;; get-background
+(define (get-background s)
+  (cond
+    [(string=? s "test room 1") (bitmap/file "background.png")]
+    [else (bitmap/file "blankbackground.png")]))
+
 ;; a menu one of:
 ;; - empty
 ;; - 'player-info

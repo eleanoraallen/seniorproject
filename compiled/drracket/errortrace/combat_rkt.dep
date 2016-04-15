@@ -1,1 +1,1 @@
-("6.1.1" ("6ad7353b03f909ab1ca928449ad5741f6d5efaf7" . "d315112013904139c0058a9f7eb5fffb47dabe34") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"2htdp" #"image.rkt") (collects #"2htdp" #"universe.rkt"))
+("6.4" ("dc2bcc3cd918b723f217f2e9af8f7add4a56cda0" . "ebe5dffbc81706325243972299c06854f0306a05") (collects #"2htdp" #"image.rkt") (collects #"2htdp" #"universe.rkt") (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))

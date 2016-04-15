@@ -365,6 +365,6 @@
        [name "Gold"]
        [description "The coin of the relm."]
        [image (circle 10 'solid 'gold)]
-       [value n]
+       [value 0]
        [number n]))
   
