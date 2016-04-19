@@ -6,6 +6,7 @@
 (require "spells.rkt")
 (require "items.rkt")
 (require "dungeons.rkt")
+(require "music.rkt")
 (provide (struct-out create)
          (all-defined-out))
 
@@ -182,6 +183,7 @@ Reason For Adventuring:
                              [else c])]
     [(= (create-step c) 6) (cond
                              [(and (key=? k "\r") (> (create-decision2 c) 0))
+                              (superset dungeon-music)
                               (make-dungeon (send SPELLSWORD clone
                                                   #:name (create-name c)
                                                   #:health (+ 40

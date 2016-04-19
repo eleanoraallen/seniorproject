@@ -6,6 +6,7 @@
 (require "dungeons.rkt")
 (require "store.rkt")
 (require "create.rkt")
+(require "music.rkt")
 (require 2htdp/image)
 (require 2htdp/universe)
 
@@ -938,12 +939,14 @@
                   (combat-dungeon-name w)
                   (combat-room-name w)
                   (combat-bg  w))]
-    [(send (combat-player w) dead?) 
+    [(send (combat-player w) dead?)
      (overlay (above (text "'Damn it, how will I ever get out of this labyrinth?'" 30 'black)
                      (text "- Simon Bolivar" 30 'black))
-              (rectangle 810 630 'solid 'gray))]
-    [(send (combat-npc w) dead?) 
-     (construct-dungeon w)]
+              (rectangle 810 630 'solid 'gray))
+     (superset dead-music)]
+    [(send (combat-npc w) dead?)
+     (construct-dungeon w)
+     (superset dungeon-music)]
     [(symbol=? (combat-phase w) 'e) (npc-action w)]
     [(and (symbol=? (combat-phase w) 'ea) (empty? (combat-loi w)))
      (make-combat (combat-player w) (combat-npc w) 'p 'm empty (combat-dungeon-name w) (combat-room-name w) (combat-bg w))]
@@ -1161,13 +1164,13 @@
 ;; takes a game and a keystroke and alters game if necessary
 (define (handle-key w k)
   (cond
-    [(image? w)
-     (if (or (key=? k "escape")
-             (key=? k "\r")) STARTINGCREATE w)]
+    [(and (image? w) (or (key=? k "escape")
+             (key=? k "\r"))) (superset splash-music) STARTINGCREATE]
     [(create? w) (handle-create-key w k)]
     [(combat? w) (handle-combat-key w k)]
     [(dungeon? w) (handle-dungeon-key w k)]
-    [(store? w) (handle-store-key w k)]))
+    [(store? w) (handle-store-key w k)]
+    [else w]))
 
 ;; handle-combat-key : combat --> combat
 (define (handle-combat-key w k)
@@ -1404,7 +1407,7 @@
           (can-interact? (dungeon-player d) (closest-npc (send (dungeon-player d) get-position) (room-npcs (first (dungeon-rooms d))))))
      (make-dungeon (dungeon-player d) (dungeon-rooms d) (send (closest-npc (send (dungeon-player d) get-position) (room-npcs (first (dungeon-rooms d)))) get-diologue) (dungeon-name d) (dungeon-menu d))]
     [(key=? k "escape") (make-dungeon (dungeon-player d) (dungeon-rooms d) empty (dungeon-name d) 'player-info)]
-    [(key=? k "q") (make-store (dungeon-player d) STORE-INVENTORY1 0 'c (dungeon-name d) (room-name (first (dungeon-rooms d))))]
+    [(key=? k "q") (superset store-music) (make-store (dungeon-player d) STORE-INVENTORY1 0 'c (dungeon-name d) (room-name (first (dungeon-rooms d))))]
     [(or
       (not (empty? (dungeon-images d)))
       (not (or (key=? k "w") (key=? k "s")
@@ -1412,6 +1415,7 @@
     [else
      (cond
        [(> (room-encounter-probability (first (dungeon-rooms d))) (random 1000))
+        (superset combat-music)
         (make-dungeon (dungeon-player d)
                       (dungeon-rooms d)
                       (append
@@ -1995,4 +1999,5 @@
             [on-key handle-key]))
 
 ;; run
+(start-music)
 (main (overlay (above (text "The General's Labyrinth" 50 'black) (text "Press Enter to play" 30 'black)) (rectangle 810 630 'solid 'gray)))

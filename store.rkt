@@ -4,6 +4,7 @@
 (require "spells.rkt")
 (require "items.rkt")
 (require "dungeons.rkt")
+(require "music.rkt")
 (require 2htdp/image)
 (require 2htdp/universe)
 (provide (all-defined-out))
@@ -1085,6 +1086,7 @@
      (cond
        [(or (key=? k "3")
             (key=? k "escape"))
+        (superset dungeon-music)
         (make-dungeon (store-player s)
                       (cons (get-room (get-dungeon (store-dungeon s)) (store-room s))
                             (filter (lambda (x) (not (string=? (room-name x) (store-room s))))
