@@ -5,6 +5,13 @@
 (require 2htdp/image)
 (provide (all-defined-out))
 
+;; Diologue Functions --------------------------------------------------------------------------------------------
+(define TAKE (lambda (d)
+               (make-dungeon (send (dungeon-player d) clone #:health 1)
+                             (dungeon-rooms d) (list "MWAHAHAHAHAHAHAHAHA!"
+                                                     "(just buy some health potions from the store, you'll be fine)")
+                             (dungeon-name d) (dungeon-menu d))))
+
 ;; Player Characters ------------------------------------------------------------------------------------------------
 (define SPELLSWORD
   (new player%
@@ -42,7 +49,22 @@
                                                                      (square 50 'solid 'black)
                                                                      (square 50 'solid 'black)
                                                                      (square 50 'solid 'black))] 
-       [dir 'e] [diologue empty] [xp-award 250]))
+       [dir 'e] [diologue (list "I can say words!"
+                                "Words"
+                                "But I can do far  more than that"
+                                "diologues can lead to any valid gamestate"
+                                "for instance, your next click could lead to a boss battle"
+                                "or to a compleatly different dungeon"
+                                "one that is significantly more unpleasent than this one"
+                                "I could even end the game right now"
+                                "Don't think I wouldn't"
+                                "I'm very evil"
+                                "What's that?"
+                                "You don't want me to do that?"
+                                "Well OK."
+                                "I'll let you off easy this time"
+                                "Alakasam!"
+                                TAKE)] [xp-award 250]))
 
 (define NPC2
   (new npc%
@@ -61,7 +83,23 @@
                                                                      (square 30 'solid 'black)
                                                                      (square 30 'solid 'black)
                                                                      (square 30 'solid 'black))] 
-       [dir 'e] [diologue empty] [xp-award 250]))
+       [dir 'e] [diologue (list "I can say words!"
+                                "Words"
+                                "But I can do far  more than that"
+                                "diologues can lead to any valid gamestate"
+                                "for instance, your next click could lead to a boss battle"
+                                "or to a compleatly different dungeon"
+                                "one that is significantly more unpleasent than this one"
+                                "I could even end the game right now"
+                                "Don't think I wouldn't"
+                                "I'm very evil"
+                                "What's that?"
+                                "You don't want me to do that?"
+                                "Well OK."
+                                "I'll let you off easy this time"
+                                "Alakasam!"
+                                TAKE)] [xp-award 250]))
+
 
 ;; Player Functions --------------------------------------------------------------------------------------------
 

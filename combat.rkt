@@ -13,7 +13,10 @@
          (struct-out combat)
          (struct-out map-animation)
          (struct-out store)
-         (struct-out diologue-frame)
+         tile% 
+         (struct-out room)
+         (struct-out portal)
+         (struct-out dungeon)
          (all-defined-out))
 
 ;; CHARACTERS -----------------------------------------------------------
@@ -77,13 +80,8 @@
 (define-struct posn (x y))
 
 ;; a diologue is one of
-;; - empty
-;; - diologue frame
-;; - symbol : 'e 'c
-;; NO IT ISN'T!
-
-;; a diologe-frame is a (make-diologue-frame list-of-strings image)
-(define-struct diologue-frame (strings image))
+;; - list-of-strings
+;; - a function that takes a dungeon and outputs another dungeon
 
 (define player%
   (class* character% (base-character<%>)
@@ -465,3 +463,41 @@
 ;; Store -----------------------------------------------------------------------------------
 ;; a store is a (make-store player inventory number symbol string string)
 (define-struct store (player inventory num sym dungeon room))
+
+;; DUNGEON -----------------------------------------------------------------------------------
+
+;; a portal is a (make-portal string posn) where
+;; the first string is the name of the dungeon to which the portal leads
+;; the second string is the name of the room to which the portal leads
+;; the posn is the position in the room to which the portal leads
+(define-struct portal (dungeon room position))
+
+(define base-tile<%>
+  (interface ()
+    get-image ;; gets tiles image
+    passable? ;; true iff tile is passable
+    portal? ;; true iff tile contains a portal
+    ))
+
+(define tile%
+  (class* object% (base-tile<%>)
+    (super-new)
+    (init-field
+     image ;; an image that is an image of the tile
+     passable ;; true iff tile is passable
+     portal ;; is one of: empty portal
+     )
+    (define/public (get-image) image)
+    (define/public (passable?) passable)
+    (define/public (portal?) (not (empty? portal)))
+    (define/public (get-portal) portal)))
+
+;; a room is a (make-room string list-of-tiles num list-of-npcs) where:
+;; - the string is the name of the room
+;; - the list-of-(list-of-tiles) are th
+;; - the number is the proboblility you will encounter an enemy on a givin step
+;; - the list-of-npcs is the list of all possible npcs you could face
+(define-struct room (name tiles encounter-probability possible-encounters npcs))
+
+;; a dungeon is a (make-dungeon player list-of-rooms loi menu)
+(define-struct dungeon (player rooms images name menu))

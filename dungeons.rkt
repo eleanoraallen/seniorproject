@@ -5,40 +5,10 @@
 (require "items.rkt")
 (require "spells.rkt")
 (require "characters.rkt")
-(provide tile% 
-         (struct-out room)
-         (struct-out portal)
-         (struct-out dungeon)
-         (all-defined-out))
+(provide (all-defined-out))
 
 (define PLAYER-SPEED 20)
 ;; ----------------------------------------------------------------------------
-
-;; a portal is a (make-portal string posn) where
-;; the first string is the name of the dungeon to which the portal leads
-;; the second string is the name of the room to which the portal leads
-;; the posn is the position in the room to which the portal leads
-(define-struct portal (dungeon room position))
-
-(define base-tile<%>
-  (interface ()
-    get-image ;; gets tiles image
-    passable? ;; true iff tile is passable
-    portal? ;; true iff tile contains a portal
-    ))
-
-(define tile%
-  (class* object% (base-tile<%>)
-    (super-new)
-    (init-field
-     image ;; an image that is an image of the tile
-     passable ;; true iff tile is passable
-     portal ;; is one of: empty portal
-     )
-    (define/public (get-image) image)
-    (define/public (passable?) passable)
-    (define/public (portal?) (not (empty? portal)))
-    (define/public (get-portal) portal)))
 
 (define W (new tile%
                    [image (bitmap/file "dirt.jpg")]
@@ -103,12 +73,8 @@
                 (list B B B B B B B B B B B B B B B B B B B B B B B B)))
                 
 
-;; a room is a (make-room string list-of-tiles num list-of-npcs) where:
-;; - the string is the name of the room
-;; - the list-of-(list-of-tiles) are th
-;; - the number is the proboblility you will encounter an enemy on a givin step
-;; - the list-of-npcs is the list of all possible npcs you could face
-(define-struct room (name tiles encounter-probability possible-encounters npcs))
+
+;; ROOMS
 
 (define TESTROOM1 (make-room "test room 1" TILES1 5 (list NPC) (list NPC NPC2)))
 (define TESTROOM2 (make-room "test room 2" TILES2 10 (list NPC2) (list NPC2)))
@@ -126,9 +92,6 @@
 ;; - 'items
 ;; - 'equipment
 ;; - 'spells
-
-;; a dungeon is a (make-dungeon player list-of-rooms loi menu)
-(define-struct dungeon (player rooms images name menu))
 
 (define TESTDUNGEON1 (make-dungeon SPELLSWORD (list TESTROOM1 TESTROOM2) empty "test_dungeon_1" empty))
 (define TESTDUNGEON2 (make-dungeon SPELLSWORD (list TESTROOM3) empty "test_dungeon_2" empty))

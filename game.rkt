@@ -241,15 +241,30 @@
 (define (render-dungeon d)
   (if (empty? (dungeon-menu d))
       (overlay
-       (if (empty? (dungeon-images d)) (square 0 'solid 'blue) 
-           (if (= (image-height (first (dungeon-images d))) 1)
-               (rectangle 810 630 'solid 'black)
-               (first (dungeon-images d))))
+       (cond
+         [(empty? (dungeon-images d)) (square 0 'solid 'blue)]
+         [(string? (first (dungeon-images d))) (render-diologue (first (dungeon-images d)))]
+         [(and (not (string? (first (dungeon-images d))))
+               (not (image? (first (dungeon-images d))))) (square 0 'solid 'black)]
+         [(= (image-height (first (dungeon-images d))) 1) (rectangle 810 630 'solid 'black)]
+         [(image? (first (dungeon-images d))) (first (dungeon-images d))]
+         [else (square 0 'solid 'pink)])
        (render-room (send (dungeon-player d) get-position)
                     (send (dungeon-player d) get-dir)
                     (send (dungeon-player d) get-map-animation)
                     (first (dungeon-rooms d))))
       (render-dungeon-menu d)))
+
+(define (render-diologue s)
+  (overlay/align "middle" "bottom"
+                 (overlay (text s 25 'black)
+                          (rectangle (+ 5 (image-width (text s 25 'black)))
+                                     (+ 5 (image-height (text s 25 'black)))
+                                     'solid 'gray)
+                          (rectangle (+ 10 (image-width (text s 25 'black)))
+                                     (+ 10 (image-height (text s 25 'black)))
+                                     'solid 'black))
+                 (bitmap/file "blankbackground.png")))
 
 ;; render-dungeon-menu : dungeon --> image
 (define (render-dungeon-menu d)
@@ -1124,7 +1139,8 @@
 ;; preforms actions that should happen every tick when in a dungeon
 (define (dungeon-tock d)
   (cond
-    [(empty? (dungeon-images d)) d]
+    [(or (empty? (dungeon-images d))
+         (not (image? (first (dungeon-images d))))) d]
     [(= 1 (image-height (first (dungeon-images d))))
      (make-combat (dungeon-player d)
                   (list-ref (room-possible-encounters (first (dungeon-rooms d)))
@@ -1374,6 +1390,19 @@
       empty
       (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)) empty)]
     [(not (empty? (dungeon-menu d))) (handle-menu-key d k)]
+    [(and (or (key=? k " ") (key=? k "\r"))
+          (not (empty? (dungeon-images d)))
+          (not (empty? (rest (dungeon-images d))))
+          (not (string? (second (dungeon-images d))))
+          (not (image? (second (dungeon-images d))))) ((second (dungeon-images d)) d)]
+    [(and (not (empty? (dungeon-images d))) (string? (first (dungeon-images d))))
+     (if (or (key=? k " ") (key=? k "\r"))
+         (make-dungeon (dungeon-player d) (dungeon-rooms d) (rest (dungeon-images d)) (dungeon-name d) (dungeon-menu d)) d)]
+    [(and (or (key=? k " ") (key=? k "\r"))
+          (empty? (dungeon-images d))
+          (not (empty? (room-npcs (first (dungeon-rooms d)))))
+          (can-interact? (dungeon-player d) (closest-npc (send (dungeon-player d) get-position) (room-npcs (first (dungeon-rooms d))))))
+     (make-dungeon (dungeon-player d) (dungeon-rooms d) (send (closest-npc (send (dungeon-player d) get-position) (room-npcs (first (dungeon-rooms d)))) get-diologue) (dungeon-name d) (dungeon-menu d))]
     [(key=? k "escape") (make-dungeon (dungeon-player d) (dungeon-rooms d) empty (dungeon-name d) 'player-info)]
     [(key=? k "q") (make-store (dungeon-player d) STORE-INVENTORY1 0 'c (dungeon-name d) (room-name (first (dungeon-rooms d))))]
     [(or
@@ -1423,6 +1452,47 @@
                #:dir 'e)
          (dungeon-rooms d) (dungeon-images d) (dungeon-name d) empty)]
        [else d])]))
+
+;; can-interact?
+(define (can-interact? p c)
+   (or
+    (and (characters-touching? (send p clone
+                                       #:position
+                                       (make-posn (- (posn-x (send p get-position)) PLAYER-SPEED)
+                                                  (posn-y (send p get-position)))) c)
+         (symbol=? (send p get-dir) 'w))
+           (and (characters-touching? (send p clone
+                                       #:position
+                                       (make-posn (+ (posn-x (send p get-position)) PLAYER-SPEED)
+                                                  (posn-y (send p get-position)))) c)
+                (symbol=? (send p get-dir) 'e))
+           
+           (and (characters-touching? (send p clone
+                                       #:position
+                                       (make-posn (posn-x (send p get-position))
+                                                  (- (posn-y (send p get-position)) PLAYER-SPEED))) c)
+                (symbol=? (send p get-dir) 'n))
+           (and (characters-touching? (send p clone
+                                       #:position
+                                       (make-posn (posn-x (send p get-position))
+                                                  (+ (posn-y (send p get-position)) PLAYER-SPEED))) c)
+                (symbol=? (send p get-dir) 's))))
+
+;; closest-npc
+(define (closest-npc p l)
+  (cond
+    [(empty? (rest l)) (first l)]
+    [(cons? (rest l))
+     (if (< (expt (+ (expt (abs (- (posn-x p)
+                       (posn-x (send (first l) get-position)))) 2)
+               (expt (abs (- (posn-y p)
+                       (posn-y (send (first l) get-position)))) 2)) .5)
+            (expt (+ (expt (abs (- (posn-x p)
+                       (posn-x (send (second l) get-position)))) 2)
+               (expt (abs (- (posn-y p)
+                       (posn-y (send (second l) get-position)))) 2)) .5))
+         (closest-npc p (cons (first l) (rest (rest l))))
+         (closest-npc p (rest l)))]))
 
 ;; handle-menu-key : dungeon, keyevent --> dungeon
 (define (handle-menu-key d k)
@@ -1816,33 +1886,11 @@
    (or (>= (/ (image-height (map-animation-north
                              (send (dungeon-player d) get-map-animation))) 2)
            (posn-y (send (dungeon-player d) get-position)))
-       (or
-        (empty? (room-npcs (first (dungeon-rooms d))))
-        (and
-         (not (or
-               (>= 
-                (- PLAYER-SPEED
-                   (+ (/ (image-height (map-animation-north
-                                        (send (dungeon-player d) get-map-animation))) 2)
-                      (/ (image-height (map-animation-north
-                                        (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)))
-                (- (posn-x (send (dungeon-player d) get-position))
-                   (posn-x (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position))))
-               (>= 
-                (- PLAYER-SPEED
-                   (+ (/ (image-height (map-animation-north
-                                        (send (dungeon-player d) get-map-animation))) 2)
-                      (/ (image-height (map-animation-north
-                                        (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)))
-                (- (posn-x (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position))
-                   (posn-x (send (dungeon-player d) get-position))))))
-         (> PLAYER-SPEED
-            (- (posn-y (send (dungeon-player d) get-position))
-               (+ (/ (image-height (map-animation-north
-                                    (send (dungeon-player d) get-map-animation))) 2)
-                  (/ (image-height (map-animation-north
-                                    (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)
-                  (posn-y (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position)))))))
+       (any-characters-touching? (send (dungeon-player d) clone
+                                       #:position (make-posn (posn-x (send (dungeon-player d) get-position))
+                                                             (- (posn-y (send (dungeon-player d) get-position))
+                                                                PLAYER-SPEED)))
+                                 (room-npcs (first (dungeon-rooms d))))
        (not 
         (send (get-tile (make-posn (posn-x (send (dungeon-player d) get-position))
                                    (- (posn-y (send (dungeon-player d) get-position))
@@ -1851,21 +1899,23 @@
                                            (send (dungeon-player d) get-map-animation))) 2)))
                         (room-tiles (first (dungeon-rooms d)))) passable?)))))
 
-;; closest-npc
-(define (closest-npc p l)
+;; characters-touching? : character character --> bool
+(define (characters-touching? c1 c2)
+  (and
+   (< (abs (- (posn-x (send c1 get-position)) (posn-x (send c2 get-position))))
+      (/ (+ (image-width (map-animation-east (send c1 get-map-animation)))
+         (image-width (map-animation-west (send c2 get-map-animation)))) 2))
+   (< (abs (- (posn-y (send c1 get-position)) (posn-y (send c2 get-position))))
+      (/ (+ (image-height (map-animation-north (send c1 get-map-animation)))
+         (image-height (map-animation-south (send c2 get-map-animation)))) 2))))
+
+;; any-characters-touching?
+(define (any-characters-touching? c l)
   (cond
-    [(empty? (rest l)) (first l)]
-    [else (if
-           (< (+ (expt (- (posn-x (send p get-position))
-                          (posn-x (send (first l) get-position))) 2)
-                 (expt (- (posn-y (send p get-position))
-                          (posn-y (send (first l) get-position))) 2))
-              (+ (expt (- (posn-x (send p get-position))
-                          (posn-x (send (second l) get-position))) 2)
-                 (expt (- (posn-y (send p get-position))
-                          (posn-y (send (second l) get-position))) 2)))
-           (closest-npc p (cons (first l) (rest (rest l))))
-           (closest-npc p (rest l)))]))
+    [(empty? l) false]
+    [(cons? l)
+     (or (characters-touching? c (first l))
+         (any-characters-touching? c (rest l)))]))
 
 ;; get-tile : posn lolot --> tile
 (define (get-tile p l)
@@ -1886,33 +1936,11 @@
                  (length (room-tiles (first (dungeon-rooms d)))))
               (/ (image-height (map-animation-south (send (dungeon-player d) get-map-animation))) 2))
            (posn-y (send (dungeon-player d) get-position)))
-       (or
-        (empty? (room-npcs (first (dungeon-rooms d))))
-        (and
-         (not (or
-               (>= 
-                (- PLAYER-SPEED
-                   (+ (/ (image-height (map-animation-north
-                                        (send (dungeon-player d) get-map-animation))) 2)
-                      (/ (image-height (map-animation-north
-                                        (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)))
-                (- (posn-x (send (dungeon-player d) get-position))
-                   (posn-x (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position))))
-               (>= 
-                (- PLAYER-SPEED
-                   (+ (/ (image-height (map-animation-north
-                                        (send (dungeon-player d) get-map-animation))) 2)
-                      (/ (image-height (map-animation-north
-                                        (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)))
-                (- (posn-x (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position))
-                   (posn-x (send (dungeon-player d) get-position))))))
-         (> PLAYER-SPEED
-            (- (posn-y (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position))
-               (+ (/ (image-height (map-animation-north
-                                    (send (dungeon-player d) get-map-animation))) 2)
-                  (/ (image-height (map-animation-north
-                                    (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)
-                  (posn-y (send (dungeon-player d) get-position)))))))
+       (any-characters-touching? (send (dungeon-player d) clone
+                                       #:position (make-posn (posn-x (send (dungeon-player d) get-position))
+                                                             (+ (posn-y (send (dungeon-player d) get-position))
+                                                                PLAYER-SPEED)))
+                                 (room-npcs (first (dungeon-rooms d))))
        (not (send (get-tile 
                    (make-posn (posn-x (send (dungeon-player d) get-position)) 
                               (+ (posn-y (send (dungeon-player d) get-position))
@@ -1926,33 +1954,11 @@
    (or (>= (/ (image-width (map-animation-west 
                             (send (dungeon-player d) get-map-animation))) 2)
            (posn-x (send (dungeon-player d) get-position)))
-       (or
-        (empty? (room-npcs (first (dungeon-rooms d))))
-        (and
-         (not (or
-               (>= 
-                (- PLAYER-SPEED
-                   (+ (/ (image-height (map-animation-north
-                                        (send (dungeon-player d) get-map-animation))) 2)
-                      (/ (image-height (map-animation-north
-                                        (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)))
-                (- (posn-y (send (dungeon-player d) get-position))
-                   (posn-y (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position))))
-               (>= 
-                (- PLAYER-SPEED
-                   (+ (/ (image-height (map-animation-north
-                                        (send (dungeon-player d) get-map-animation))) 2)
-                      (/ (image-height (map-animation-north
-                                        (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)))
-                (- (posn-y (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position))
-                   (posn-y (send (dungeon-player d) get-position))))))
-         (> PLAYER-SPEED
-            (- (posn-x (send (dungeon-player d) get-position))
-               (+ (/ (image-height (map-animation-north
-                                    (send (dungeon-player d) get-map-animation))) 2)
-                  (/ (image-height (map-animation-north
-                                    (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)
-                  (posn-x (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position)))))))
+       (any-characters-touching? (send (dungeon-player d) clone
+                                       #:position (make-posn (- (posn-x (send (dungeon-player d) get-position))
+                                                                PLAYER-SPEED)
+                                                             (posn-y (send (dungeon-player d) get-position))))
+                                 (room-npcs (first (dungeon-rooms d))))
        (not 
         (send (get-tile 
                (make-posn (- (posn-x (send (dungeon-player d) get-position))
@@ -1969,34 +1975,11 @@
                  (length (first (room-tiles (first (dungeon-rooms d))))))
               (/ (image-width (map-animation-east (send (dungeon-player d) get-map-animation))) 2))
            (posn-x (send (dungeon-player d) get-position)))
-       (or
-        (empty? (room-npcs (first (dungeon-rooms d))))
-        (and
-         (not (or
-               (>= 
-                (- PLAYER-SPEED
-                   (+ (/ (image-height (map-animation-north
-                                        (send (dungeon-player d) get-map-animation))) 2)
-                      (/ (image-height (map-animation-north
-                                        (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)))
-                (- (posn-y (send (dungeon-player d) get-position))
-                   (posn-y (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position))))
-               (>= 
-                (- PLAYER-SPEED
-                   (+ (/ (image-height (map-animation-north
-                                        (send (dungeon-player d) get-map-animation))) 2)
-                      (/ (image-height (map-animation-north
-                                        (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)))
-                (- (posn-y (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position))
-                   (posn-y (send (dungeon-player d) get-position))))))
-         (> PLAYER-SPEED
-            (- 
-             (+ (/ (image-height (map-animation-north
-                                  (send (dungeon-player d) get-map-animation))) 2)
-                (/ (image-height (map-animation-north
-                                  (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-map-animation))) 2)
-                (posn-x (send (dungeon-player d) get-position))
-                (posn-x (send (closest-npc (dungeon-player d) (room-npcs (first (dungeon-rooms d)))) get-position)))))))
+       (any-characters-touching? (send (dungeon-player d) clone
+                                       #:position (make-posn (+ (posn-x (send (dungeon-player d) get-position))
+                                                                PLAYER-SPEED)
+                                                             (posn-y (send (dungeon-player d) get-position))))
+                                 (room-npcs (first (dungeon-rooms d))))
        (not (send (get-tile (make-posn (+ (posn-x (send (dungeon-player d) get-position))
                                           (/ (image-width (map-animation-east
                                                            (send (dungeon-player d) get-map-animation))) 2))
