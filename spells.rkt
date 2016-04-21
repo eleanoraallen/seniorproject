@@ -61,7 +61,7 @@
 (define DOOM-ROCK
   (make-spell
    'npc
-   "Doom Rock"
+   "DoomRock"
    "Deal 250 rock damage"
    (lambda (c)
      (new npc%
@@ -84,7 +84,7 @@
 (define GAMBLERS-GAMBIT
   (make-spell
    'player
-   "Gambler's Gambit"
+   "Gambler'sGambit"
    "x2 Strength, 1/2 Health"
    (lambda (c)
      (new player%
@@ -109,6 +109,10 @@
 (define SPELL-LIST (list (list 3 HEAL)
                          (list 5 DOOM-ROCK)
                          (list 6 GAMBLERS-GAMBIT)))
+
+(define SPELL-DIRECTORY (list HEAL
+                              DOOM-ROCK
+                              GAMBLERS-GAMBIT))
 
 
 ;; ENIMY SPELLS ---------------------------------------------------------------------

@@ -76,14 +76,14 @@
 
 ;; ROOMS
 
-(define TESTROOM1 (make-room "test room 1" TILES1 5 (list NPC) (list NPC NPC2)))
-(define TESTROOM2 (make-room "test room 2" TILES2 10 (list NPC2) (list NPC2)))
-(define TESTROOM3 (make-room "test room 3" TILES3 10 (list NPC2) (list NPC NPC2)))
+(define TESTROOM1 (make-room "TestRoom1" TILES1 5 (list NPC) (list NPC NPC2)))
+(define TESTROOM2 (make-room "TestRoom2" TILES2 10 (list NPC2) (list NPC2)))
+(define TESTROOM3 (make-room "TestRoom3" TILES3 10 (list NPC2) (list NPC NPC2)))
 
 ;; get-background
 (define (get-background s)
   (cond
-    [(string=? s "test room 1") (bitmap/file "background.png")]
+    [(string=? s "TestRoom1") (bitmap/file "background.png")]
     [else (bitmap/file "blankbackground.png")]))
 
 ;; a menu one of:

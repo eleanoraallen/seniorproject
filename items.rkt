@@ -206,7 +206,7 @@
 ;; player ---------------------------------------------
 (define MAGIC-POTION
   (new consumable%
-       [name "Magic Potion"] 
+       [name "MagicPotion"] 
        [description "Fully restores MP."]
        [image (bitmap/file "magic-potion.gif")]
        [value 10]
@@ -226,7 +226,7 @@
 
 (define HEALING-POTION
   (new consumable%
-       [name "Health Potion"] 
+       [name "HealthPotion"] 
        [description "+ 25 health"]
        [image (bitmap/file "health-potion.gif")]
        [value 10]
@@ -248,7 +248,7 @@
 ;; npc ---------------------------------------------
 (define HEALING-PHILTER
   (new consumable%
-       [name "Healing Philter"] 
+       [name "HealingPhilter"] 
        [description "Fully restores health"]
        [image (square 20 'solid 'white)]
        [value 10]
@@ -268,7 +268,7 @@
 ;; Weapons ------------------------------------------------------------------------------------------------
 (define SWORD
   (new weapon%
-       [name "Steel Sword"]
+       [name "SteelSword"]
        [description "A sturdy steel sword."]
        [value 10]
        [weapon-damage 10]
@@ -277,7 +277,7 @@
        [image (square 20 'solid 'white)]))
 (define STAFF
   (new weapon%
-       [name "Wood Staff"]
+       [name "WoodStaff"]
        [description "A flimsy wooden quarterstaff."]
        [value 10]
        [weapon-damage 5]
@@ -288,7 +288,7 @@
 ;; Armor -------------------------------------------------------------------------------------------------
 (define HELMET
   (new equipment%
-       [name "Steel Helmet"]
+       [name "SteelHelmet"]
        [description "A sturdy steel helmet"]
        [image (circle 10 'solid 'gray)]
        [value 50]
@@ -297,7 +297,7 @@
 
 (define HAT
   (new equipment%
-       [name "Wool Hat"]
+       [name "WoolHat"]
        [description "A warm woolen hat"]
        [image (circle 10 'solid 'gray)]
        [value 5]
@@ -315,7 +315,7 @@
 
 (define MAIL
   (new equipment%
-       [name "Chain Mail"]
+       [name "ChainMail"]
        [description "Strong steel chain mail"]
        [image (circle 10 'solid 'gray)]
        [value 100]
@@ -324,7 +324,7 @@
 
 (define BOOTS
   (new equipment%
-       [name "Leather Boots"]
+       [name "LeatherBoots"]
        [description "Good for keeping your feet dry"]
        [image (circle 10 'solid 'gray)]
        [value 10]
@@ -333,7 +333,7 @@
 
 (define STEEL-BOOTS
   (new equipment%
-       [name "Steel Boots"]
+       [name "SteelBoots"]
        [description "Surprisingly heavy"]
        [image (circle 10 'solid 'gray)]
        [value 40]
@@ -342,7 +342,7 @@
 
 (define GAUNTLETS
   (new equipment%
-       [name "Steel Gauntlets"]
+       [name "SteelGauntlets"]
        [description "Protect your arms"]
        [image (circle 10 'solid 'gray)]
        [value 40]
@@ -351,7 +351,7 @@
 
 (define MITTENS
   (new equipment%
-       [name "Fuzzy Mittens"]
+       [name "FuzzyMittens"]
        [description "Good for snowball fights"]
        [image (circle 10 'solid 'gray)]
        [value 5]
@@ -367,4 +367,28 @@
        [image (circle 10 'solid 'gold)]
        [value 0]
        [number n]))
+
+;; --------------------------------------------------------------------------------------------------------
+(define ITEM-DIRECTORY
+  (list
+   ;; weapons
+   SWORD
+   STAFF
+   ;; consumables
+   MAGIC-POTION
+   HEALING-POTION
+   ;; head armor
+   HAT
+   HELMET
+   ;; body armor
+   COAT
+   MAIL
+   ;; arm armor
+   GAUNTLETS
+   MITTENS
+   ;; leg armor
+   BOOTS
+   STEEL-BOOTS
+   ;; misc (not gold)
+   ))
   
