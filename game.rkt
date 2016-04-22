@@ -8,6 +8,7 @@
 (require "create.rkt")
 (require "music.rkt")
 (require "saves.rkt")
+(require "menu.rkt")
 (require 2htdp/image)
 (require 2htdp/universe)
 
@@ -27,6 +28,7 @@
 ;; renders the combat as an image
 (define (render w)
   (cond
+    [(number? w) (render-main-menu w)]
     [(image? w) w]
     [(combat? w) (render-combat w)]
     [(dungeon? w) (render-dungeon w)]
@@ -387,6 +389,15 @@
                                                                                                                     (if (empty? (inventory-weapon (send (dungeon-player d) get-inventory))) 0 1)))) 20 'black)
                                                               (rectangle 0 20 'solid 'black)
                                                               (text (string-append "Spells: " (number->string (length (send (dungeon-player d) get-spells)))) 20 'black)
+                                                              (rectangle 0 100 'solid 'pink)
+                                                              (beside
+                                                               (overlay (text "Save (s)" 30 'black)
+                                                                       (rectangle 150 75 'solid (make-color 80 80 80))
+                                                                       (rectangle 160 85 'solid 'black))
+                                                               (rectangle 25 0 'solid 'pink)
+                                                               (overlay (text "Quit (q)" 30 'black)
+                                                                       (rectangle 150 75 'solid (make-color 80 80 80))
+                                                                       (rectangle 160 85 'solid 'black)))
                                                               ))))
                     (overlay/align "middle" "top"
                                    (rectangle 802 570 'solid 'gray)
@@ -941,13 +952,13 @@
                   (combat-room-name w)
                   (combat-bg  w))]
     [(send (combat-player w) dead?)
+     (superset dead-music)
      (overlay (above (text "'Damn it, how will I ever get out of this labyrinth?'" 30 'black)
                      (text "- Simon Bolivar" 30 'black))
-              (rectangle 810 630 'solid 'gray))
-     (superset dead-music)]
+              (rectangle 810 630 'solid 'gray))]
     [(send (combat-npc w) dead?)
-     (construct-dungeon w)
-     (superset dungeon-music)]
+     (superset dungeon-music)
+     (construct-dungeon w)]
     [(symbol=? (combat-phase w) 'e) (npc-action w)]
     [(and (symbol=? (combat-phase w) 'ea) (empty? (combat-loi w)))
      (make-combat (combat-player w) (combat-npc w) 'p 'm empty (combat-dungeon-name w) (combat-room-name w) (combat-bg w))]
@@ -1171,6 +1182,7 @@
     [(combat? w) (handle-combat-key w k)]
     [(dungeon? w) (handle-dungeon-key w k)]
     [(store? w) (handle-store-key w k)]
+    [(number? w) (handle-main-menu-key w k)]
     [else w]))
 
 ;; handle-combat-key : combat --> combat
@@ -1517,6 +1529,11 @@
                            empty
                            (dungeon-name d)
                            'spells)]
+           [(key=? k "s") (save d) (make-dungeon (dungeon-player d) (dungeon-rooms d) (make-list 20 (overlay (text "Game Saved!" 30 'black)
+                                  (overlay
+                                   (rectangle 800 620 'solid 'gray)
+                                   (rectangle 810 630 'solid 'black)))) (dungeon-name d) 'player-info)]
+           [(key=? k "q") 1]
            [else d])]
     [(and (symbol? (dungeon-menu d))
           (symbol=? (dungeon-menu d) 'items))
@@ -2001,4 +2018,4 @@
 
 ;; run
 (start-music)
-(main (overlay (above (text "The General's Labyrinth" 50 'black) (text "Press Enter to play" 30 'black)) (rectangle 810 630 'solid 'gray)))
+(main 0)

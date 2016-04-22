@@ -162,7 +162,7 @@ current-xp
                                                                   (inventory-miscellaneous (send (dungeon-player d) get-inventory)))) get-number)) k)
                              " " (write-items (filter (lambda (x) (not (string=? (send x get-name) "Gold")))
                                                                   (inventory-miscellaneous (send (dungeon-player d) get-inventory))) k)) "\n"
-             (enchript-string (number->string (posn-x (send (dungeon-player d) get-position))) k) " " (enchript-string (number->string (posn-x (send (dungeon-player d) get-position))) k) "\n"
+             (enchript-string (number->string (posn-x (send (dungeon-player d) get-position))) k) " " (enchript-string (number->string (posn-y (send (dungeon-player d) get-position))) k) "\n"
              (enchript-string (number->string (send (dungeon-player d) get-level)) k) " "
              (enchript-string (number->string (send (dungeon-player d) get-mp)) k) " "
              (enchript-string (number->string (send (dungeon-player d) get-max-mp)) k) " "

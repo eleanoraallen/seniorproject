@@ -23,17 +23,17 @@
                    [image (overlay (circle 30 'solid 'red)
                                    (bitmap/file "stone.jpg"))]
                    [passable true]
-                   [portal (make-portal "test_dungeon_1" "test room 2" (make-posn 20 20))]))
+                   [portal (make-portal "test_dungeon_1" "TestRoom2" (make-posn 20 20))]))
 (define Y (new tile%
                    [image (overlay (circle 30 'solid 'blue)
                                    (bitmap/file "stone.jpg"))]
                    [passable true]
-                   [portal (make-portal "test_dungeon_1" "test room 1" (make-posn 3150 2250))]))
+                   [portal (make-portal "test_dungeon_1" "TestRoom1" (make-posn 3150 2250))]))
 (define Z (new tile%
                    [image (overlay (circle 30 'solid 'green)
                                    (bitmap/file "stone.jpg"))]
                    [passable true]
-                   [portal (make-portal "test_dungeon_2" "test room 3" (make-posn 3150 2250))]))
+                   [portal (make-portal "test_dungeon_2" "TestRoom3" (make-posn 3150 2250))]))
 
 (define TILES1 (list
                 (list B B B B B B B B B B B B B B B B B B B B B B B B)
