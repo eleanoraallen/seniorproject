@@ -11,167 +11,122 @@
 ;; ----------------------------------------------------------------------------
 
 ;; ROOF
-(define ROOFTR (new tile%
-                    [image (bitmap/file "RoofTRC.png")]
+(define RTL (new tile%
+                    [image (scale .5 (bitmap/file "RoofTL.png"))]
                     [passable false]
                     [portal empty]))
-(define ROOFTC (new tile%
-                    [image (bitmap/file "RoofT.png")]
+(define RTC (new tile%
+                    [image (scale .5 (bitmap/file "RoofTC.png"))]
                     [passable false]
                     [portal empty]))
-(define ROOFTL (new tile%
-                    [image (bitmap/file "RoofTLC.png")]
+(define RTR (new tile%
+                    [image (scale .5 (bitmap/file "RoofTR.png"))]
                     [passable false]
                     [portal empty]))
-(define ROOFML (new tile%
-                    [image (bitmap/file "RoofL.png")]
+(define RML (new tile%
+                    [image (scale .5 (bitmap/file "RoofML.png"))]
                     [passable false]
                     [portal empty]))
-(define ROOFMC (new tile%
-                    [image (bitmap/file "RoofM.png")]
+(define RMC (new tile%
+                    [image (scale .5 (bitmap/file "RoofMC.png"))]
                     [passable false]
                     [portal empty]))
-(define ROOFMR (new tile%
-                    [image (bitmap/file "RoofR.png")]
+(define RMR (new tile%
+                    [image (scale .5 (bitmap/file "RoofMR.png"))]
                     [passable false]
                     [portal empty]))
-(define ROOFBR (new tile%
-                    [image (bitmap/file "RoofBLC.png")]
+(define RBL (new tile%
+                    [image (scale .5 (bitmap/file "RoofBL.png"))]
                     [passable false]
                     [portal empty]))
-(define ROOFBC (new tile%
-                    [image (bitmap/file "RoofB.png")]
+(define RBC (new tile%
+                    [image (scale .5 (bitmap/file "RoofBC.png"))]
                     [passable false]
                     [portal empty]))
-(define ROOFBL (new tile%
-                    [image (bitmap/file "RoofBRC.png")]
+(define RBR (new tile%
+                    [image (scale .5 (bitmap/file "RoofBR.png"))]
                     [passable false]
                     [portal empty]))
-(define WALLTL (new tile%
-                    [image (bitmap/file "WallL.png")]
+;; Wall
+(define WML (new tile%
+                    [image (scale .5 (bitmap/file "WallML.png"))]
                     [passable false]
                     [portal empty]))
-(define WALLTC (new tile%
-                    [image (bitmap/file "Wall.png")]
+(define WMC (new tile%
+                    [image (scale .5 (bitmap/file "WallMC.png"))]
                     [passable false]
                     [portal empty]))
-(define WALLTR (new tile%
-                    [image (bitmap/file "WallR.png")]
+(define WMR (new tile%
+                    [image (scale .5 (bitmap/file "WallMR.png"))]
                     [passable false]
                     [portal empty]))
-
-;; WALL
-(define WALLMR (new tile%
-                    [image (bitmap/file "Tile15.png")]
+(define WBL (new tile%
+                    [image (scale .5 (bitmap/file "WallBL.png"))]
                     [passable false]
                     [portal empty]))
-(define WALLMC (new tile%
-                    [image (bitmap/file "Tile17.png")]
+(define WBC (new tile%
+                    [image (scale .5 (bitmap/file "WallBC.png"))]
                     [passable false]
                     [portal empty]))
-(define WALLML (new tile%
-                    [image (bitmap/file "Tile16.png")]
+(define WBR (new tile%
+                    [image (scale .5 (bitmap/file "WallBR.png"))]
                     [passable false]
                     [portal empty]))
-(define WALLBL (new tile%
-                    [image (bitmap/file "BuildingLC.png")]
-                    [passable false]
-                    [portal empty]))
-(define WALLBC (new tile%
-                    [image (bitmap/file "BuildingB.png")]
-                    [passable false]
-                    [portal empty]))
-(define WALLBR (new tile%
-                    [image (bitmap/file "BuildingRC.png")]
-                    [passable false]
-                    [portal empty]))
-
-;; Door
-(define DOORTR (new tile%
-                    [image (bitmap/file "DoorTL.png")]
-                    [passable false]
-                    [portal empty]))
-(define DOORTC (new tile%
-                    [image (bitmap/file "DoorT.png")]
-                    [passable false]
-                    [portal empty]))
-(define DOORTL (new tile%
-                    [image (bitmap/file "DoorTR.png")]
-                    [passable false]
-                    [portal empty]))
-(define DOORBR (new tile%
-                    [image (bitmap/file "DoorLB.png")]
-                    [passable false]
-                    [portal empty]))
-(define DOORBL (new tile%
-                    [image (bitmap/file "DoorRB.png")]
-                    [passable false]
-                    [portal empty]))
-(define DOORBC (new tile%
-                    [image (bitmap/file "DoorRB.png")]
-                    [passable false]
-                    [portal empty]))
-
 ;; Street
-(define STREET (new tile%
-                    [image (bitmap/file "Street.png")]
+(define STR (new tile%
+                    [image (scale .5 (bitmap/file "Street.png"))]
                     [passable true]
                     [portal empty]))
-
 ;; Signs
-(define HEALER (new tile%
-                    [image (bitmap/file "healer.png")]
+(define HEL (new tile%
+                    [image (scale .5 (bitmap/file "healer.png"))]
                     [passable false]
                     [portal empty]))
-(define WPNSTO (new tile%
-                    [image (bitmap/file "wpnsmith.png")]
+(define WPN (new tile%
+                    [image (scale .5 (bitmap/file "wpnsmith.png"))]
                     [passable false]
                     [portal empty]))
-(define ITMSTO (new tile%
-                    [image (bitmap/file "itemshop.png")]
+(define ITM (new tile%
+                    [image (scale .5 (bitmap/file "itemshop.png"))]
                     [passable false]
                     [portal empty]))
-(define MGUILD (new tile%
-                    [image (bitmap/file "mguild.png")]
+(define MGU (new tile%
+                    [image (scale .5 (bitmap/file "mguild.png"))]
                     [passable false]
                     [portal empty]))
-(define AGUILD (new tile%
-                    [image (bitmap/file "aguild.png")]
+(define AGU (new tile%
+                    [image (scale .5 (bitmap/file "aguild.png"))]
                     [passable false]
                     [portal empty]))
-(define TAVERN (new tile%
-                    [image (bitmap/file "tavern.png")]
+(define TAV (new tile%
+                    [image (scale .5 (bitmap/file "tavern.png"))]
+                    [passable false]
+                    [portal empty]))
+;; Door
+(define DOO (new tile%
+                    [image (scale .5 (bitmap/file "Door.png"))]
                     [passable false]
                     [portal empty]))
 
 ;; City Tiles
 (define CITY-TILES
   (list
-   (append (make-list 17 STREET) (list ROOFTL ROOFTC ROOFTC ROOFTC ROOFTC ROOFTR) (make-list 17 STREET))
-   (append (make-list 17 STREET) (list ROOFML ROOFMC ROOFMC ROOFMC ROOFMC ROOFMR) (make-list 17 STREET))
-   (append (make-list 8 STREET) (list ROOFTL) (list 7 ROOFTC) (list ROOFTR) (list ROOFBL) (make-list 4 ROOFBC) (list ROOFBR)
-           (list ROOFTR) (make-list 7 ROOFTC) (list ROOFTR) (make-list 8 STREET))
-   (append (make-list 8 STREET) (list ROOFBL) (make-list 7 ROOFBC) (list ROOFBR WALLTL) (make-list 4 WALLTC) (list WALLTR ROOFBL)
-           (make-list 7 ROOFBC) (list ROOFBR) (make-list 8 STREET))
-   (append (list ROOFTR) (make-list 7 STREET) (list WALLTL) (make-list 7 WALLMC) (list WALLTR WALLML DOORTL) (make-list 2 DOORTC)
-           (list DOORTR WALLMR WALLTL) (make-list 7 WALLTC) (list WALLTR) (make-list 7 STREET) (list WALLTR))
-   (append (list WALLMR) (make-list 7 STREET) (list WALLML DOORTL DOORTC DOORTR WALLMC DOORTL DOORTC DOORTR WALLMR DOORTL)
-           (make-list 2 DOORTC) (list DOORTR WALLMR WALLML DOORTL DOORTC DOORTR WALLMC DOORTL DOORTC DOORTR WALLMR) (make-list 7 STREET) (list ROOFML))
-   (append (make-list 7 WALLTC) (list WALLTR WALLML DOORBL DOORBC DOORBR WALLBC DOORBL DOORBC DOORBR WALLBR WALLBL DOORBL DOORBC DOORBC DOORBR WALLBR
-                                      WALLBL DOORBL DOORBC DOORBR WALLBC DOORBL DOORBC DOORBR WALLBR ROOFTL) (make-list 7 ROOFTC))
-   (append (make-list 7 ROOFMC) (list ROOFMR) (make-list 24 STREET) (list ROOFML) (make-list 7 ROOFMC))
-   (append (make-list 7 ROOFBC) (list ROOFBR STREET ROOFTL) (make-list 3 ROOFTC) (list ROOFTR ROOFTL) (make-list 3 ROOFTC)
-           (list ROOFTR STREET STREET ROOFTL) (make-list 3 ROOFTC) (list ROOFTR ROOFTL) (make-list 3 ROOFTC) (list ROOFTR STREET ROOFBL) (make-list 7 ROOFBC))
-   (append (make-list 7 ROOFTC) (list ROOFTR STREET ROOFBL) (make-list 3 ROOFBC) (list ROOFBR ROOFBL) (make-list 3 ROOFBC) (list ROOFBL STREET STREET ROOFBL)
-           (make-list 3 ROOFBC) (list ROOFBR STREET ROOFTL) (make-list 7 ROOFMC))
-   (append (list ROOFMR WALLML) (make-list 5 WALLMC) (list WALLMR STREET WALLTL) (make-list 3 WALLTC) (list WALLTR WALLTL) (make-list 3 WALLTC) (list WALLTR STREET STREET WALLTL)
-           (make-list 3 WALLTC) (list WALLTR WALLTL) (make-list 3 WALLTC) (list WALLMC STREET WALLML) (make-list 6 WALLMC) (list ROOFML))
-   (list ROOFMR WALLML WALLMC DOORTL DOORTC DOORTC DOORTR WALLMR STREET WALLML DOORTL DOORTC DOORTR WALLMR WALLML DOORTL DOORTC DOORTR WALLMR STREET STREET
-                 WALLML DOORTL DOORTC DOORTR WALLMR WALLML DOORTL DOORTC DOORTR WALLMR STREET WALLML DOORTL DOORTC DOORTC DOORTR WALLMC WALLMR ROOFML)
-   (list ROOFMR WALLBL WALLBC DOORBL DOORBC DOORBC AGUILD WALLBR STREET WALLBL DOORBL DOORBC WPNSTO WALLBR WALLBL DOORBL DOORBC DOORBR WALLBR STREET STREET
-                 WALLBL TAVERN DOORBC DOORBR WALLBR WALLBL DOORBL DOORBC DOORBR WALLBR STREET WALLBL MGUILD DOORBC DOORBC DOORBR WALLBC WALLBR ROOFML)
-   (append (list ROOFMR) (make-list 38 STREET) (list ROOFML))
-   (append (list ROOFMR) (make-list 38 STREET) (list ROOFML))))
+   (append (list RMC) (make-list 38 RBC) (list RMC))
+   (append (list RMR) (make-list 16 STR) (list RTL RTC RTC RTC RTC RTR) (make-list 16 STR) (list RML))
+   (append (list RMR) (make-list 16 STR) (list RML RMC RMC RMC RMC RMR) (make-list 16 STR) (list RML))
+   (append (list RMR) (make-list 7 STR) (list RTL) (make-list 7 RTC) (list RTR RBL) (make-list 4 RBC) (list RBR RTL) (make-list 7 RTC) (list RTR) (make-list 7 STR) (list RML))
+   (append (list RMR) (make-list 7 STR) (list RML) (make-list 7 RMC) (list RMR WML) (make-list 4 WMC) (list WMR RBL) (make-list 7 RBC) (list RBR) (make-list 7 STR) (list RML))
+   (append (list RMR) (make-list 7 STR) (list WML) (make-list 7 WMC) (list WMR WML) (make-list 4 WMC) (list WMR WML) (make-list 7 WMC) (list WMR) (make-list 7 STR) (list RML))
+   (append (list RMR) (make-list 7 STR) (list WML) (make-list 7 WMC) (list WMR WML) (make-list 4 WMC) (list WMR WML) (make-list 7 WMC) (list WMR) (make-list 7 STR) (list RML))
+   (append (list RMR RTR) (make-list 5 RTC) (list RTR WBL WBC DOO) (make-list 3 WBC) (list DOO WBC WBR WBL WBC DOO DOO WBC WBR WBL WBC DOO) (make-list 3 WBC) (list DOO WBC WBR RTL) (make-list 5 RTC) (list RTR RML))
+   (append (list RMR RML) (make-list 5 RMC) (list RMR) (make-list 24 STR) (list RML) (make-list 5 RMC) (list RMR RML))
+   (append (list RMR RBL) (make-list 5 RBC) (list RBR STR RTL) (make-list 3 RTC) (list RTR RTL) (make-list 3 RTC) (list RTR STR STR RTL) (make-list 3 RTC) (list RTR RTL) (make-list 3 RTC) (list RTR STR RBL) (make-list 5 RBC) (list RBR RML))
+   (append (list RMR WML) (make-list 5 WMC) (list WMR STR RBL) (make-list 3 RBC) (list RBR RBL) (make-list 3 RBC) (list RBR STR STR RBL) (make-list 3 RBC) (list RBR RBL) (make-list 3 RBC) (list RBR STR WML) (make-list 5 WMC) (list WMR RML))
+   (append (list RMR WML) (make-list 5 WMC) (list WMR STR WML) (make-list 3 WMC) (list WMR WML) (make-list 3 WMC) (list WMR STR STR WML) (make-list 3 WMC) (list WMR WML) (make-list 3 WMC) (list WMR STR WML) (make-list 5 WMC) (list WMR RML))
+   (append (list RMR WML) (make-list 5 WMC) (list WMR STR WML) (make-list 3 WMC) (list WMR WML) (make-list 3 WMC) (list WMR STR STR WML) (make-list 3 WMC) (list WMR WML) (make-list 3 WMC) (list WMR STR WML) (make-list 5 WMC) (list WMR RML))
+   (list RMR WBL WBC AGU DOO DOO AGU WBR STR WBL WBC DOO WPN WBR WBL WBC DOO WBC WBR STR STR WBL TAV DOO WBC WBR WBL WBC DOO WBC WBR STR WBL MGU DOO DOO MGU WBC WBR RML)
+   (append (list RMR) (make-list 38 STR) (list RML))
+   (append (list RMR) (make-list 38 STR) (list RML))))
    
 
 ;; Test TILESETS
@@ -186,7 +141,7 @@
                [portal empty]))
 (define X (new tile%
                [image (overlay (circle 30 'solid 'red)
-                               (bitmap/file "stone.jpg"))]
+              (bitmap/file "stone.jpg"))]
                [passable true]
                [portal (make-portal "test_dungeon_1" "TestRoom2" (make-posn 20 20))]))
 (define Y (new tile%
@@ -261,7 +216,7 @@
 ;; - 'spells
 
 ;; DUNGEONS
-(define CITY (make-dungeon (send SPELLSWORD clone #:position (make-posn 6150 4350)) (list CITY-OUTSIDE) empty "City" empty))
+(define CITY (make-dungeon (send SPELLSWORD clone #:position (make-posn 2350 1250)) (list CITY-OUTSIDE) empty "City" empty))
 ;; TEST DUNGEONS
 (define TESTDUNGEON1 (make-dungeon SPELLSWORD (list TESTROOM1 TESTROOM2) empty "test_dungeon_1" empty))
 (define TESTDUNGEON2 (make-dungeon SPELLSWORD (list TESTROOM3) empty "test_dungeon_2" empty))

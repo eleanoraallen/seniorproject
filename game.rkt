@@ -27,13 +27,15 @@
 ;; render: game --> image
 ;; renders the combat as an image
 (define (render w)
-  (cond
+  (overlay
+   (cond
     [(number? w) (render-main-menu w)]
     [(image? w) w]
     [(combat? w) (render-combat w)]
     [(dungeon? w) (render-dungeon w)]
     [(create? w) (render-create w)]
-    [(store? w) (render-store w)]))
+    [(store? w) (render-store w)])
+   (rectangle 810 630 'solid 'black)))
 
 ;; render-combat: combat --> image
 ;; renders a combat as an image

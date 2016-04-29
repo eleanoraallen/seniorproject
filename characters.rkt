@@ -25,7 +25,7 @@
                                   (flip-horizontal (bitmap/file "knight_flinch.png"))
                                   (flip-horizontal (bitmap/file "knight_standby.png"))
                                   (flip-horizontal (bitmap/file "knight_standby.png")))]
-       [position (make-posn 3150 2250)] [map-animation (make-map-animation (bitmap/file "bolivar3.png")
+       [position (make-posn 1 1)] [map-animation (make-map-animation (bitmap/file "bolivar3.png")
                                                                            (bitmap/file "bolivar1.png")
                                                                            (bitmap/file "bolivar2.png")
                                                                            (bitmap/file "bolivar4.png"))] 
