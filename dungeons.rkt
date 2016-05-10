@@ -195,7 +195,7 @@
 
 
 ;; ROOMS
-(define CITY-OUTSIDE (make-room "City" CITY-TILES 0 empty empty))
+(define CITY-OUTSIDE (make-room "City" CITY-TILES 0 empty (list NPC NPC2)))
 
 ;; TESTROOMS
 (define TESTROOM1 (make-room "TestRoom1" TILES1 5 (list NPC) (list NPC NPC2)))
@@ -222,7 +222,7 @@
 (define TESTDUNGEON2 (make-dungeon SPELLSWORD (list TESTROOM3) empty "test_dungeon_2" empty))
 
 ;; DUNGEON-DIRECTORY (the list of all the dungeons)
-(define DUNGEON-DIRECTORY (list TESTDUNGEON1 TESTDUNGEON2))
+(define DUNGEON-DIRECTORY (list TESTDUNGEON1 TESTDUNGEON2 CITY))
 
 (define (get-dungeon s) (first (filter (lambda (x) (string=? (dungeon-name x) s)) DUNGEON-DIRECTORY)))
 

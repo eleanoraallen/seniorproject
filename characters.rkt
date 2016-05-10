@@ -25,7 +25,7 @@
                                   (flip-horizontal (bitmap/file "knight_flinch.png"))
                                   (flip-horizontal (bitmap/file "knight_standby.png"))
                                   (flip-horizontal (bitmap/file "knight_standby.png")))]
-       [position (make-posn 1 1)] [map-animation (make-map-animation (bitmap/file "bolivar3.png")
+       [position (make-posn 2350 1250)] [map-animation (make-map-animation (bitmap/file "bolivar3.png")
                                                                            (bitmap/file "bolivar1.png")
                                                                            (bitmap/file "bolivar2.png")
                                                                            (bitmap/file "bolivar4.png"))] 
@@ -64,7 +64,7 @@
                                 "Well OK."
                                 "I'll let you off easy this time"
                                 "Alakasam!"
-                                TAKE)] [xp-award 250]))
+                                TAKE)] [xp-award 1000]))
 
 (define NPC2
   (new npc%
@@ -98,7 +98,7 @@
                                 "Well OK."
                                 "I'll let you off easy this time"
                                 "Alakasam!"
-                                TAKE)] [xp-award 250]))
+                                TAKE)] [xp-award 1000]))
 
 
 ;; Player Functions --------------------------------------------------------------------------------------------

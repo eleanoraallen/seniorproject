@@ -172,7 +172,7 @@
     [else
      (cons
       (place-image i 400 225
-      (place-image (circle 10 'solid 'white)
+      (place-image (scale .5 (bitmap/file "bubble.png"))
                    (posn-x p) (posn-y p)
                    (bitmap/file "blankbackground.png")))
       (draw-bubble n (make-posn
@@ -185,7 +185,7 @@
     [else
      (cons
       (place-image i 400 225
-      (place-image (circle 10 'solid 'white)
+      (place-image (scale .5 (bitmap/file "bubble.png"))
                    (posn-x p) (posn-y p)
                    (bitmap/file "blankbackground.png")))
       (draw-npc-bubble n (make-posn
@@ -202,8 +202,246 @@
 
 
 ;; Consumables -------------------------------------------------------------------------------------------
+;; 133.7
 
 ;; player ---------------------------------------------
+(define HEALING-1
+  (new consumable%
+       [name "Potion_of_Minor_Healing"] 
+       [description "Restores 20 points of HP"]
+       [image (scale (/ 1 133.7) (bitmap/file "health1.png"))]
+       [value 5]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (if (>= (+ (send c get-health) 20) (send c get-max-health))
+                                                           (send c get-max-health) (+ 2 (send c get-health)))]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)]  [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
+                      [mp (send c get-mp)] [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-1 (scale (/ 1 133.7) (bitmap/file "health1.png")))]
+       [number 1]))
+
+(define HEALING-2
+  (new consumable%
+       [name "Potion_of_Moderate_Healing"] 
+       [description "Restores 50 points of HP"]
+       [image (scale (/ 1 133.7) (bitmap/file "health2.png"))]
+       [value 20]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (if (>= (+ (send c get-health) 50) (send c get-max-health))
+                                                           (send c get-max-health) (+ 50 (send c get-health)))]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)]  [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
+                      [mp (send c get-mp)] [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-2 (scale (/ 1 133.7) (bitmap/file "health2.png")))]
+       [number 1]))
+
+(define HEALING-3
+  (new consumable%
+       [name "Potion_of_Ultimate_Healing"] 
+       [description "Fully restores health"]
+       [image (scale (/ 1 133.7) (bitmap/file "health3.png"))]
+       [value 100]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (send c get-max-health)]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)]  [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
+                      [mp (send c get-mp)] [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-3 (scale (/ 1 133.7) (bitmap/file "health3.png")))]
+       [number 1]))
+
+(define MP-1
+  (new consumable%
+       [name "Minor_MP_Potion"] 
+       [description "Restores 5 points of MP"]
+       [image (scale (/ 1 133.7) (bitmap/file "mp1.png"))]
+       [value 10]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (send c get-health)]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)] [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
+                      [mp (if (>= (+ (send c get-mp) 5) (send c get-max-mp))
+                                                           (send c get-max-mp) (+ 5 (send c get-mp)))]
+                      [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-1 (scale (/ 1 133.7) (bitmap/file "mp1.png")))]
+       [number 1]))
+
+(define MP-2
+  (new consumable%
+       [name "MP_Potion"] 
+       [description "Restores 15 points of MP"]
+       [image (scale (/ 1 133.7) (bitmap/file "mp2.png"))]
+       [value 40]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (send c get-health)]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)] [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
+                      [mp (if (>= (+ (send c get-mp) 15) (send c get-max-mp))
+                                                           (send c get-max-mp) (+ 15 (send c get-mp)))]
+                      [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-2 (scale (/ 1 133.7) (bitmap/file "mp2.png")))]
+       [number 1]))
+
+(define MP-3
+  (new consumable%
+       [name "MP_Potion"] 
+       [description "Fully restores MP"]
+       [image (scale (/ 1 133.7) (bitmap/file "mp3.png"))]
+       [value 80]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (send c get-health)]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)] [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
+                      [mp (send c get-max-mp)]
+                      [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-3 (scale (/ 1 133.7) (bitmap/file "mp3.png")))]
+       [number 1]))
+
+(define NOB-CURE
+  (new consumable%
+       [name "Noble_Cure"] 
+       [description "Restores 50 points of HP and 15 points of MP"]
+       [image (scale (/ 1 133.7) (bitmap/file "cure1.png"))]
+       [value 200]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (if (>= (+ (send c get-health) 50) (send c get-max-health))
+                                                           (send c get-max-health) (+ 50 (send c get-health)))]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)] [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
+                      [mp (if (>= (+ (send c get-mp) 15) (send c get-max-mp))
+                                                           (send c get-max-mp) (+ 15 (send c get-mp)))]
+                      [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-3 (scale (/ 1 133.7) (bitmap/file "cure1.png")))]
+       [number 1]))
+
+(define DIV-CURE
+  (new consumable%
+       [name "Divine_Cure"] 
+       [description "Fully restores HP and MP"]
+       [image (scale (/ 1 133.7) (bitmap/file "cure2.png"))]
+       [value 500]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (send c get-max-health)]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)] [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
+                      [mp (send c get-max-mp)]
+                      [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-3 (scale (/ 1 133.7) (bitmap/file "cure2.png")))]
+       [number 1]))
+
+(define MYS
+  (new consumable%
+       [name "Mystery_Liquid"] 
+       [description "An unidentifyable liquid in an unmarked bottle... seems safe enough"]
+       [image (scale (/ 1 133.7) (bitmap/file "mystery.png"))]
+       [value 150]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (random (send c get-max-health))]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)] [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
+                      [mp (random (send c get-max-mp))]
+                      [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-3 (scale (/ 1 133.7) (bitmap/file "cure2.png")))]
+       [number 1]))
+
+(define STRENGTH-P
+  (new consumable%
+       [name "Strength_Potion"] 
+       [description "Temporarily increases your strength"]
+       [image (scale (/ 1 133.7) (bitmap/file "strength.png"))]
+       [value 100]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (send c get-health)]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (send c get-agility)] [base-strength (send c get-base-strength)]
+                      [strength (+ (round (* .1 (send c get-strength))) (send c get-strength))] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)] [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
+                      [mp (send c get-mp)]
+                      [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-1 (scale (/ 1 133.7) (bitmap/file "strength.png")))]
+       [number 1]))
+
+(define AGILITY-P
+  (new consumable%
+       [name "Agility_Potion"] 
+       [description "Temporarily increases your agility"]
+       [image (scale (/ 1 133.7) (bitmap/file "agility.png"))]
+       [value 100]
+       [effect (lambda (c)
+                 (new player% 
+                      [name (send c get-name)] [health (send c get-health)]
+                      [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
+                      [agility (+ (round (* .1 (send c get-agility))) (send c get-agility))]
+                      [base-strength (send c get-base-strength)]
+                      [strength (send c get-strength)] [spells (send c get-spells)]
+                      [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
+                      [resistance (send c get-resistance)] [animation (send c get-animation)]
+                      [position (send c get-position)] [map-animation (send c get-map-animation)]
+                      [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)] 
+                      [mp (send c get-mp)]
+                      [current-xp (send c get-current-xp)]))]
+       [animation (use-consumable-1 (scale (/ 1 133.7) (bitmap/file "agility.png")))]
+       [number 1]))
+
+
+
 (define MAGIC-POTION
   (new consumable%
        [name "MagicPotion"] 

@@ -99,20 +99,34 @@
           [position (send c get-position)] [map-animation (send c get-map-animation)]
           [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
           [mp (send c get-mp)] [current-xp (send c get-current-xp)]))
-   (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
-         (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green))
+   (append (seal-release (bitmap/file "gamblers_gambit.png"))
+           (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
+         (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green)))
    1
    (bitmap/file "gamblers_gambit.png")))
+
+(define LIGHTNING
+  (make-spell
+   'npc
+   "Lightning"
+   "Summon a bolt of lightning"
+   (lambda (c) (damage-character c 150 'electric))
+   (append (seal-release (bitmap/file "lightning.png"))
+           (make-list 10 (bitmap/file "lightning-attack.png")))
+   5
+   (bitmap/file "lightning.png")))
 
 
 ;; a list of lists of player spells and their prequisit levels
 (define SPELL-LIST (list (list 3 HEAL)
                          (list 5 DOOM-ROCK)
-                         (list 6 GAMBLERS-GAMBIT)))
+                         (list 6 GAMBLERS-GAMBIT)
+                         (list 10 LIGHTNING)))
 
 (define SPELL-DIRECTORY (list HEAL
                               DOOM-ROCK
-                              GAMBLERS-GAMBIT))
+                              GAMBLERS-GAMBIT
+                              LIGHTNING))
 
 
 ;; ENIMY SPELLS ---------------------------------------------------------------------

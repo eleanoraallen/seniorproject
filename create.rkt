@@ -224,10 +224,10 @@ Reason For Adventuring:
                                                   #:mp (+ 4 
                                                                     (if (= (create-decision2 c) 1) 2 0)
                                                                     (if (= (create-decision2 c) 2) 2 0)))
-                                            (dungeon-rooms TESTDUNGEON1)
-                                            (dungeon-images TESTDUNGEON1)
-                                            (dungeon-name TESTDUNGEON1)
-                                            (dungeon-menu TESTDUNGEON1))]
+                                            (dungeon-rooms CITY)
+                                            (dungeon-images CITY)
+                                            (dungeon-name CITY)
+                                            (dungeon-menu CITY))]
                              [(key=? k "1") (make-create 6 (create-name c) (create-gender c)
                                         (create-decision1 c) (create-decision2 c) 1)]
                              [(key=? k "2") (make-create 6 (create-name c) (create-gender c)

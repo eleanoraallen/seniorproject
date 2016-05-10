@@ -1734,7 +1734,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; store inventories
 (define STORE-INVENTORY1 (make-inventory empty empty (list (list SWORD STAFF) (list HAT HELMET) (list COAT MAIL) (list GAUNTLETS) (list STEEL-BOOTS))
-                                         (list HEALING-POTION MAGIC-POTION) (list STAFF SWORD GAUNTLETS COAT COAT)))
+                                         (list HEALING-1 HEALING-2 HEALING-3 MP-1 MP-2 MP-3 AGILITY-P STRENGTH-P MYS NOB-CURE DIV-CURE) (list STAFF SWORD GAUNTLETS COAT COAT)))
 
 (define STORE1 (make-store SPELLSWORD STORE-INVENTORY1 0 'c "Strind" "gjkd"))
 
