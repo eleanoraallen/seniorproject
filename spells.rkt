@@ -22,35 +22,29 @@
 
 (define (seal-release i)
   (list
-   (overlay (scale 7 i) (bitmap/file "blankbackground.png"))
    (overlay (scale 6 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 5.5 i) (bitmap/file "blankbackground.png"))
    (overlay (scale 5 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 4.5 i) (bitmap/file "blankbackground.png"))
    (overlay (scale 4 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 3.5 i) (bitmap/file "blankbackground.png"))
    (overlay (scale 3 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 2.5 i) (bitmap/file "blankbackground.png"))
    (overlay (scale 2 i) (bitmap/file "blankbackground.png"))
-   (overlay i (bitmap/file "blankbackground.png"))
-   (overlay i (bitmap/file "blankbackground.png"))
-   (overlay i (bitmap/file "blankbackground.png"))
-   (overlay i (bitmap/file "blankbackground.png"))))
+   (overlay (scale 2 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 2 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 2 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 2 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 2 i) (bitmap/file "blankbackground.png"))
+   (overlay (scale 2 i) (bitmap/file "blankbackground.png"))))
 
 ;; Heal
 (define HEAL
   (make-spell
    'player
-   "heal" "+ 100 health"
-   (lambda (c)
-     (new player%
-          [name (send c get-name)]
-          [health (if (>= (+ 100 (send c get-health)) (send c get-max-health))
-                      (send c get-max-health) (+ 100 (send c get-health)))]
-          [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
-          [agility (send c get-agility)] [base-strength (send c get-base-strength)]
-          [strength (send c get-strength)] [spells (send c get-spells)]
-          [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
-          [resistance (send c get-resistance)] [animation (send c get-animation)]
-          [position (send c get-position)] [map-animation (send c get-map-animation)]
-          [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
-          [mp (send c get-mp)] [current-xp (send c get-current-xp)]))
+   "Magic_Healing" "Restore 100 HP"
+   (lambda (c) (send c clone #:health (if (>= (+ 100 (send c get-health)) (send c get-max-health))
+                      (send c get-max-health) (+ 100 (send c get-health)))))
    (append (seal-release (bitmap/file "heal.png")) 
            (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
          (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green)))
@@ -61,20 +55,10 @@
 (define DOOM-ROCK
   (make-spell
    'npc
-   "DoomRock"
+   "Magic_Meteor"
    "Deal 250 rock damage"
    (lambda (c)
-     (new npc%
-          [name (send c get-name)] 
-          [health (if (>= 125 (send c get-health)) 0 (- (send c get-health) 250))] 
-          [max-health (send c get-max-health)]
-          [base-agility (send c get-base-agility)] [agility (send c get-agility)]
-          [base-strength (send c get-base-strength)] [strength (send c get-strength)]
-          [spells (send c get-spells)] [character-inventory (send c get-inventory)]
-          [weakness (send c get-weakness)] [resistance (send c get-resistance)]
-          [animation (send c get-animation)] [position (send c get-position)] 
-          [map-animation (send c get-map-animation)] [dir (send c get-dir)] 
-          [xp-award (send c get-xp-award)]))
+     (send c clone #:health (if (>= 125 (send c get-health)) 0 (- (send c get-health)))))
    (append (seal-release (bitmap/file "doom-rock.png")) 
            (reverse (draw-throw (make-posn 480 -40) (make-posn -60 520) 20 (scale .5 (bitmap/file "doomrock.png")))))
    3
@@ -84,21 +68,12 @@
 (define GAMBLERS-GAMBIT
   (make-spell
    'player
-   "Gambler'sGambit"
+   "Gambler's_Gambit"
    "x2 Strength, 1/2 Health"
    (lambda (c)
-     (new player%
-          [name (send c get-name)]
-          [health (if (= (send c get-health) 1) 0
-                      (round (/ (send c get-health) 2)))]
-          [max-health (send c get-max-health)] [base-agility (send c get-base-agility)]
-          [agility (send c get-agility)] [base-strength (send c get-base-strength)]
-          [strength (round (* 2 (send c get-strength)))] [spells (send c get-spells)]
-          [character-inventory (send c get-inventory)] [weakness (send c get-weakness)]
-          [resistance (send c get-resistance)] [animation (send c get-animation)]
-          [position (send c get-position)] [map-animation (send c get-map-animation)]
-          [dir (send c get-dir)] [level (send c get-level)] [max-mp (send c get-max-mp)]
-          [mp (send c get-mp)] [current-xp (send c get-current-xp)]))
+     (send c clone #:health (if (= (send c get-health) 1) 0
+                      (round (/ (send c get-health) 2)))
+           #:strength (round (* 2 (send c get-strength)))))
    (append (seal-release (bitmap/file "gamblers_gambit.png"))
            (list (circle 10 'solid 'green) (circle 9 'solid 'green) (circle 8 'solid 'green) 
          (circle 7 'solid 'green) (circle 6 'solid 'green) (circle 5 'solid 'green)))
@@ -109,10 +84,10 @@
   (make-spell
    'npc
    "Lightning"
-   "Summon a bolt of lightning"
-   (lambda (c) (damage-character c 150 'electric))
+   "Deal 150 electric damage"
+   (lambda (c) (send c apply-attack 10000 150 'electric))
    (append (seal-release (bitmap/file "lightning.png"))
-           (make-list 10 (bitmap/file "lightning-attack.png")))
+           (make-list 25 (bitmap/file "lightning-attack.png")))
    5
    (bitmap/file "lightning.png")))
 

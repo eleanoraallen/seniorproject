@@ -1281,7 +1281,7 @@
             (make-combat
              (send (combat-player w) 
                    clone #:spells (append (list (first (reverse (send (combat-player w) get-spells))))
-                                          (reverse (rest (send (combat-player w) get-spells)))))
+                                          (reverse (rest (reverse (send (combat-player w) get-spells))))))
              (combat-npc w) 'p 's empty (combat-dungeon-name w) (combat-room-name w) (combat-bg w))]
            [(or (key=? k "escape") (key=? k "\b"))
             (make-combat (combat-player w)                                                

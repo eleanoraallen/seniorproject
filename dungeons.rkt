@@ -7,7 +7,7 @@
 (require "characters.rkt")
 (provide (all-defined-out))
 
-(define PLAYER-SPEED 20)
+(define PLAYER-SPEED 30)
 ;; ----------------------------------------------------------------------------
 
 ;; ROOF
@@ -195,7 +195,7 @@
 
 
 ;; ROOMS
-(define CITY-OUTSIDE (make-room "City" CITY-TILES 0 empty (list NPC NPC2)))
+(define CITY-OUTSIDE (make-room "City" CITY-TILES 10 (list NPC NPC2) (list NPC NPC2)))
 
 ;; TESTROOMS
 (define TESTROOM1 (make-room "TestRoom1" TILES1 5 (list NPC) (list NPC NPC2)))
@@ -203,10 +203,7 @@
 (define TESTROOM3 (make-room "TestRoom3" TILES3 10 (list NPC2) (list NPC NPC2)))
 
 ;; get-background
-(define (get-background s)
-  (cond
-    [(string=? s "TestRoom1") (bitmap/file "background.png")]
-    [else (bitmap/file "blankbackground.png")]))
+(define (get-background s) (bitmap/file "background.png"))
 
 ;; a menu one of:
 ;; - empty

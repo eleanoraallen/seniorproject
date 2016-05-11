@@ -104,7 +104,7 @@
                                                                   (beside 
                                                                    (rectangle 5 0 'solid 'pink)
                                                                    (rectangle 10 0 'solid 'pink)
-                                                                   (send (third (first (inventory-equipment (store-inventory s)))) get-image))
+                                                                   (send (fourth (first (inventory-equipment (store-inventory s)))) get-image))
                                                                   (place-image
                                                                    (above (text (send (fourth (first (inventory-equipment (store-inventory s)))) get-name) 18 'black)
                                                                           (text (send (fourth (first (inventory-equipment (store-inventory s)))) get-description) 15 'black)
@@ -176,7 +176,7 @@
                                                                   (beside 
                                                                    (rectangle 5 0 'solid 'pink)
                                                                    (rectangle 10 0 'solid 'pink)
-                                                                   (send (third (second (inventory-equipment (store-inventory s)))) get-image))
+                                                                   (send (fourth (second (inventory-equipment (store-inventory s)))) get-image))
                                                                   (place-image
                                                                    (above (text (send (fourth (second (inventory-equipment (store-inventory s)))) get-name) 18 'black)
                                                                           (text (send (fourth (second (inventory-equipment (store-inventory s)))) get-description) 15 'black)
@@ -249,7 +249,7 @@
                                                                   (beside 
                                                                    (rectangle 5 0 'solid 'pink)
                                                                    (rectangle 10 0 'solid 'pink)
-                                                                   (send (third (third (inventory-equipment (store-inventory s)))) get-image))
+                                                                   (send (fourth (third (inventory-equipment (store-inventory s)))) get-image))
                                                                   (place-image
                                                                    (above (text (send (fourth (third (inventory-equipment (store-inventory s)))) get-name) 18 'black)
                                                                           (text (send (fourth (third (inventory-equipment (store-inventory s)))) get-description) 15 'black)
@@ -321,7 +321,7 @@
                                                                   (beside 
                                                                    (rectangle 5 0 'solid 'pink)
                                                                    (rectangle 10 0 'solid 'pink)
-                                                                   (send (third (fourth (inventory-equipment (store-inventory s)))) get-image))
+                                                                   (send (fourth (fourth (inventory-equipment (store-inventory s)))) get-image))
                                                                   (place-image
                                                                    (above (text (send (fourth (fourth (inventory-equipment (store-inventory s)))) get-name) 18 'black)
                                                                           (text (send (fourth (fourth (inventory-equipment (store-inventory s)))) get-description) 15 'black)
@@ -393,7 +393,7 @@
                                                                   (beside 
                                                                    (rectangle 5 0 'solid 'pink)
                                                                    (rectangle 10 0 'solid 'pink)
-                                                                   (send (third (fifth (inventory-equipment (store-inventory s)))) get-image))
+                                                                   (send (fourth (fifth (inventory-equipment (store-inventory s)))) get-image))
                                                                   (place-image
                                                                    (above (text (send (fourth (fifth (inventory-equipment (store-inventory s)))) get-name) 18 'black)
                                                                           (text (send (fourth (fifth (inventory-equipment (store-inventory s)))) get-description) 15 'black)
@@ -465,7 +465,7 @@
                                                                   (beside 
                                                                    (rectangle 5 0 'solid 'pink)
                                                                    (rectangle 10 0 'solid 'pink)
-                                                                   (send (third (inventory-consumables (store-inventory s))) get-image))
+                                                                   (send (fourth (inventory-consumables (store-inventory s))) get-image))
                                                                   (place-image
                                                                    (above (text (send (fourth (inventory-consumables (store-inventory s))) get-name) 18 'black)
                                                                           (text (send (fourth (inventory-consumables (store-inventory s))) get-description) 15 'black)
@@ -1733,8 +1733,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; store inventories
-(define STORE-INVENTORY1 (make-inventory empty empty (list (list SWORD STAFF) (list HAT HELMET) (list COAT MAIL) (list GAUNTLETS) (list STEEL-BOOTS))
-                                         (list HEALING-1 HEALING-2 HEALING-3 MP-1 MP-2 MP-3 AGILITY-P STRENGTH-P MYS NOB-CURE DIV-CURE) (list STAFF SWORD GAUNTLETS COAT COAT)))
+(define STORE-INVENTORY1 (make-inventory empty empty
+                                         (list (list WALKING-STICK PRACTICE-SWORD OASIS-BLADE JANBIYA SWORD-CANE MACHETE SWORD KATANA CLAYMORE)
+                                               (list PLAIN-HAT FANCY-HAT RUSTY-HELM STEEL-HELM)
+                                               (list COAT DRESS RUSTY-MAIL MAIL RUSTY-BRESTPLATE STEEL-BRESTPLATE)
+                                               (list MITTENS GLOVES RUSTY-GAUNTLETS GAUNTLETS)
+                                               (list BOOTS MAGIC-SHOES RUSTY-GRIEVES IRON-GRIEVES STEEL-BOOTS))
+                                         (list HEALING-1 HEALING-2 HEALING-3 MP-1 MP-2 MP-3 AGILITY-P STRENGTH-P MYS NOB-CURE DIV-CURE)
+                                         empty))
 
 (define STORE1 (make-store SPELLSWORD STORE-INVENTORY1 0 'c "Strind" "gjkd"))
 

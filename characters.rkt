@@ -17,7 +17,7 @@
   (new player%
        [name "You"] [health 50] [max-health 50] [base-agility 1]
        [agility 1] [base-strength 5] [strength 5] [spells empty]
-       [character-inventory (make-inventory STAFF (list HAT COAT BOOTS MITTENS) (list empty empty empty empty empty) (list HEALING-POTION) (list (add-gold 999)))]
+       [character-inventory (make-inventory STAFF (list HAT COAT BOOTS MITTENS) (list empty empty empty empty empty) empty (list (add-gold 999)))]
        [weakness 'none] [resistance 'none]
        [animation (make-animation (flip-horizontal (bitmap/file "knight_standby.png"))
                                   (flip-horizontal (bitmap/file "knight_attack.png"))

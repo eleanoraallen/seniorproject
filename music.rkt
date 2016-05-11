@@ -66,7 +66,7 @@
     [else (pstream-set-volume! (first l) 0)
           (silence (rest l))]))
 
-(define (hear p) (pstream-set-volume! p .2))
+(define (hear p) (pstream-set-volume! p 1))
 
 (define (start-music) (start-all) (silence-all) (hear splash-music))
 
