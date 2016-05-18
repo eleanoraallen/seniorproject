@@ -483,10 +483,12 @@
   (class* object% (base-tile<%>)
     (super-new)
     (init-field
+     name ;; a string that is the name of the tile
      image ;; an image that is an image of the tile
      passable ;; true iff tile is passable
      portal ;; is one of: empty portal
      )
+    (define/public (get-name) name)
     (define/public (get-image) image)
     (define/public (passable?) passable)
     (define/public (portal?) (not (empty? portal)))

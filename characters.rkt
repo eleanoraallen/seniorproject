@@ -19,13 +19,13 @@
        [agility 1] [base-strength 5] [strength 5] [spells empty]
        [character-inventory (make-inventory STAFF (list HAT COAT BOOTS MITTENS) (list empty empty empty empty empty) empty (list (add-gold 999)))]
        [weakness 'none] [resistance 'none]
-       [animation (make-animation (flip-horizontal (bitmap/file "knight_standby.png"))
-                                  (flip-horizontal (bitmap/file "knight_attack.png"))
-                                  (flip-horizontal (bitmap/file "knight_standby.png"))
-                                  (flip-horizontal (bitmap/file "knight_flinch.png"))
-                                  (flip-horizontal (bitmap/file "knight_standby.png"))
-                                  (flip-horizontal (bitmap/file "knight_standby.png")))]
-       [position (make-posn 2350 1250)] [map-animation (make-map-animation (bitmap/file "bolivar3.png")
+       [animation (make-animation (flip-horizontal (bitmap/file "standby-m.png"))
+                                        (flip-horizontal (bitmap/file "attack-m.png"))
+                                        (flip-horizontal (bitmap/file "cast-m.png"))
+                                        (flip-horizontal (bitmap/file "flinch-m.png"))
+                                        (flip-horizontal (bitmap/file "standby-m.png"))
+                                        (flip-horizontal (bitmap/file "dead-m.png")))]
+       [position (make-posn (* 150 14) (* 7 150))] [map-animation (make-map-animation (bitmap/file "bolivar3.png")
                                                                            (bitmap/file "bolivar1.png")
                                                                            (bitmap/file "bolivar2.png")
                                                                            (bitmap/file "bolivar4.png"))] 

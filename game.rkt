@@ -899,12 +899,10 @@
      [(eq? d 's) (map-animation-south a)]
      [(eq? d 'w) (map-animation-west a)])
    (place-image
-    (place-npcs (room-npcs r) (tiles->image (room-tiles r)))
-    (+ 405 (- (/ (image-width (tiles->image (room-tiles r))) 2) (posn-x p)))
-    (+ 315 (- (/ (image-height (tiles->image (room-tiles r))) 2) (posn-y p)))
-    (overlay/align "left" "bottom" 
-                   (text (room-name r) 15 'red) 
-                   (rectangle 810 630 'solid 'black)))))
+    (place-npcs (room-npcs r) (tiles->image (lolos->lolot (room-tiles r))))
+    (+ 405 (- (/ (image-width (tiles->image (lolos->lolot (room-tiles r)))) 2) (posn-x p)))
+    (+ 315 (- (/ (image-height (tiles->image (lolos->lolot (room-tiles r)))) 2) (posn-y p)))
+    (rectangle 810 630 'solid 'black))))
 
 ;; place-npcs :list-of-npcs, image --> image
 (define (place-npcs l i)
@@ -1228,14 +1226,14 @@
                                  clone #:mp (- (send (combat-player w) get-mp) 
                                                (spell-cost (first (send (combat-player w) get-spells)))))
                            apply-spell (first (send (combat-player w) get-spells)))
-                     (combat-npc w) 'pa 'e (spell-animation (first (send (combat-player w) get-spells)))
+                     (combat-npc w) 'ps 'e (spell-animation (first (send (combat-player w) get-spells)))
                      (combat-dungeon-name w) (combat-room-name w) (combat-bg w))
                     (make-combat 
                      (send (combat-player w) 
                            clone #:mp (- (send (combat-player w) get-mp) 
                                          (spell-cost (first (send (combat-player w) get-spells)))))
                      (send (combat-npc w) apply-spell (first (send (combat-player w) get-spells)))
-                     'pa 'e (spell-animation (first (send (combat-player w) get-spells)))
+                     'ps 'e (spell-animation (first (send (combat-player w) get-spells)))
                      (combat-dungeon-name w) (combat-room-name w) (combat-bg w))) w)]
            [(and (> (length (send (combat-player w) get-spells)) 1) (key=? k "2"))
             (if (>= (send (combat-player w) get-mp) (spell-cost (second (send (combat-player w) get-spells))))
@@ -1245,14 +1243,14 @@
                                  clone #:mp (- (send (combat-player w) get-mp) 
                                                (spell-cost (second (send (combat-player w) get-spells)))))
                            apply-spell (second (send (combat-player w) get-spells)))
-                     (combat-npc w) 'pa 'e (spell-animation (second (send (combat-player w) get-spells)))
+                     (combat-npc w) 'ps 'e (spell-animation (second (send (combat-player w) get-spells)))
                      (combat-dungeon-name w) (combat-room-name w) (combat-bg w))
                     (make-combat 
                      (send (combat-player w) 
                            clone #:mp (- (send (combat-player w) get-mp) 
                                          (spell-cost (second (send (combat-player w) get-spells)))))
                      (send (combat-npc w) apply-spell (second (send (combat-player w) get-spells)))
-                     'pa 'e (spell-animation (second (send (combat-player w) get-spells)))
+                     'ps 'e (spell-animation (second (send (combat-player w) get-spells)))
                      (combat-dungeon-name w) (combat-room-name w) (combat-bg w))) w)]
            [(and (> (length (send (combat-player w) get-spells)) 2) (key=? k "3"))
             (if (>= (send (combat-player w) get-mp) (spell-cost (third (send (combat-player w) get-spells))))
@@ -1262,14 +1260,14 @@
                                  clone #:mp (- (send (combat-player w) get-mp) 
                                                (spell-cost (third (send (combat-player w) get-spells)))))
                            apply-spell (third (send (combat-player w) get-spells)))
-                     (combat-npc w) 'pa 'e (spell-animation (third (send (combat-player w) get-spells)))
+                     (combat-npc w) 'ps 'e (spell-animation (third (send (combat-player w) get-spells)))
                      (combat-dungeon-name w) (combat-room-name w) (combat-bg w))
                     (make-combat 
                      (send (combat-player w) 
                            clone #:mp (- (send (combat-player w) get-mp) 
                                          (spell-cost (third (send (combat-player w) get-spells)))))
                      (send (combat-npc w) apply-spell (third (send (combat-player w) get-spells)))
-                     'pa 'e (spell-animation (third (send (combat-player w) get-spells)))
+                     'ps 'e (spell-animation (third (send (combat-player w) get-spells)))
                      (combat-dungeon-name w) (combat-room-name w) (combat-bg w))) w)]
            [(and (> (length (send (combat-player w) get-spells)) 3) (or (key=? k "right") (key=? k "d")))
             (make-combat
@@ -1398,15 +1396,15 @@
 ;; handle-dungeon-key : dungeon --> dungeon
 (define (handle-dungeon-key d k)
   (cond
-    [(send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) portal?)
+    [(send (get-tile (send (dungeon-player d) get-position) (lolos->lolot (room-tiles (first (dungeon-rooms d))))) portal?)
      (make-dungeon
-      (send (dungeon-player d) clone #:position (portal-position (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))
-      (cons (get-room (get-dungeon (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))
-                      (portal-room (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))
-            (filter (lambda (x) (not (string=? (room-name x) (portal-room (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)))))
-                    (dungeon-rooms (get-dungeon (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal))))))
+      (send (dungeon-player d) clone #:position (portal-position (send (get-tile (send (dungeon-player d) get-position) (lolos->lolot (room-tiles (first (dungeon-rooms d))))) get-portal)))
+      (cons (get-room (get-dungeon (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (lolos->lolot (room-tiles (first (dungeon-rooms d))))) get-portal)))
+                      (portal-room (send (get-tile (send (dungeon-player d) get-position) (lolos->lolot (room-tiles (first (dungeon-rooms d))))) get-portal)))
+            (filter (lambda (x) (not (string=? (room-name x) (portal-room (send (get-tile (send (dungeon-player d) get-position) (lolos->lolot (room-tiles (first (dungeon-rooms d))))) get-portal)))))
+                    (dungeon-rooms (get-dungeon (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (lolos->lolot (room-tiles (first (dungeon-rooms d))))) get-portal))))))
       empty
-      (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (room-tiles (first (dungeon-rooms d)))) get-portal)) empty)]
+      (portal-dungeon (send (get-tile (send (dungeon-player d) get-position) (lolos->lolot (room-tiles (first (dungeon-rooms d))))) get-portal)) empty)]
     [(not (empty? (dungeon-menu d))) (handle-menu-key d k)]
     [(and (or (key=? k " ") (key=? k "\r"))
           (not (empty? (dungeon-images d)))
@@ -1921,7 +1919,7 @@
                                       (/ (image-height 
                                           (map-animation-east
                                            (send (dungeon-player d) get-map-animation))) 2)))
-                        (room-tiles (first (dungeon-rooms d)))) passable?)))))
+                        (lolos->lolot (room-tiles (first (dungeon-rooms d))))) passable?)))))
 
 ;; characters-touching? : character character --> bool
 (define (characters-touching? c1 c2)
@@ -1956,8 +1954,8 @@
 ;; enough-space-below? : dungeon --> boolean
 (define (enough-space-below? d)
   (not
-   (or (<= (- (* (image-height (send (first (first (room-tiles (first (dungeon-rooms d))))) get-image))
-                 (length (room-tiles (first (dungeon-rooms d)))))
+   (or (<= (- (* (image-height (send (first (first (lolos->lolot (room-tiles (first (dungeon-rooms d)))))) get-image))
+                 (length (lolos->lolot (room-tiles (first (dungeon-rooms d))))))
               (/ (image-height (map-animation-south (send (dungeon-player d) get-map-animation))) 2))
            (posn-y (send (dungeon-player d) get-position)))
        (any-characters-touching? (send (dungeon-player d) clone
@@ -1970,7 +1968,7 @@
                               (+ (posn-y (send (dungeon-player d) get-position))
                                  (/ (image-height (map-animation-east 
                                                    (send (dungeon-player d) get-map-animation))) 2)))
-                   (room-tiles (first (dungeon-rooms d)))) passable?)))))
+                   (lolos->lolot (room-tiles (first (dungeon-rooms d))))) passable?)))))
 
 ;; enough-space-left? : dungeon --> boolean
 (define (enough-space-left? d)
@@ -1990,13 +1988,13 @@
                                  (map-animation-west 
                                   (send (dungeon-player d) get-map-animation))) 2))
                           (posn-y (send (dungeon-player d) get-position)))
-               (room-tiles (first (dungeon-rooms d)))) passable?)))))
+               (lolos->lolot (room-tiles (first (dungeon-rooms d))))) passable?)))))
 
 ;; enough-space-right? : dungeon --> boolean
 (define (enough-space-right? d)
   (not
-   (or (<= (- (* (image-width (send (first (first (room-tiles (first (dungeon-rooms d))))) get-image))
-                 (length (first (room-tiles (first (dungeon-rooms d))))))
+   (or (<= (- (* (image-width (send (first (first (lolos->lolot (room-tiles (first (dungeon-rooms d)))))) get-image))
+                 (length (first (lolos->lolot (room-tiles (first (dungeon-rooms d)))))))
               (/ (image-width (map-animation-east (send (dungeon-player d) get-map-animation))) 2))
            (posn-x (send (dungeon-player d) get-position)))
        (any-characters-touching? (send (dungeon-player d) clone
@@ -2008,7 +2006,7 @@
                                           (/ (image-width (map-animation-east
                                                            (send (dungeon-player d) get-map-animation))) 2))
                                        (posn-y (send (dungeon-player d) get-position)))
-                            (room-tiles (first (dungeon-rooms d)))) passable?)))))
+                            (lolos->lolot (room-tiles (first (dungeon-rooms d))))) passable?)))))
 
 ;; MAIN -------------------------------------------------------------------------------------------------------------------------
 

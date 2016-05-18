@@ -101,19 +101,20 @@ current-xp
      (dechript (first (tenth (rest (rest (rest (rest save)))))))
      (dechript (second (tenth (rest (rest (rest (rest save)))))))
      (dechript (third (tenth (rest (rest (rest (rest save)))))))
-     (dechript (fourth (tenth (rest (rest (rest (rest save))))))))))
-     
+     (dechript (fourth (tenth (rest (rest (rest (rest save)))))))
+     (dechript (first (tenth (rest (rest (rest (rest (rest save)))))))))))
+
 
 ;; derive-dungeon
-(define (derive-dungeon dn rn n h mh a s sp iw ie ieq ic g m p l mp mmp xp)
-  (make-dungeon (derive-player n h mh a s sp iw ie ieq ic g m p l mp mmp xp)
+(define (derive-dungeon dn rn n h mh a s sp iw ie ieq ic g m p l mp mmp xp gen)
+  (make-dungeon (derive-player n h mh a s sp iw ie ieq ic g m p l mp mmp xp gen)
                 (cons (get-room (get-dungeon dn) rn)
                       (filter (lambda (x) (not (string=? (room-name x) rn)))
                               (dungeon-rooms (get-dungeon dn)))) empty dn empty))
 
 ;; derive-player : string string string string string los string los los
 ;; lolos los string los los string string string string --> player
-(define (derive-player n h mh a s sp iw ie ieq ic g m p l mp mmp xp)
+(define (derive-player n h mh a s sp iw ie ieq ic g m p l mp mmp xp gen)
   (send SPELLSWORD clone
         #:name n #:health (string->number h) #:max-health (string->number mh)
         #:agility (string->number a) #:base-agility (string->number a)
@@ -133,6 +134,19 @@ current-xp
                                               (cons
                                                (add-gold (string->number g))
                                                (get-items m)))
+        #:animation (if (eq? gen "m")
+                        (make-animation (flip-horizontal (bitmap/file "standby-m.png"))
+                                        (flip-horizontal (bitmap/file "attack-m.png"))
+                                        (flip-horizontal (bitmap/file "cast-m.png"))
+                                        (flip-horizontal (bitmap/file "flinch-m.png"))
+                                        (flip-horizontal (bitmap/file "standby-m.png"))
+                                        (flip-horizontal (bitmap/file "dead-m.png")))
+                        (make-animation (flip-horizontal (bitmap/file "standby-m.png"))
+                                        (flip-horizontal (bitmap/file "attack-m.png"))
+                                        (flip-horizontal (bitmap/file "cast-m.png"))
+                                        (flip-horizontal (bitmap/file "flinch-m.png"))
+                                        (flip-horizontal (bitmap/file "standby-m.png"))
+                                        (flip-horizontal (bitmap/file "dead-m.png"))))
         #:position (make-posn (string->number (first p))
                               (string->number (second p)))
         #:level (string->number l) #:mp (string->number mp)
@@ -146,27 +160,27 @@ current-xp
   (write-file "save.txt"
               (string-append
                k " " (enchript-string (dungeon-name d) k) " " (enchript-string (room-name (first (dungeon-rooms d))) k) " "  (enchript-string (send (dungeon-player d) get-name) k) "\n"
-              (enchript-string (number->string (send (dungeon-player d) get-health)) k) " " (enchript-string (number->string (send (dungeon-player d) get-max-health)) k) " "
-              (enchript-string (number->string (send (dungeon-player d) get-agility)) k) " " (enchript-string (number->string (send (dungeon-player d) get-strength)) k) "\n"
-              (write-spells (send (dungeon-player d) get-spells) k) "\n"
-              (if (empty? (inventory-weapon (send (dungeon-player d) get-inventory))) (enchript-string "empty" k)
-                  (enchript-string (send (inventory-weapon (send (dungeon-player d) get-inventory)) get-name) k)) "\n"
-              (write-items (inventory-equiped (send (dungeon-player d) get-inventory)) k) "\n"
-              (write-items (first (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
-              (write-items (second (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
-              (write-items (third (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
-              (write-items (fourth (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
-              (write-items (fifth (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
-              (write-items (inventory-consumables (send (dungeon-player d) get-inventory)) k) "\n"
-              (string-append (enchript-string (number->string (send (first (filter (lambda (x) (string=? (send x get-name) "Gold"))
-                                                                  (inventory-miscellaneous (send (dungeon-player d) get-inventory)))) get-number)) k)
-                             " " (write-items (filter (lambda (x) (not (string=? (send x get-name) "Gold")))
-                                                                  (inventory-miscellaneous (send (dungeon-player d) get-inventory))) k)) "\n"
-             (enchript-string (number->string (posn-x (send (dungeon-player d) get-position))) k) " " (enchript-string (number->string (posn-y (send (dungeon-player d) get-position))) k) "\n"
-             (enchript-string (number->string (send (dungeon-player d) get-level)) k) " "
-             (enchript-string (number->string (send (dungeon-player d) get-mp)) k) " "
-             (enchript-string (number->string (send (dungeon-player d) get-max-mp)) k) " "
-             (enchript-string (number->string (send (dungeon-player d) get-current-xp)) k))))
+               (enchript-string (number->string (send (dungeon-player d) get-health)) k) " " (enchript-string (number->string (send (dungeon-player d) get-max-health)) k) " "
+               (enchript-string (number->string (send (dungeon-player d) get-agility)) k) " " (enchript-string (number->string (send (dungeon-player d) get-strength)) k) "\n"
+               (write-spells (send (dungeon-player d) get-spells) k) "\n"
+               (if (empty? (inventory-weapon (send (dungeon-player d) get-inventory))) (enchript-string "empty" k)
+                   (enchript-string (send (inventory-weapon (send (dungeon-player d) get-inventory)) get-name) k)) "\n"
+                                                                                                                   (write-items (inventory-equiped (send (dungeon-player d) get-inventory)) k) "\n"
+                                                                                                                   (write-items (first (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
+                                                                                                                   (write-items (second (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
+                                                                                                                   (write-items (third (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
+                                                                                                                   (write-items (fourth (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
+                                                                                                                   (write-items (fifth (inventory-equipment (send (dungeon-player d) get-inventory))) k) "\n"
+                                                                                                                   (write-items (inventory-consumables (send (dungeon-player d) get-inventory)) k) "\n"
+                                                                                                                   (string-append (enchript-string (number->string (send (first (filter (lambda (x) (string=? (send x get-name) "Gold"))
+                                                                                                                                                                                        (inventory-miscellaneous (send (dungeon-player d) get-inventory)))) get-number)) k)
+                                                                                                                                  " " (write-items (filter (lambda (x) (not (string=? (send x get-name) "Gold")))
+                                                                                                                                                           (inventory-miscellaneous (send (dungeon-player d) get-inventory))) k)) "\n"
+                                                                                                                                                                                                                                  (enchript-string (number->string (posn-x (send (dungeon-player d) get-position))) k) " " (enchript-string (number->string (posn-y (send (dungeon-player d) get-position))) k) "\n"
+                                                                                                                                                                                                                                  (enchript-string (number->string (send (dungeon-player d) get-level)) k) " "
+                                                                                                                                                                                                                                  (enchript-string (number->string (send (dungeon-player d) get-mp)) k) " "
+                                                                                                                                                                                                                                  (enchript-string (number->string (send (dungeon-player d) get-max-mp)) k) " "
+                                                                                                                                                                                                                                  (enchript-string (number->string (send (dungeon-player d) get-current-xp)) k) "\n" (enchript-string (if (eq? (animation-standby (send (dungeon-player d) get-animation)) (flip-horizontal (bitmap/file "standby-m.png"))) "m" "f") k))))
 
 (define VALID-CHARACTERS
   (list "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "!" "'" "," "." "?" "@" "#" "$" "%" "^" "&" "*" "(" ")" "_" "-" "+" "="
@@ -184,7 +198,7 @@ current-xp
     [(string=? s "") ""]
     [else
      (string-append (list-ref VALID-CHARACTERS (modulo (+ (get-list-ref-number (substring s 0 1) VALID-CHARACTERS 0)
-                       (get-list-ref-number (substring k 0 1) VALID-CHARACTERS 0)) 83))
+                                                          (get-list-ref-number (substring k 0 1) VALID-CHARACTERS 0)) 83))
                     (enchript-string (substring s 1) (string-append (substring k 1) (substring k 0 1))))]))
 
 (define (dechript-string s k)
@@ -192,7 +206,7 @@ current-xp
     [(string=? s "") ""]
     [else
      (string-append (list-ref VALID-CHARACTERS (modulo (- (get-list-ref-number (substring s 0 1) VALID-CHARACTERS 0)
-                       (get-list-ref-number (substring k 0 1) VALID-CHARACTERS 0)) 83))
+                                                          (get-list-ref-number (substring k 0 1) VALID-CHARACTERS 0)) 83))
                     (dechript-string (substring s 1) (string-append (substring k 1) (substring k 0 1))))]))
 
 (define (get-list-ref-number s l n)
@@ -200,8 +214,8 @@ current-xp
     [(and (empty? l) (not (empty? s))) false]
     [(string=? s (first l)) n]
     [else (get-list-ref-number s (rest l) (+ n 1))]))
-                                                                                                                                       
-                                                                                              
+
+
 ;; write-spells
 (define (write-spells l k)
   (cond
